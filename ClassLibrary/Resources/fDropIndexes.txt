@@ -1,0 +1,22 @@
+
+--Drop all indexes in the Database
+
+CREATE OR ALTER PROCEDURE [dbo].[fDropIndexes]
+AS
+BEGIN
+	--DROP indexes
+	DROP INDEX IF EXISTS IDX_Attachments_EmailID ON dbo.Attachments;
+	DROP INDEX IF EXISTS IDX_Inbox_FileID ON dbo.Inbox;
+	DROP INDEX IF EXISTS IDX_Inbox_ChkSum ON dbo.Inbox;
+	DROP INDEX IF EXISTS IDX_PSTFolders_FileID ON dbo.PSTFolders;
+	DROP INDEX IF EXISTS IDX_EmailExemptStatus_EmailID ON dbo.EmailExemptStatus;
+	DROP INDEX IF EXISTS IDX_EmailExemptStatus_ExemptionID ON dbo.EmailExemptStatus;
+
+	--Drop FULLTEXT INDEX objects if they exist
+	/*
+	NO LONGER USED, INSTEAD RE-POPULATE INDEX
+	IF OBJECTPROPERTY ( object_id('Inbox'), 'TableHasActiveFulltextIndex')<>0
+		DROP FULLTEXT INDEX ON Inbox;
+	*/
+
+END;

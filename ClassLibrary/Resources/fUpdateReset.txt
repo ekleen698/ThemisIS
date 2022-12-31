@@ -1,0 +1,17 @@
+
+--Used by frmEmailExemption
+--Remove multiple rows from email and attachment exemption tables
+CREATE OR ALTER PROCEDURE fUpdateReset
+AS
+BEGIN
+	--Delete any already existing email exemptions
+	DELETE FROM dbo.EmailExemptStatus
+	WHERE [EmailID] IN (SELECT [EmailID] FROM dbo.DisplayEmailIDs);
+
+	--Delete any already existing attachment exemptions
+	DELETE dbo.AttachExemptStatus
+    WHERE [AttachID] IN (
+		SELECT [ID] 
+		FROM Attachments 
+		WHERE [EmailID] IN (SELECT [EmailID] FROM dbo.DisplayEmailIDs) );
+END;

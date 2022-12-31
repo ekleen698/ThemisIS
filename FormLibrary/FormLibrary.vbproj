@@ -1,0 +1,396 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3BFFE25E-42D7-4C79-B793-63A3764B40CE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FormLibrary</RootNamespace>
+    <AssemblyName>FormLibrary</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>Windows</MyType>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>FormLibrary.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>FormLibrary.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DocumentationFile>FormLibrary.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DocumentationFile>FormLibrary.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="GemBox.Pdf, Version=17.0.0.1208, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
+      <HintPath>..\packages\GemBox.Pdf.17.0.1208\lib\net35\GemBox.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.Redemption">
+      <HintPath>..\Redemption Libraries\Interop.Redemption.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Pkcs11Interop, Version=5.1.1.0, Culture=neutral, PublicKeyToken=c10e9c2d8c006d2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pkcs11Interop.5.1.1\lib\net45\Pkcs11Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Printing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Threading.Tasks" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="04-Search.Designer.vb">
+      <DependentUpon>04-Search.vb</DependentUpon>
+    </Compile>
+    <Compile Include="04-Search.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="01-Directory.Designer.vb">
+      <DependentUpon>01-Directory.vb</DependentUpon>
+    </Compile>
+    <Compile Include="01-Directory.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="06b-Email_Grouped.Designer.vb">
+      <DependentUpon>06b-Email_Grouped.vb</DependentUpon>
+    </Compile>
+    <Compile Include="06b-Email_Grouped.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="06a-Email.Designer.vb">
+      <DependentUpon>06a-Email.vb</DependentUpon>
+    </Compile>
+    <Compile Include="06a-Email.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="09-AttachExemption.Designer.vb">
+      <DependentUpon>09-AttachExemption.vb</DependentUpon>
+    </Compile>
+    <Compile Include="09-AttachExemption.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="07-EmailExemption.Designer.vb">
+      <DependentUpon>07-EmailExemption.vb</DependentUpon>
+    </Compile>
+    <Compile Include="07-EmailExemption.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="05-Keywords.Designer.vb">
+      <DependentUpon>05-Keywords.vb</DependentUpon>
+    </Compile>
+    <Compile Include="05-Keywords.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="03-ProjDetails.Designer.vb">
+      <DependentUpon>03-ProjDetails.vb</DependentUpon>
+    </Compile>
+    <Compile Include="03-ProjDetails.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="02-ProjUpdate.Designer.vb">
+      <DependentUpon>02-ProjUpdate.vb</DependentUpon>
+    </Compile>
+    <Compile Include="02-ProjUpdate.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="08-Attachments.Designer.vb">
+      <DependentUpon>08-Attachments.vb</DependentUpon>
+    </Compile>
+    <Compile Include="08-Attachments.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="10-SearchUpdate.Designer.vb">
+      <DependentUpon>10-SearchUpdate.vb</DependentUpon>
+    </Compile>
+    <Compile Include="10-SearchUpdate.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="14-WorkerProgrBar.Designer.vb">
+      <DependentUpon>14-WorkerProgrBar.vb</DependentUpon>
+    </Compile>
+    <Compile Include="14-WorkerProgrBar.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="13-ExportProgrBar.Designer.vb">
+      <DependentUpon>13-ExportProgrBar.vb</DependentUpon>
+    </Compile>
+    <Compile Include="13-ExportProgrBar.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="16-WaitingBar.Designer.vb">
+      <DependentUpon>16-WaitingBar.vb</DependentUpon>
+    </Compile>
+    <Compile Include="16-WaitingBar.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="15-ImportProgrBar.Designer.vb">
+      <DependentUpon>15-ImportProgrBar.vb</DependentUpon>
+    </Compile>
+    <Compile Include="15-ImportProgrBar.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="11-UserSettings.Designer.vb">
+      <DependentUpon>11-UserSettings.vb</DependentUpon>
+    </Compile>
+    <Compile Include="11-UserSettings.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="12-Export.Designer.vb">
+      <DependentUpon>12-Export.vb</DependentUpon>
+    </Compile>
+    <Compile Include="12-Export.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="00-ExportClasses.vb" />
+    <Compile Include="17-Input.Designer.vb">
+      <DependentUpon>17-Input.vb</DependentUpon>
+    </Compile>
+    <Compile Include="17-Input.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="18-Redacted.Designer.vb">
+      <DependentUpon>18-Redacted.vb</DependentUpon>
+    </Compile>
+    <Compile Include="18-Redacted.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="04-Search.resx">
+      <DependentUpon>04-Search.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="01-Directory.resx">
+      <DependentUpon>01-Directory.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="06b-Email_Grouped.resx">
+      <DependentUpon>06b-Email_Grouped.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="06a-Email.resx">
+      <DependentUpon>06a-Email.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="09-AttachExemption.resx">
+      <DependentUpon>09-AttachExemption.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="07-EmailExemption.resx">
+      <DependentUpon>07-EmailExemption.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="05-Keywords.resx">
+      <DependentUpon>05-Keywords.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="03-ProjDetails.resx">
+      <DependentUpon>03-ProjDetails.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="02-ProjUpdate.resx">
+      <DependentUpon>02-ProjUpdate.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="08-Attachments.resx">
+      <DependentUpon>08-Attachments.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="10-SearchUpdate.resx">
+      <DependentUpon>10-SearchUpdate.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="14-WorkerProgrBar.resx">
+      <DependentUpon>14-WorkerProgrBar.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="13-ExportProgrBar.resx">
+      <DependentUpon>13-ExportProgrBar.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="16-WaitingBar.resx">
+      <DependentUpon>16-WaitingBar.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="15-ImportProgrBar.resx">
+      <DependentUpon>15-ImportProgrBar.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="11-UserSettings.resx">
+      <DependentUpon>11-UserSettings.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="12-Export.resx">
+      <DependentUpon>12-Export.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="17-Input.resx">
+      <DependentUpon>17-Input.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="18-Redacted.resx">
+      <DependentUpon>18-Redacted.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>9</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Outlook">
+      <Guid>{00062FFF-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Word">
+      <Guid>{00020905-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>7</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClassLibrary\ClassLibrary.vbproj">
+      <Project>{2b7b81a5-a9a0-4587-a086-70d91c15ff57}</Project>
+      <Name>ClassLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\gear_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\info_16.png" />
+    <Content Include="Resources\info_24.png" />
+    <Content Include="Resources\trashcan.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+</Project>

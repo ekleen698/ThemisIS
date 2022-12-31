@@ -1,0 +1,32 @@
+
+-- Updates Inbox.Duplicate to 1 indicating that this is a duplicate email
+CREATE OR ALTER   PROCEDURE [dbo].[fUpdateDuplicates]
+AS
+BEGIN
+	-- Reset indicator
+	UPDATE dbo.Inbox SET Duplicate=0;
+	-- Update indicator
+	UPDATE dbo.Inbox
+	SET Duplicate=1
+	WHERE emailid IN (
+		SELECT sub.EmailID
+		FROM (
+			SELECT ib.ChkSum
+				, COUNT(ib.EmailID) OVER (PARTITION BY ChkSum) "ChkSum_Count"
+				, ib.EmailID
+				-- Prioritize emails with Email/Attachment Exemptions
+				, ROW_NUMBER() OVER(PARTITION BY ib.ChkSum ORDER BY
+					IIF(ib.EmailID IN (SELECT EmailID FROM dbo.EmailExemptStatus),1,0) DESC
+					, IIF(ib.EmailID IN (
+						SELECT att.EmailID 
+						FROM dbo.Attachments att
+						JOIN dbo.AttachExemptStatus aes ON att.ID=aes.AttachID),1,0) DESC
+					, ib.EmailID ASC) row_num
+			FROM Inbox ib
+			WHERE 1=1
+			AND ib.EntryID<>'Embedded'
+			) sub
+		WHERE sub.ChkSum_Count>1 and sub.row_num>1 
+		);
+	RETURN (SELECT @@ROWCOUNT);
+END;

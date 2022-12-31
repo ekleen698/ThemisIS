@@ -1,0 +1,45 @@
+--Used by frmEmailExemption, frmAttachments, frmSearchUpdate 
+--Insert new row(s) into Attachment Exemption Status table
+CREATE OR ALTER PROCEDURE [dbo].[fAttachExemption]
+@AttachID INT
+, @Exemptions TVP READONLY --custom type (TABLE)
+
+AS
+BEGIN
+	BEGIN TRANSACTION
+	--Updates all Attachments for Emails in search criteria
+	IF @AttachID = -1
+		BEGIN
+			-- Delete any existing Exemptions for each Attachment
+			DELETE FROM dbo.[AttachExemptStatus] 
+			WHERE AttachID IN (
+				SELECT att.ID
+				FROM dbo.Attachments att
+				JOIN dbo.DisplayEmailIDs d ON att.EmailID=d.EmailID
+				);
+
+			-- Insert new rows for selected Exemptions to each Attachment
+			INSERT INTO dbo.[AttachExemptStatus] ([AttachID], [ExemptionID], [Description])
+			SELECT DISTINCT att.ID, ex.ID, ex.[Description]
+			FROM dbo.Attachments att
+			JOIN dbo.DisplayEmailIDs d ON att.EmailID=d.EmailID
+			, @Exemptions ex
+			ORDER BY att.ID, ex.ID;
+		END;
+
+	-- Update a single Attachment
+	ELSE
+		BEGIN
+			-- Delete any existing Exemptions
+			DELETE FROM dbo.[AttachExemptStatus] 
+			WHERE AttachID = @AttachID;
+
+			-- Insert rows for selected Exemptions
+			INSERT INTO dbo.[AttachExemptStatus] ([AttachID], [ExemptionID], [Description])
+			SELECT DISTINCT att.ID, ex.ID, ex.[Description]
+			FROM (SELECT @AttachID [ID]) att
+			, @Exemptions ex
+			ORDER BY att.ID, ex.ID;
+		END;
+	COMMIT
+END;

@@ -1,0 +1,44 @@
+
+--Used in frmProjDetails, frmBasicSearch, frmPatternSearch
+--Updates list of EmailID's in DisplayEmailIDs
+--DisplayEmailIDs is the data source for frmEmail
+
+CREATE OR ALTER PROCEDURE [dbo].[fUpdate_DisplayEmailIDs]
+@Where NVARCHAR(MAX),	--Where clause conditions
+@Unreviewed BIT,		--Include unreviewed emails
+@Reviewed BIT,			--Include reviewed emails
+@Types NVARCHAR(100),	--Exemption Types
+@Flagged BIT			--Filter for only emails with Flag in EmailExemptionStatus
+AS
+BEGIN
+	DECLARE @UnrevPred NVARCHAR(255) = N'(1=0)';
+	DECLARE @RevPred NVARCHAR(255) = N'(1=0)';
+	DECLARE @FlagPred NVARCHAR(20) = N'(1=1)';
+	DECLARE @Pred NVARCHAR(255);
+	DECLARE @SQL NVARCHAR(MAX);
+
+	IF @Unreviewed=1
+		SET @UnrevPred = N'(ees.EmailID IS NULL)';
+
+	IF @Flagged=1
+		SET @FlagPred = N'(ees.Flag=1)';
+
+	IF @Reviewed=1
+		SET @RevPred = N'(ty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+
+	SET @Pred = N'
+		AND (' + @UnrevPred + ' OR ' + @RevPred + ')';
+		
+	SET @SQL = N'DELETE FROM dbo.DisplayEmailIDs;
+		INSERT INTO dbo.DisplayEmailIDs (EmailID, SentOn)
+		SELECT DISTINCT ib.EmailID, ib.SentOn
+		FROM dbo.Inbox ib
+		LEFT JOIN dbo.EmailExemptStatus ees on ib.EmailID=ees.EmailID
+		LEFT JOIN dbo.sys_Exemptions ex ON ees.ExemptionID=ex.ID
+		LEFT JOIN dbo.sys_ExemptionTypes ty ON ex.TypeID=ty.ID
+		WHERE 1=1
+		AND ib.Duplicate=0
+		AND ib.EntryID<>''Embedded''
+		' + @Where + @Pred;
+	EXECUTE sp_executesql @SQL;
+END;

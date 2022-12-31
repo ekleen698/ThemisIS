@@ -1,0 +1,10 @@
+
+/*
+This function returns the current user name.
+*/
+CREATE FUNCTION [dbo].[fUsername]() 
+RETURNS VARCHAR(50)
+AS
+BEGIN
+	RETURN (SELECT nt_username FROM sys.sysprocesses WHERE spid = @@SPID);
+END;

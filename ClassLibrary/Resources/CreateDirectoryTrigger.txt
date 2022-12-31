@@ -1,0 +1,11 @@
+
+/*  Create Trigger on Project Directory table to generate Project Database name  */
+CREATE TRIGGER [dbo].[DBName] ON [dbo].[ProjectDirectory]
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @id INT = (SELECT [ID] FROM inserted);
+	UPDATE [dbo].[ProjectDirectory] 
+	SET [CreatedOn]=GETDATE(), [ProjectDatabase]= CONCAT('mlg_Project_', FORMAT([ID], '000'))
+	WHERE [ID]=@id;
+END;

@@ -1,0 +1,43 @@
+
+/*  Drop Sequence and Table if they exist  */
+DROP TABLE IF EXISTS [dbo].[ProjectDirectory];
+DROP SEQUENCE IF EXISTS [dbo].[sProjectDirectory_PK];
+DROP TABLE IF EXISTS [dbo].[sys_DirectoryInfo];
+
+/*  Create Project Directory table  */
+BEGIN TRANSACTION
+CREATE SEQUENCE [sProjectDirectory_PK] 
+ AS [int]
+ START WITH 1
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 999
+ NO CACHE ;
+COMMIT
+
+BEGIN TRANSACTION
+CREATE TABLE [dbo].[ProjectDirectory] (
+[ID] INTEGER NOT NULL,
+[CreatedOn] DATE NULL,
+[ApplicationVersion] VARCHAR(10) NULL,
+[Name] VARCHAR(15) NOT NULL,
+[Owner] VARCHAR(25) NOT NULL,
+[District] VARCHAR(25) NULL,
+[Description] VARCHAR(255) NULL,
+[ProjectDatabase] VARCHAR(15) NULL
+);
+COMMIT
+
+BEGIN TRANSACTION
+ALTER TABLE [dbo].[ProjectDirectory] 
+ADD CONSTRAINT [DF_ProjectDirectory_PK] DEFAULT (NEXT VALUE FOR [sProjectDirectory_PK]) FOR [ID];
+COMMIT
+
+/*  Create ProjectInfo table  */
+BEGIN TRANSACTION
+CREATE TABLE [dbo].[sys_DirectoryInfo] (
+[ID] INTEGER IDENTITY(1,1) PRIMARY KEY,
+[Key] VARCHAR(25) NOT NULL,
+[Value] VARCHAR(255) NOT NULL
+);
+COMMIT

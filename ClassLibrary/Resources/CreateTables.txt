@@ -1,0 +1,268 @@
+/* CREATE ALL DATABASE OBJECTS */
+DECLARE @SQLString NVARCHAR(MAX);
+
+
+/* Create Types  */
+CREATE TYPE dbo.TVP AS TABLE (ID int, [Description] varchar(255));
+
+
+/* Create Sequences */
+CREATE SEQUENCE dbo.sFiles_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE dbo.sPSTFolders_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE dbo.sInbox_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE dbo.sAttachments_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+
+
+/* Create Tables */
+-- Exemption Types
+BEGIN TRANSACTION
+CREATE TABLE dbo.[sys_ExemptionTypes] (
+[ID] INTEGER PRIMARY KEY, 
+[Exemption_Type] VARCHAR(20) NOT NULL
+);
+INSERT INTO dbo.[sys_ExemptionTypes] ([ID], [Exemption_Type]) 
+VALUES (1, 'Produce'), 
+(2, 'Non-Responsive'), 
+(3, 'Exemption'), 
+(4, 'Redaction');
+COMMIT
+
+-- Exemptions
+BEGIN TRANSACTION
+CREATE TABLE dbo.[sys_Exemptions] (
+[ID] INTEGER PRIMARY KEY, 
+[TypeID] INTEGER NOT NULL,
+[Exemption] VARCHAR(255) NOT NULL,
+CONSTRAINT FK_Exemptions_TypeID FOREIGN KEY ([TypeID])
+	REFERENCES sys_ExemptionTypes([ID]) ON DELETE CASCADE 
+);
+INSERT INTO dbo.[sys_Exemptions] ([ID], [TypeID], [Exemption]) 
+VALUES (-1, 1, 'Not Exempt'), 
+(0, 2, 'Non-Responsive'), 
+(1, 3, 'Attorney Client Privilege-Communication'),
+(2, 3, 'Attorney Client Privilege-Work Product'),
+(3, 3, 'Student Records'),
+(4, 3, 'PII'),
+(5, 3, 'Deliberative'),
+(6, 3, 'Other'),
+(7, 4, 'Attorney Client Privilege-Communication'),
+(8, 4, 'Attorney Client Privilege-Work Product'),
+(9, 4, 'Student Records'),
+(10, 4, 'PII'),
+(11, 4, 'Deliberative'),
+(12, 4, 'Other');
+COMMIT
+
+-- ProjectInfo
+CREATE TABLE dbo.[ProjectInfo] (
+[ID] INTEGER IDENTITY(1,1) PRIMARY KEY,
+[Key] VARCHAR(25) NOT NULL,
+[Value] VARCHAR(255) NOT NULL
+);
+
+-- Files
+CREATE TABLE dbo.[Files] (
+[ID] INTEGER NOT NULL DEFAULT (NEXT VALUE FOR sFiles_PK), 
+[FolderPath] VARCHAR(255) NOT NULL,
+[FileName] VARCHAR(255) NOT NULL,
+[FilePath]  AS (CONCAT([FolderPath],'\',[FileName])),
+CONSTRAINT PK_Files PRIMARY KEY ([ID]),
+CONSTRAINT U_Files_FileName UNIQUE (FileName)
+);
+
+-- Search Terms
+BEGIN TRANSACTION
+CREATE TABLE dbo.[SearchTerms](
+[search_term] VARCHAR(255) PRIMARY KEY 
+);
+INSERT INTO dbo.SearchTerms (search_term)
+VALUES ('%jessika%'), ('%kleen%'), ('%jkleen%'), ('%machado%');
+COMMIT
+
+-- Note: below tables have FK relationships to other tables
+
+-- Inbox
+CREATE TABLE dbo.[Inbox] (
+[EmailID] INTEGER NOT NULL DEFAULT (NEXT VALUE FOR sInbox_PK), 
+[FileID] INTEGER NOT NULL, 
+[Parent] VARCHAR(255) NOT NULL,
+[EntryID] VARCHAR(50) NOT NULL, 
+[EmbAttID] INTEGER NULL,
+[Importance] INTEGER NOT NULL, 
+[MessageClass] VARCHAR(255) NOT NULL, 
+[Size] INTEGER, 
+[Attachments] INTEGER,
+[CreationTime] DATETIME, 
+[SentOn] DATETIME, 
+[ReceivedTime] DATETIME, 
+[Sender] VARCHAR(255), 
+[SenderName] VARCHAR(255), 
+[To] VARCHAR(MAX), 
+[To_Name] VARCHAR(MAX),
+[CC] VARCHAR(MAX), 
+[CC_Name] VARCHAR(MAX),
+[BCC] VARCHAR(MAX),
+[BCC_Name] VARCHAR(MAX),
+[Recipients] VARCHAR(MAX),
+[Subject] VARCHAR(MAX), 
+[Body] NVARCHAR(MAX),
+[ChkSum] AS CHECKSUM(SentOn, Sender, Recipients, [Subject], Body, Attachments),
+[Duplicate] BIT DEFAULT 0,
+CONSTRAINT PK_Inbox_ID PRIMARY KEY ([EmailID]),
+CONSTRAINT UN_Inbox_File_Entry_Embed UNIQUE ([FileID], [EntryID], [EmbAttID]),
+CONSTRAINT FK_Inbox_Files_ID FOREIGN KEY ([FileID]) 
+	REFERENCES dbo.Files([ID]) ON DELETE CASCADE
+);
+CREATE FULLTEXT CATALOG iFullText
+	WITH ACCENT_SENSITIVITY = OFF
+	AS DEFAULT;
+CREATE FULLTEXT INDEX ON dbo.Inbox ([Sender], [SenderName], [To], [To_Name], [BCC], [BCC_Name],
+	[CC], [CC_Name], [Recipients], [Subject], [Body])
+	KEY INDEX PK_Inbox_ID
+	WITH
+	STOPLIST = SYSTEM,
+	CHANGE_TRACKING OFF,
+	NO POPULATION;
+
+-- PST Folders
+CREATE TABLE dbo.[PSTFolders] (
+[ID] INTEGER NOT NULL DEFAULT (NEXT VALUE FOR sPSTFolders_PK), 
+[FileID] INTEGER,
+[ParentFolder] VARCHAR(255),
+[FolderName] VARCHAR(255),
+[ItemCount] INTEGER,
+[SubfolderCount] INTEGER,
+CONSTRAINT PK_PSTFolders PRIMARY KEY ([ID]),
+CONSTRAINT FK_PSTFolders_FileID FOREIGN KEY ([FileID])
+	REFERENCES dbo.Files([ID]) ON DELETE CASCADE 
+);
+
+-- Attachments
+CREATE TABLE dbo.[Attachments] (
+[ID] INTEGER NOT NULL DEFAULT (NEXT VALUE FOR sAttachments_PK), 
+[EmailID] INTEGER NOT NULL,
+[OLType] VARCHAR(50) NOT NULL,
+[FileName] VARCHAR(255) NULL,
+[FileExt] VARCHAR(20) NULL,
+[GUID] UNIQUEIDENTIFIER ROWGUIDCOL UNIQUE DEFAULT NEWID() NOT NULL,
+[FileStream] VARBINARY(max) FILESTREAM DEFAULT CONVERT(VARBINARY(MAX), '') NULL,
+CONSTRAINT PK_Attachments PRIMARY KEY ([ID]),
+CONSTRAINT FK_Attachments_Inbox_EmailID FOREIGN KEY ([EmailID])
+	REFERENCES dbo.Inbox([EmailID]) ON DELETE CASCADE 
+) ON [PRIMARY] FILESTREAM_ON [FILESTREAM];
+
+-- Email Exempt Status
+CREATE TABLE dbo.[EmailExemptStatus] (
+[ID] INTEGER IDENTITY(1,1), 
+[EmailID] INTEGER NOT NULL,
+[ExemptionID] INTEGER NOT NULL,
+[Description] VARCHAR(255) NULL,
+[Timestamp] DATETIME DEFAULT GETDATE(),
+[CreatedBy] VARCHAR(100) DEFAULT (dbo.fUsername()),
+[Flag] BIT DEFAULT 0,
+[FlagComment] VARCHAR(MAX) DEFAULT '',
+CONSTRAINT PK_EmailExemptStatus PRIMARY KEY ([ID]), 
+CONSTRAINT FK_EmailExemptStatus_Inbox_EmailID FOREIGN KEY ([EmailID])
+	REFERENCES dbo.Inbox([EmailID]) ON DELETE CASCADE,
+CONSTRAINT FK_EmailExemptStatus_Exemption_ExemptionID FOREIGN KEY ([ExemptionID])
+	REFERENCES dbo.sys_Exemptions([ID]) ON DELETE CASCADE,
+CONSTRAINT U_EmailExemptStatus_EmailID_ExemptionID UNIQUE ([EmailID], [ExemptionID]) 
+);
+
+-- Attachment Exempt Status
+CREATE TABLE dbo.[AttachExemptStatus] (
+[ID] INTEGER IDENTITY(1,1), 
+[AttachID] INTEGER NOT NULL,
+[ExemptionID] INTEGER NOT NULL,
+[Description] VARCHAR(255) NULL,
+[Timestamp] DATETIME DEFAULT GETDATE(),
+[CreatedBy] VARCHAR(100) DEFAULT (dbo.fUsername()),
+CONSTRAINT PK_AttachExemptStatus PRIMARY KEY ([ID]), 
+CONSTRAINT FK_AttachExemptStatus_Attachments_AttachID FOREIGN KEY ([AttachID])
+	REFERENCES dbo.Attachments([ID]) ON DELETE CASCADE,
+CONSTRAINT FK_AttachExemptStatus_Exemption_ExemptionID FOREIGN KEY ([ExemptionID])
+	REFERENCES dbo.sys_Exemptions([ID]) ON DELETE CASCADE,
+CONSTRAINT U_AttachExemptStatus_AttachID_ExemptionID UNIQUE ([AttachID], [ExemptionID]) 
+);
+
+-- Display Terms
+CREATE TABLE dbo.[DisplayTerms] (
+[ID] INTEGER IDENTITY(1,1),
+[search_term] VARCHAR(255), 
+[display_term] VARCHAR(255),
+[EmailID] INTEGER,
+[column_name] VARCHAR(255),
+CONSTRAINT PK_DisplayTerms PRIMARY KEY ([ID]), 
+CONSTRAINT FK_DisplayTerms_Inbox_EmailID FOREIGN KEY ([EmailID])
+	REFERENCES dbo.Inbox([EmailID]) ON DELETE CASCADE,
+INDEX IDX_Search_Term NONCLUSTERED ([search_term]) 
+);
+
+-- Display Emails
+CREATE TABLE dbo.[DisplayEmailIDs] (
+[EmailID] INTEGER,
+[SentOn] DATETIME, 
+CONSTRAINT PK_DisplayEmailIDs PRIMARY KEY ([EmailID]),
+CONSTRAINT FK_DisplayEmailIDs_Inbox_EmailID FOREIGN KEY ([EmailID])
+	REFERENCES dbo.Inbox([EmailID]) ON DELETE CASCADE );
+
+-- Redacted Files
+CREATE TABLE dbo.[RedactedFiles] (
+[ID] INTEGER IDENTITY(1,1), 
+[EmailID] INTEGER NOT NULL,
+[Seq] INTEGER NOT NULL,
+[FileName] VARCHAR(255) NOT NULL,
+[GUID] UNIQUEIDENTIFIER ROWGUIDCOL UNIQUE DEFAULT NEWID() NOT NULL,
+[FileStream] VARBINARY(max) FILESTREAM DEFAULT CONVERT(VARBINARY(MAX), '') NOT NULL,
+[Timestamp] DATETIME DEFAULT GETDATE(),
+[CreatedBy] VARCHAR(100) DEFAULT (dbo.fUsername()),
+CONSTRAINT PK_RedactedEmails PRIMARY KEY ([ID]),
+CONSTRAINT FK_RedactedEmails_Inbox_EmailID FOREIGN KEY ([EmailID])
+	REFERENCES dbo.Inbox([EmailID]) ON DELETE CASCADE 
+) ON [PRIMARY] FILESTREAM_ON [FILESTREAM];
+
+
+/*  Create Views  */
+-- Email Groups View
+SET @SQLString = N'
+/*
+This view identifies emails that are duplicated on Sender, Sent date, Subject, and Body.
+For some reason the recipients are different, but everything else is exactly the same.
+*/
+CREATE OR ALTER VIEW [dbo].[vGroups]
+AS
+WITH cte AS (
+	SELECT CHECKSUM(ib.SentOn, ib.Sender, ib.[Subject], ib.Body) "ChkSum"
+		, COUNT(ib.EmailID) OVER(PARTITION BY CHECKSUM(ib.SentOn, ib.Sender, ib.[Subject], ib.Body)) "ChkSum_Count"
+		, ib.EmailID, ib.[To], ib.CC, ib.BCC, ib.SentOn, ib.Sender, ib.[Subject], ib.Body, ib.Attachments
+	FROM dbo.Inbox ib
+	JOIN dbo.DisplayEmailIDs d on ib.EmailID=d.EmailID
+)
+SELECT ChkSum, ChkSum_Count, EmailID, [To],CC, BCC, SentOn, Sender , [Subject], Body, Attachments
+FROM cte
+WHERE ChkSum_Count>1';
+EXECUTE sp_executesql @SQLString;
+
+-- Redacted Files View
+SET @SQLString = N'
+/*
+This view lists all emails currently marked as Redaction and the latest Redacted File
+*/
+CREATE OR ALTER VIEW dbo.vRedactedFiles
+AS
+SELECT DISTINCT ib.EmailID, ISNULL(rf.[FileName],'''') [FileName]
+	, rf.ID, rf.Seq, rf.[GUID], rf.[FileStream], rf.[Timestamp], rf.[CreatedBy]
+FROM dbo.Inbox ib
+JOIN dbo.EmailExemptStatus ees ON ib.EmailID=ees.EmailID
+JOIN dbo.sys_Exemptions ex ON ees.ExemptionID=ex.ID
+JOIN dbo.sys_ExemptionTypes ty ON ex.TypeID=ty.ID AND ty.Exemption_Type=''Redaction''
+LEFT JOIN (
+	SELECT rf1.*
+	FROM dbo.RedactedFiles rf1
+	JOIN (
+		SELECT EmailID, MAX(Seq) [Seq]
+		FROM dbo.RedactedFiles
+		GROUP BY EmailID
+		) rf2 ON rf1.EmailID=rf2.EmailID AND rf1.Seq=rf2.Seq
+	) rf ON ib.EmailID=rf.EmailID;'
+EXECUTE sp_executesql @SQLString;

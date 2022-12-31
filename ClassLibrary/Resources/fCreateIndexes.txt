@@ -1,0 +1,32 @@
+
+--Drop and create all indexes in the Database
+
+CREATE OR ALTER PROCEDURE [dbo].[fCreateIndexes]
+AS
+BEGIN
+	--DROP all indexes and FULLTEXT INDEX objects if they exist
+	EXEC dbo.fDropIndexes;
+
+	--Create indexes for all Foreign Keys
+	CREATE INDEX IDX_Attachments_EmailID ON dbo.Attachments(EmailID);
+	CREATE INDEX IDX_Inbox_FileID ON dbo.Inbox(FileID);
+	CREATE INDEX IDX_Inbox_ChkSum ON dbo.Inbox(ChkSum);
+	CREATE INDEX IDX_PSTFolders_FileID ON dbo.PSTFolders(FileID);
+	CREATE INDEX IDX_EmailExemptStatus_EmailID ON dbo.EmailExemptStatus(EmailID);
+	CREATE INDEX IDX_EmailExemptStatus_ExemptionID ON dbo.EmailExemptStatus(ExemptionID);
+
+	--Create FULLTEXT INDEX objects
+	/*
+	NO LONGER USED, INSTEAD RE-POPULATE INDEX
+	IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name]='iFullText')
+		CREATE FULLTEXT CATALOG iFullText
+			WITH ACCENT_SENSITIVITY = OFF
+			AS DEFAULT;
+	IF OBJECTPROPERTY ( object_id('Inbox'), 'TableHasActiveFulltextIndex')=0
+		CREATE FULLTEXT INDEX ON dbo.Inbox ([Sender], [SenderName], [To], [To_Name], [BCC], [BCC_Name],
+			[CC], [CC_Name], [Recipients], [Subject], [Body])
+			KEY INDEX PK_Inbox_ID
+			WITH STOPLIST = SYSTEM;
+	*/
+
+END;

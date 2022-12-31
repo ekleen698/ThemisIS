@@ -1,0 +1,27 @@
+
+-- Used by ProjectDirectory to drop and re-create sequence for PK
+CREATE OR ALTER PROCEDURE [dbo].[fResetSeq]
+AS
+BEGIN
+	IF EXISTS(SELECT 1 FROM sys.default_constraints WHERE "name"='DF_ProjectDirectory_PK')
+		ALTER TABLE [dbo].[ProjectDirectory] DROP CONSTRAINT [DF_ProjectDirectory_PK];
+
+	DROP SEQUENCE IF EXISTS [dbo].[sProjectDirectory_PK];
+
+	DECLARE @ID INT = (SELECT MAX(ID)+1 FROM dbo.ProjectDirectory);
+	SET @ID = COALESCE(@ID,1);
+	DECLARE @SQL NVARCHAR(MAX) = CONCAT(
+	N'CREATE SEQUENCE [dbo].[sProjectDirectory_PK] 
+	 AS [int]
+	 START WITH ', @ID, N'
+	 INCREMENT BY 1
+	 MINVALUE 1
+	 MAXVALUE 999
+	 NO CACHE;');
+	EXECUTE sp_executesql @SQL;
+
+	ALTER TABLE [dbo].[ProjectDirectory] 
+	ADD CONSTRAINT [DF_ProjectDirectory_PK] DEFAULT (NEXT VALUE FOR [sProjectDirectory_PK]) FOR [ID];
+	--select * from sys.sequences;
+	--SELECT * FROM sys.default_constraints;
+END;

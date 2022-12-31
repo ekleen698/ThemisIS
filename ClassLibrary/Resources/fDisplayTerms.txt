@@ -1,0 +1,31 @@
+
+-- Iterate over each search term in dbo.SearchTerms and add rows to dbo.DisplayTerms
+-- containing the keywords from the Full Text Index.
+
+CREATE OR ALTER PROCEDURE [dbo].[fDisplayTerms]
+@DBName NVARCHAR(50)
+AS
+BEGIN
+	DECLARE curr CURSOR FOR
+		SELECT search_term 
+		FROM dbo.SearchTerms;
+	DECLARE @Term VARCHAR(255);
+
+	OPEN curr; 
+	FETCH NEXT FROM curr INTO @Term; 
+		WHILE @@FETCH_STATUS = 0  
+		BEGIN  
+			--Skip insert if term already exists in table
+			IF NOT EXISTS (SELECT 1 FROM [DisplayTerms] WHERE [search_term]=@Term) 
+				INSERT INTO dbo.DisplayTerms ([search_term], [display_term], [EmailID], [column_name]) 
+				SELECT @Term AS [search_term], t.display_term, t.document_id AS [EmailID], c.[name] AS [column_name]
+				FROM sys.dm_fts_index_keywords_by_document(DB_ID(@DBName), OBJECT_ID('dbo.Inbox')) t
+				INNER JOIN sys.columns c ON t.column_id=c.column_id AND c.[object_id]=OBJECT_ID('dbo.inbox')
+				WHERE display_term LIKE @Term;
+
+			FETCH NEXT FROM curr INTO @Term
+		END
+	CLOSE curr;
+	DEALLOCATE curr;
+
+END;

@@ -1,0 +1,46 @@
+--Used by frmEmail, frmEmailDupe, frmEmailExemptions, frmSearchUpdate
+--Insert new row(s) into Email Exemption Status table
+CREATE OR ALTER PROCEDURE [dbo].[fEmailExemption]
+@EmailID INT
+, @Exemptions TVP READONLY --custom type (TABLE)
+
+AS
+BEGIN
+	BEGIN TRANSACTION
+
+	--Updates all Emails in search criteria
+	IF @EmailID = -1
+		BEGIN
+			-- Delete any existing Exemptions for each Email
+			DELETE FROM dbo.[EmailExemptStatus] 
+			WHERE EmailID IN (
+				SELECT EmailID
+				FROM dbo.DisplayEmailIDs
+				);
+
+			-- Insert new rows for selected Exemptions to each Email
+			INSERT INTO dbo.[EmailExemptStatus] ([EmailID], [ExemptionID], [Description])
+			SELECT DISTINCT ib.EmailID, ex.ID, ex.[Description]
+			FROM dbo.Inbox ib
+			JOIN dbo.DisplayEmailIDs d ON ib.EmailID=d.EmailID
+			, @Exemptions ex
+			ORDER BY ib.EmailID, ex.ID;
+		END;
+
+	-- Update a single Email
+	ELSE
+		BEGIN
+			-- Delete any existing Exemptions
+			DELETE FROM dbo.[EmailExemptStatus] 
+			WHERE EmailID = @EmailID;
+
+			-- Insert rows for selected Exemptions
+			INSERT INTO dbo.[EmailExemptStatus] ([EmailID], [ExemptionID], [Description])
+			SELECT DISTINCT ib.EmailID, ex.ID, ex.[Description]
+			FROM (SELECT @EmailID [EmailID]) ib
+			, @Exemptions ex
+			ORDER BY ib.EmailID, ex.ID;
+		END;
+
+	COMMIT
+END;
