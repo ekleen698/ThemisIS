@@ -219,6 +219,11 @@ Public Class frmEmail
             .DeselectAll()
         End With
 
+        ' If Find box not blank, highlight search term
+        If Me.txtFind.Text.Trim() <> "" Then
+            Me.cmdFind.PerformClick()
+        End If
+
     End Sub
 
     Private Sub cmdPrevious_Click(sender As Object, e As EventArgs) Handles cmdPrevious.Click
@@ -233,6 +238,11 @@ Public Class frmEmail
             .ScrollToCaret()
             .DeselectAll()
         End With
+
+        ' If Find box not blank, highlight search term
+        If Me.txtFind.Text.Trim() <> "" Then
+            Me.cmdFind.PerformClick()
+        End If
 
     End Sub
 
