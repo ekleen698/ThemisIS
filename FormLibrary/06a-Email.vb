@@ -588,7 +588,8 @@ Public Class frmEmail
 
             If sEntryID = "Embedded" Then
                 'Embedded messages have no EntryID and can only be opened from parent email
-                MsgBox($"Message is an attachment to EmailID {sParent}, cannot open in Outlook.")
+                MsgBox($"Message is an attachment to EmailID {sParent}.{vbCrLf}" +
+                    "To view in Outlook, open parent email in Outlook then select attachment.")
 
             Else
                 'Initialize Outlook objects

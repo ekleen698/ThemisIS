@@ -21,10 +21,10 @@ Module Main
             Application.EnableVisualStyles()    ' required for marquee animation in progress bar
             LoadLibrary("riched20")     ' prevents error when frmEmail opened due to rich text box
 
-            frmDirectory()
+            'frmDirectory()
 
             'testFrmProjUpdate("Edit")
-            'testFrmProjDetails()
+            testFrmProjDetails()
             'testFrmEmail()
             'testFrmSearch()
             'testFrmKeyword()

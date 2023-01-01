@@ -22,10 +22,10 @@ Partial Class frmProjDetails
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.dgvPSTFiles = New System.Windows.Forms.DataGridView()
         Me.cmdSelectAll = New System.Windows.Forms.Button()
@@ -45,6 +45,9 @@ Partial Class frmProjDetails
         Me.mnuViewGroups = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuSearch = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuSearchEmails = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ByEmailIDToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnuEmailID = New System.Windows.Forms.ToolStripTextBox()
+        Me.mnuSearchEmailID = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuRedacted = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuRedactedManage = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuExport = New System.Windows.Forms.ToolStripMenuItem()
@@ -90,23 +93,23 @@ Partial Class frmProjDetails
         Me.dgvPSTFiles.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.dgvPSTFiles.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
+        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle9.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.dgvPSTFiles.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle9
         Me.dgvPSTFiles.ColumnHeadersHeight = 34
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.dgvPSTFiles.DefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle10.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.dgvPSTFiles.DefaultCellStyle = DataGridViewCellStyle10
         Me.dgvPSTFiles.Location = New System.Drawing.Point(27, 88)
         Me.dgvPSTFiles.Margin = New System.Windows.Forms.Padding(2)
         Me.dgvPSTFiles.Name = "dgvPSTFiles"
@@ -199,23 +202,23 @@ Partial Class frmProjDetails
         Me.dgvTotals.AllowUserToResizeRows = False
         Me.dgvTotals.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.dgvTotals.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
+        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle11.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.dgvTotals.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle11
         Me.dgvTotals.ColumnHeadersHeight = 34
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.dgvTotals.DefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.dgvTotals.DefaultCellStyle = DataGridViewCellStyle12
         Me.dgvTotals.Enabled = False
         Me.dgvTotals.Location = New System.Drawing.Point(251, 35)
         Me.dgvTotals.Margin = New System.Windows.Forms.Padding(2)
@@ -304,10 +307,10 @@ Partial Class frmProjDetails
         'mnuSearch
         '
         Me.mnuSearch.AutoSize = False
-        Me.mnuSearch.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuSearchEmails})
+        Me.mnuSearch.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuSearchEmails, Me.ByEmailIDToolStripMenuItem})
         Me.mnuSearch.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
         Me.mnuSearch.Name = "mnuSearch"
-        Me.mnuSearch.Size = New System.Drawing.Size(100, 25)
+        Me.mnuSearch.Size = New System.Drawing.Size(122, 25)
         Me.mnuSearch.Text = "Search"
         Me.mnuSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -315,9 +318,32 @@ Partial Class frmProjDetails
         '
         Me.mnuSearchEmails.Font = New System.Drawing.Font("Segoe UI", 11.0!)
         Me.mnuSearchEmails.Name = "mnuSearchEmails"
-        Me.mnuSearchEmails.Size = New System.Drawing.Size(169, 24)
+        Me.mnuSearchEmails.Size = New System.Drawing.Size(180, 24)
         Me.mnuSearchEmails.Text = "Search Emails"
         Me.mnuSearchEmails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'ByEmailIDToolStripMenuItem
+        '
+        Me.ByEmailIDToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuEmailID, Me.mnuSearchEmailID})
+        Me.ByEmailIDToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 11.0!)
+        Me.ByEmailIDToolStripMenuItem.Name = "ByEmailIDToolStripMenuItem"
+        Me.ByEmailIDToolStripMenuItem.Size = New System.Drawing.Size(180, 24)
+        Me.ByEmailIDToolStripMenuItem.Text = "By EmailID"
+        '
+        'mnuEmailID
+        '
+        Me.mnuEmailID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.mnuEmailID.Font = New System.Drawing.Font("Segoe UI", 11.0!)
+        Me.mnuEmailID.Name = "mnuEmailID"
+        Me.mnuEmailID.Size = New System.Drawing.Size(100, 27)
+        '
+        'mnuSearchEmailID
+        '
+        Me.mnuSearchEmailID.BackColor = System.Drawing.SystemColors.Control
+        Me.mnuSearchEmailID.Font = New System.Drawing.Font("Segoe UI", 11.0!)
+        Me.mnuSearchEmailID.Name = "mnuSearchEmailID"
+        Me.mnuSearchEmailID.Size = New System.Drawing.Size(180, 24)
+        Me.mnuSearchEmailID.Text = "View Email"
         '
         'mnuRedacted
         '
@@ -332,7 +358,7 @@ Partial Class frmProjDetails
         '
         Me.mnuRedactedManage.Font = New System.Drawing.Font("Segoe UI", 11.0!)
         Me.mnuRedactedManage.Name = "mnuRedactedManage"
-        Me.mnuRedactedManage.Size = New System.Drawing.Size(180, 24)
+        Me.mnuRedactedManage.Size = New System.Drawing.Size(165, 24)
         Me.mnuRedactedManage.Text = "Manage Files"
         '
         'mnuExport
@@ -589,4 +615,7 @@ Partial Class frmProjDetails
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents mnuRedacted As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuRedactedManage As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ByEmailIDToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents mnuEmailID As System.Windows.Forms.ToolStripTextBox
+    Friend WithEvents mnuSearchEmailID As System.Windows.Forms.ToolStripMenuItem
 End Class
