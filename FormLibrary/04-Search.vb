@@ -206,7 +206,7 @@ Public Class frmSearch
 
     End Sub
 
-    Private Sub mnuViewEmails_Click(sender As Object, e As EventArgs) Handles mnuViewEmails.Click
+    Private Sub cmdView_Click(sender As Object, e As EventArgs) Handles cmdView.Click
         ' Update email list, open email display form
 
         ' Use this to help identify how Full Text is parsing search terms
@@ -229,7 +229,7 @@ Public Class frmSearch
 
     End Sub
 
-    Private Sub mnuUpdateEmails_Click(sender As Object, e As EventArgs) Handles mnuUpdateEmails.Click
+    Private Sub cmdUpdate_Click(sender As Object, e As EventArgs) Handles cmdUpdate.Click
         'Update email list, open bulk update form
 
         Try
@@ -246,6 +246,16 @@ Public Class frmSearch
             MsgBox($"{DateTime.Now} > {ex.GetType}", , "Update Emails Error")
 
         End Try
+
+    End Sub
+
+    Private Sub mnuViewEmails_Click(sender As Object, e As EventArgs) Handles mnuViewEmails.Click
+
+
+    End Sub
+
+    Private Sub mnuUpdateEmails_Click(sender As Object, e As EventArgs) Handles mnuUpdateEmails.Click
+
 
     End Sub
 
