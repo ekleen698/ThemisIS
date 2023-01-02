@@ -131,14 +131,14 @@ Public Class frmSearch
 
             End If
 
-            ' If confirmed...
+            ' Disable selections not used in filter criteria
             Me.chkSender.Enabled = False
             Me.chkTo.Enabled = False
             Me.chkSubject.Enabled = False
             Me.chkBody.Enabled = False
             Me.optInclude.Enabled = False
             Me.optExclude.Enabled = False
-            Me.Panel1.Enabled = False
+            'Me.Panel1.Enabled = False
 
             _iSearchOption = 4
             updateExample()
@@ -206,7 +206,7 @@ Public Class frmSearch
 
     End Sub
 
-    Private Sub mnuViewEmails_Click(sender As Object, e As EventArgs) Handles mnuViewEmails.Click
+    Private Sub cmdView_Click(sender As Object, e As EventArgs) Handles cmdView.Click
         ' Update email list, open email display form
 
         ' Use this to help identify how Full Text is parsing search terms
@@ -229,7 +229,7 @@ Public Class frmSearch
 
     End Sub
 
-    Private Sub mnuUpdateEmails_Click(sender As Object, e As EventArgs) Handles mnuUpdateEmails.Click
+    Private Sub cmdUpdate_Click(sender As Object, e As EventArgs) Handles cmdUpdate.Click
         'Update email list, open bulk update form
 
         Try
@@ -246,6 +246,16 @@ Public Class frmSearch
             MsgBox($"{DateTime.Now} > {ex.GetType}", , "Update Emails Error")
 
         End Try
+
+    End Sub
+
+    Private Sub mnuViewEmails_Click(sender As Object, e As EventArgs) Handles mnuViewEmails.Click
+
+
+    End Sub
+
+    Private Sub mnuUpdateEmails_Click(sender As Object, e As EventArgs) Handles mnuUpdateEmails.Click
+
 
     End Sub
 
@@ -480,11 +490,11 @@ Public Class frmSearch
 
         Me.lblNoResults.Visible = False
 
-        'Get field list and search terms for sql query
-        sFieldList = formFieldList()
+        'Get search terms from text box and field list from selected items
         sSearchString = formSearchString()
+        sFieldList = formFieldList()
 
-        'Update view
+        ' Validate selections
         If sSearchString = "" Then
             MsgBox("Search string is not valid.",, "Invalid Operation")
             Return bResult
@@ -493,11 +503,17 @@ Public Class frmSearch
             Return bResult
         End If
 
+        ' If View Option is 'Reviewed', create Types list
+        If chkReviewed.Checked Then
+            If Me.chkProduce.Checked Then sTypes += "'Produce', "
+            If Me.chkNonResponsive.Checked Then sTypes += "'Non-Responsive', "
+            If Me.chkExempt.Checked Then sTypes += "'Exemption', "
+            If Me.chkRedact.Checked Then sTypes += "'Redaction', "
+            sTypes = sTypes.Remove(sTypes.Length - 2)
+        End If
 
         If _iSearchOption <> 4 Then
-            ' Any of These, All of These, or Custom search
-
-            ' Escape single quote in text string and form Where clause
+            ' Escape single quote in text string 
             sSearchString = sSearchString.Replace("'", "''")
 
             ' Include or Exclude option
@@ -505,15 +521,6 @@ Public Class frmSearch
                 sWhere = $"AND CONTAINS(({sFieldList}), '{sSearchString}')"
             ElseIf _iIncludeOption = 2 Then
                 sWhere = $"AND NOT CONTAINS(({sFieldList}), '{sSearchString}')"
-            End If
-
-            ' If View Option is 'Reviewed', create Types list
-            If chkReviewed.Checked Then
-                If Me.chkProduce.Checked Then sTypes += "'Produce', "
-                If Me.chkNonResponsive.Checked Then sTypes += "'Non-Responsive', "
-                If Me.chkExempt.Checked Then sTypes += "'Exemption', "
-                If Me.chkRedact.Checked Then sTypes += "'Redaction', "
-                sTypes = sTypes.Remove(sTypes.Length - 2)
             End If
 
         Else

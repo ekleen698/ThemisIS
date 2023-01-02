@@ -26,15 +26,15 @@ Public Class frmSearchUpdate
         Me.MaximumSize = Me.Size
         Me.MinimumSize = Me.Size
 
-        ' Form control properties
-        Me.lblNumEmails.Text = $"{_iEmails} Emails Found"
-
         Try
             'Get count of emails
             With CurrProjDB.Connection.CreateCommand
                 .CommandText = $"SELECT COUNT(0) FROM dbo.DisplayEmailIDs;"
                 _iEmails = .ExecuteScalar
             End With
+
+            ' Form control properties
+            Me.lblNumEmails.Text = $"{_iEmails} Emails Found"
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)

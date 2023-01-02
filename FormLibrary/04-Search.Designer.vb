@@ -44,9 +44,6 @@ Partial Class frmSearch
         Me.lblKeywords = New System.Windows.Forms.LinkLabel()
         Me.optInclude = New System.Windows.Forms.RadioButton()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
-        Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
-        Me.mnuViewEmails = New System.Windows.Forms.ToolStripMenuItem()
-        Me.mnuUpdateEmails = New System.Windows.Forms.ToolStripMenuItem()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.chkFlagged = New System.Windows.Forms.CheckBox()
@@ -58,14 +55,19 @@ Partial Class frmSearch
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.chkReviewed = New System.Windows.Forms.CheckBox()
         Me.chkUnreviewed = New System.Windows.Forms.CheckBox()
+        Me.cmdView = New System.Windows.Forms.Button()
+        Me.cmdUpdate = New System.Windows.Forms.Button()
+        Me.mnuViewEmails = New System.Windows.Forms.ToolStripMenuItem()
+        Me.mnuUpdateEmails = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
-        Me.MenuStrip1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.Panel1.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
+        Me.MenuStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'optAny
@@ -180,7 +182,7 @@ Partial Class frmSearch
         '
         Me.lblSearchString.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblSearchString.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSearchString.Location = New System.Drawing.Point(438, 309)
+        Me.lblSearchString.Location = New System.Drawing.Point(720, 340)
         Me.lblSearchString.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblSearchString.Name = "lblSearchString"
         Me.lblSearchString.Size = New System.Drawing.Size(113, 22)
@@ -212,7 +214,7 @@ Partial Class frmSearch
         Me.chkSender.Location = New System.Drawing.Point(17, 24)
         Me.chkSender.Margin = New System.Windows.Forms.Padding(2)
         Me.chkSender.Name = "chkSender"
-        Me.chkSender.Size = New System.Drawing.Size(73, 20)
+        Me.chkSender.Size = New System.Drawing.Size(72, 20)
         Me.chkSender.TabIndex = 12
         Me.chkSender.Text = "Sender"
         Me.ToolTip1.SetToolTip(Me.chkSender, "Email address of sender")
@@ -226,7 +228,7 @@ Partial Class frmSearch
         Me.chkTo.Location = New System.Drawing.Point(112, 24)
         Me.chkTo.Margin = New System.Windows.Forms.Padding(2)
         Me.chkTo.Name = "chkTo"
-        Me.chkTo.Size = New System.Drawing.Size(99, 20)
+        Me.chkTo.Size = New System.Drawing.Size(98, 20)
         Me.chkTo.TabIndex = 14
         Me.chkTo.Text = "To/CC/BCC"
         Me.ToolTip1.SetToolTip(Me.chkTo, "Names of recipients")
@@ -240,7 +242,7 @@ Partial Class frmSearch
         Me.chkBody.Location = New System.Drawing.Point(327, 24)
         Me.chkBody.Margin = New System.Windows.Forms.Padding(2)
         Me.chkBody.Name = "chkBody"
-        Me.chkBody.Size = New System.Drawing.Size(59, 20)
+        Me.chkBody.Size = New System.Drawing.Size(58, 20)
         Me.chkBody.TabIndex = 19
         Me.chkBody.Text = "Body"
         Me.ToolTip1.SetToolTip(Me.chkBody, "Body of email")
@@ -254,7 +256,7 @@ Partial Class frmSearch
         Me.chkSubject.Location = New System.Drawing.Point(231, 24)
         Me.chkSubject.Margin = New System.Windows.Forms.Padding(2)
         Me.chkSubject.Name = "chkSubject"
-        Me.chkSubject.Size = New System.Drawing.Size(74, 20)
+        Me.chkSubject.Size = New System.Drawing.Size(73, 20)
         Me.chkSubject.TabIndex = 18
         Me.chkSubject.Text = "Subject"
         Me.ToolTip1.SetToolTip(Me.chkSubject, "Subject line of email")
@@ -292,7 +294,7 @@ Partial Class frmSearch
         '
         Me.lblKeywords.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblKeywords.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblKeywords.Location = New System.Drawing.Point(598, 309)
+        Me.lblKeywords.Location = New System.Drawing.Point(720, 368)
         Me.lblKeywords.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblKeywords.Name = "lblKeywords"
         Me.lblKeywords.Size = New System.Drawing.Size(92, 21)
@@ -326,38 +328,6 @@ Partial Class frmSearch
         Me.GroupBox4.Size = New System.Drawing.Size(450, 27)
         Me.GroupBox4.TabIndex = 4
         Me.GroupBox4.TabStop = False
-        '
-        'MenuStrip1
-        '
-        Me.MenuStrip1.AutoSize = False
-        Me.MenuStrip1.BackColor = System.Drawing.SystemColors.InactiveCaption
-        Me.MenuStrip1.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
-        Me.MenuStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuViewEmails, Me.mnuUpdateEmails})
-        Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
-        Me.MenuStrip1.Name = "MenuStrip1"
-        Me.MenuStrip1.Padding = New System.Windows.Forms.Padding(4, 1, 0, 1)
-        Me.MenuStrip1.Size = New System.Drawing.Size(900, 25)
-        Me.MenuStrip1.TabIndex = 40
-        Me.MenuStrip1.Text = "MenuStrip1"
-        '
-        'mnuViewEmails
-        '
-        Me.mnuViewEmails.AutoSize = False
-        Me.mnuViewEmails.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
-        Me.mnuViewEmails.Name = "mnuViewEmails"
-        Me.mnuViewEmails.Size = New System.Drawing.Size(150, 25)
-        Me.mnuViewEmails.Text = "View Emails"
-        Me.mnuViewEmails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'mnuUpdateEmails
-        '
-        Me.mnuUpdateEmails.AutoSize = False
-        Me.mnuUpdateEmails.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
-        Me.mnuUpdateEmails.Name = "mnuUpdateEmails"
-        Me.mnuUpdateEmails.Size = New System.Drawing.Size(150, 25)
-        Me.mnuUpdateEmails.Text = "Update Emails"
-        Me.mnuUpdateEmails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Panel2
         '
@@ -503,12 +473,69 @@ Partial Class frmSearch
         Me.chkUnreviewed.Text = "Unreviewed"
         Me.chkUnreviewed.UseVisualStyleBackColor = True
         '
+        'cmdView
+        '
+        Me.cmdView.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdView.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdView.Location = New System.Drawing.Point(488, 300)
+        Me.cmdView.Name = "cmdView"
+        Me.cmdView.Size = New System.Drawing.Size(92, 28)
+        Me.cmdView.TabIndex = 43
+        Me.cmdView.Text = "View"
+        Me.cmdView.UseVisualStyleBackColor = True
+        '
+        'cmdUpdate
+        '
+        Me.cmdUpdate.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdUpdate.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdUpdate.Location = New System.Drawing.Point(588, 300)
+        Me.cmdUpdate.Name = "cmdUpdate"
+        Me.cmdUpdate.Size = New System.Drawing.Size(92, 28)
+        Me.cmdUpdate.TabIndex = 44
+        Me.cmdUpdate.Text = "Update"
+        Me.cmdUpdate.UseVisualStyleBackColor = True
+        '
+        'mnuViewEmails
+        '
+        Me.mnuViewEmails.AutoSize = False
+        Me.mnuViewEmails.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
+        Me.mnuViewEmails.Name = "mnuViewEmails"
+        Me.mnuViewEmails.Size = New System.Drawing.Size(150, 25)
+        Me.mnuViewEmails.Text = "View Emails"
+        Me.mnuViewEmails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'mnuUpdateEmails
+        '
+        Me.mnuUpdateEmails.AutoSize = False
+        Me.mnuUpdateEmails.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
+        Me.mnuUpdateEmails.Name = "mnuUpdateEmails"
+        Me.mnuUpdateEmails.Size = New System.Drawing.Size(150, 25)
+        Me.mnuUpdateEmails.Text = "Update Emails"
+        Me.mnuUpdateEmails.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'MenuStrip1
+        '
+        Me.MenuStrip1.AutoSize = False
+        Me.MenuStrip1.BackColor = System.Drawing.SystemColors.InactiveCaption
+        Me.MenuStrip1.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold)
+        Me.MenuStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
+        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuViewEmails, Me.mnuUpdateEmails})
+        Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
+        Me.MenuStrip1.Name = "MenuStrip1"
+        Me.MenuStrip1.Padding = New System.Windows.Forms.Padding(4, 1, 0, 1)
+        Me.MenuStrip1.Size = New System.Drawing.Size(900, 25)
+        Me.MenuStrip1.TabIndex = 40
+        Me.MenuStrip1.Text = "MenuStrip1"
+        Me.MenuStrip1.Visible = False
+        '
         'frmSearch
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(900, 451)
+        Me.Controls.Add(Me.cmdUpdate)
+        Me.Controls.Add(Me.cmdView)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.Panel1)
         Me.Controls.Add(Me.cmdGetSize)
@@ -531,14 +558,14 @@ Partial Class frmSearch
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
-        Me.MenuStrip1.ResumeLayout(False)
-        Me.MenuStrip1.PerformLayout()
         Me.Panel2.ResumeLayout(False)
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
         Me.Panel1.ResumeLayout(False)
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
+        Me.MenuStrip1.ResumeLayout(False)
+        Me.MenuStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -565,9 +592,6 @@ Partial Class frmSearch
     Friend WithEvents optExclude As System.Windows.Forms.RadioButton
     Friend WithEvents optInclude As System.Windows.Forms.RadioButton
     Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
-    Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
-    Friend WithEvents mnuViewEmails As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents mnuUpdateEmails As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents Panel2 As System.Windows.Forms.Panel
     Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
     Friend WithEvents chkFlagged As System.Windows.Forms.CheckBox
@@ -579,4 +603,9 @@ Partial Class frmSearch
     Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
     Friend WithEvents chkReviewed As System.Windows.Forms.CheckBox
     Friend WithEvents chkUnreviewed As System.Windows.Forms.CheckBox
+    Friend WithEvents cmdView As System.Windows.Forms.Button
+    Friend WithEvents cmdUpdate As System.Windows.Forms.Button
+    Friend WithEvents mnuViewEmails As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents mnuUpdateEmails As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
 End Class

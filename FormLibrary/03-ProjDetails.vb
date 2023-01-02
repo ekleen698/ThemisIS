@@ -323,7 +323,24 @@ Public Class frmProjDetails
         Try
             Me.Cursor = Cursors.WaitCursor
 
-            If Not updateDisplayEmailIDs() Then Exit Sub
+            Dim sWhere As String = ""
+            Dim bUnreviewed = Me.chkUnreviewed.Checked
+            Dim bReviewed = Me.chkReviewed.Checked
+            Dim sTypes As String = ""
+            Dim bFlagged = (Me.chkReviewed.Checked And Me.chkFlagged.Checked)
+
+            ' If View Option is 'Reviewed', create Types list
+            If chkReviewed.Checked Then
+                If Me.chkProduce.Checked Then sTypes += "'Produce', "
+                If Me.chkNonResponsive.Checked Then sTypes += "'Non-Responsive', "
+                If Me.chkExempt.Checked Then sTypes += "'Exemption', "
+                If Me.chkRedact.Checked Then sTypes += "'Redaction', "
+                sTypes = sTypes.Remove(sTypes.Length - 2)
+            End If
+
+            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged) Then
+                Exit Sub
+            End If
 
             'Open email display form
             With New frmEmail()
@@ -352,7 +369,24 @@ Public Class frmProjDetails
         Try
             Me.Cursor = Cursors.WaitCursor
 
-            If Not updateDisplayEmailIDs() Then Exit Sub
+            Dim sWhere As String = ""
+            Dim bUnreviewed = Me.chkUnreviewed.Checked
+            Dim bReviewed = Me.chkReviewed.Checked
+            Dim sTypes As String = ""
+            Dim bFlagged = (Me.chkReviewed.Checked And Me.chkFlagged.Checked)
+
+            ' If View Option is 'Reviewed', create Types list
+            If chkReviewed.Checked Then
+                If Me.chkProduce.Checked Then sTypes += "'Produce', "
+                If Me.chkNonResponsive.Checked Then sTypes += "'Non-Responsive', "
+                If Me.chkExempt.Checked Then sTypes += "'Exemption', "
+                If Me.chkRedact.Checked Then sTypes += "'Redaction', "
+                sTypes = sTypes.Remove(sTypes.Length - 2)
+            End If
+
+            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged) Then
+                Exit Sub
+            End If
 
             ' Ensure there are grouped rows before opening form
             With CurrProjDB.Connection.CreateCommand()
@@ -399,6 +433,50 @@ Public Class frmProjDetails
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
             MsgBox($"{DateTime.Now} > {ex.GetType}", , "Project Details Error")
+
+        End Try
+
+    End Sub
+
+    Private Sub mnuSearchEmailID_Click(sender As Object, e As EventArgs) Handles mnuSearchEmailID.Click
+        ' Open email display form with selected EmailID
+
+        ' Ensure input text is integer
+        Dim sEmailID As String = Me.mnuEmailID.Text.Trim()
+        Dim iEmailID As Integer = 0
+        Integer.TryParse(sEmailID, iEmailID)
+        If iEmailID = 0 Then
+            MsgBox($"Unable to convert '{sEmailID}' to EmailID.")
+            Exit Sub
+        End If
+
+        Try
+            Me.Cursor = Cursors.WaitCursor
+
+            ' Call stored procedure to update display email list
+            Dim sWhere As String = $"AND ib.EmailID={iEmailID}"
+            Dim bUnreviewed = True
+            Dim bReviewed = True
+            Dim sTypes As String = "'Produce', 'Non-Responsive', 'Exemption', 'Redaction'"
+            Dim bFlagged = False
+            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged) Then
+                Exit Sub
+            End If
+
+            'Open email display form
+            With New frmEmail()
+                .ShowDialog(Me)
+            End With
+
+            'Refresh dgv after Email Display form closes to update Reviewed items
+            fillDataTable()
+
+        Catch ex As Exception
+            Logger.WriteToLog(ex.ToString)
+            MsgBox($"{DateTime.Now} > {ex.GetType}", , "Project Details Error")
+
+        Finally
+            Me.Cursor = Cursors.Default
 
         End Try
 
@@ -680,24 +758,11 @@ Public Class frmProjDetails
 
     End Sub
 
-    Private Function updateDisplayEmailIDs() As Boolean
+    Private Function updateDisplayEmailIDs(sWhere As String, bUnreviewed As Boolean,
+                    bReviewed As Boolean, sTypes As String, bFlagged As Boolean) As Boolean
         'Update DisplayEmailIDs
 
-        Dim sWhere As String = ""
-        Dim bUnreviewed = Me.chkUnreviewed.Checked
-        Dim bReviewed = Me.chkReviewed.Checked
-        Dim sTypes As String = ""
-        Dim bFlagged = (Me.chkReviewed.Checked And Me.chkFlagged.Checked)
         Dim iCount As Integer = 0
-
-        ' If View Option is 'Reviewed', create Types list
-        If chkReviewed.Checked Then
-            If Me.chkProduce.Checked Then sTypes += "'Produce', "
-            If Me.chkNonResponsive.Checked Then sTypes += "'Non-Responsive', "
-            If Me.chkExempt.Checked Then sTypes += "'Exemption', "
-            If Me.chkRedact.Checked Then sTypes += "'Redaction', "
-            sTypes = sTypes.Remove(sTypes.Length - 2)
-        End If
 
         ' Update table of EmailIDs to be used by frmEmail or frmSearchUpdate
         With CurrProjDB.Connection.CreateCommand
@@ -772,5 +837,7 @@ Public Class frmProjDetails
 
     End Sub
 
+    Private Sub mnuSearchEmailID_MouseHover(sender As Object, e As EventArgs) Handles mnuSearchEmailID.MouseHover
 
+    End Sub
 End Class

@@ -219,6 +219,11 @@ Public Class frmEmail
             .DeselectAll()
         End With
 
+        ' If Find box not blank, highlight search term
+        If Me.txtFind.Text.Trim() <> "" Then
+            Me.cmdFind.PerformClick()
+        End If
+
     End Sub
 
     Private Sub cmdPrevious_Click(sender As Object, e As EventArgs) Handles cmdPrevious.Click
@@ -233,6 +238,11 @@ Public Class frmEmail
             .ScrollToCaret()
             .DeselectAll()
         End With
+
+        ' If Find box not blank, highlight search term
+        If Me.txtFind.Text.Trim() <> "" Then
+            Me.cmdFind.PerformClick()
+        End If
 
     End Sub
 
@@ -588,7 +598,8 @@ Public Class frmEmail
 
             If sEntryID = "Embedded" Then
                 'Embedded messages have no EntryID and can only be opened from parent email
-                MsgBox($"Message is an attachment to EmailID {sParent}, cannot open in Outlook.")
+                MsgBox($"Message is an attachment to EmailID {sParent}.{vbCrLf}" +
+                    "To view in Outlook, open parent email in Outlook then select attachment.")
 
             Else
                 'Initialize Outlook objects
