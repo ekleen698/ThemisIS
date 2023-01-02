@@ -76,7 +76,7 @@ Partial Class frmSearch
         Me.optAny.Location = New System.Drawing.Point(16, 24)
         Me.optAny.Margin = New System.Windows.Forms.Padding(2)
         Me.optAny.Name = "optAny"
-        Me.optAny.Size = New System.Drawing.Size(106, 17)
+        Me.optAny.Size = New System.Drawing.Size(115, 17)
         Me.optAny.TabIndex = 0
         Me.optAny.TabStop = True
         Me.optAny.Text = "Any Of These"
@@ -84,17 +84,17 @@ Partial Class frmSearch
         '
         'optAll
         '
-        Me.optAll.Location = New System.Drawing.Point(139, 24)
+        Me.optAll.Location = New System.Drawing.Point(148, 24)
         Me.optAll.Margin = New System.Windows.Forms.Padding(2)
         Me.optAll.Name = "optAll"
-        Me.optAll.Size = New System.Drawing.Size(101, 17)
+        Me.optAll.Size = New System.Drawing.Size(110, 17)
         Me.optAll.TabIndex = 1
         Me.optAll.Text = "All Of These"
         Me.optAll.UseVisualStyleBackColor = True
         '
         'optCustom
         '
-        Me.optCustom.Location = New System.Drawing.Point(261, 24)
+        Me.optCustom.Location = New System.Drawing.Point(276, 24)
         Me.optCustom.Margin = New System.Windows.Forms.Padding(2)
         Me.optCustom.Name = "optCustom"
         Me.optCustom.Size = New System.Drawing.Size(93, 17)
@@ -120,10 +120,10 @@ Partial Class frmSearch
         '
         'optSql
         '
-        Me.optSql.Location = New System.Drawing.Point(363, 24)
+        Me.optSql.Location = New System.Drawing.Point(384, 24)
         Me.optSql.Margin = New System.Windows.Forms.Padding(2)
         Me.optSql.Name = "optSql"
-        Me.optSql.Size = New System.Drawing.Size(80, 17)
+        Me.optSql.Size = New System.Drawing.Size(60, 17)
         Me.optSql.TabIndex = 3
         Me.optSql.Text = "SQL"
         Me.optSql.UseVisualStyleBackColor = True
@@ -214,7 +214,7 @@ Partial Class frmSearch
         Me.chkSender.Location = New System.Drawing.Point(17, 24)
         Me.chkSender.Margin = New System.Windows.Forms.Padding(2)
         Me.chkSender.Name = "chkSender"
-        Me.chkSender.Size = New System.Drawing.Size(72, 20)
+        Me.chkSender.Size = New System.Drawing.Size(73, 20)
         Me.chkSender.TabIndex = 12
         Me.chkSender.Text = "Sender"
         Me.ToolTip1.SetToolTip(Me.chkSender, "Email address of sender")
@@ -228,7 +228,7 @@ Partial Class frmSearch
         Me.chkTo.Location = New System.Drawing.Point(112, 24)
         Me.chkTo.Margin = New System.Windows.Forms.Padding(2)
         Me.chkTo.Name = "chkTo"
-        Me.chkTo.Size = New System.Drawing.Size(98, 20)
+        Me.chkTo.Size = New System.Drawing.Size(99, 20)
         Me.chkTo.TabIndex = 14
         Me.chkTo.Text = "To/CC/BCC"
         Me.ToolTip1.SetToolTip(Me.chkTo, "Names of recipients")
@@ -242,7 +242,7 @@ Partial Class frmSearch
         Me.chkBody.Location = New System.Drawing.Point(327, 24)
         Me.chkBody.Margin = New System.Windows.Forms.Padding(2)
         Me.chkBody.Name = "chkBody"
-        Me.chkBody.Size = New System.Drawing.Size(58, 20)
+        Me.chkBody.Size = New System.Drawing.Size(59, 20)
         Me.chkBody.TabIndex = 19
         Me.chkBody.Text = "Body"
         Me.ToolTip1.SetToolTip(Me.chkBody, "Body of email")
@@ -256,7 +256,7 @@ Partial Class frmSearch
         Me.chkSubject.Location = New System.Drawing.Point(231, 24)
         Me.chkSubject.Margin = New System.Windows.Forms.Padding(2)
         Me.chkSubject.Name = "chkSubject"
-        Me.chkSubject.Size = New System.Drawing.Size(73, 20)
+        Me.chkSubject.Size = New System.Drawing.Size(74, 20)
         Me.chkSubject.TabIndex = 18
         Me.chkSubject.Text = "Subject"
         Me.ToolTip1.SetToolTip(Me.chkSubject, "Subject line of email")
@@ -533,7 +533,7 @@ Partial Class frmSearch
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
-        Me.ClientSize = New System.Drawing.Size(900, 451)
+        Me.ClientSize = New System.Drawing.Size(900, 461)
         Me.Controls.Add(Me.cmdUpdate)
         Me.Controls.Add(Me.cmdView)
         Me.Controls.Add(Me.Panel2)

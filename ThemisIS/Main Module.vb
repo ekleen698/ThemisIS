@@ -24,9 +24,9 @@ Module Main
             'frmDirectory()
 
             'testFrmProjUpdate("Edit")
-            'testFrmProjDetails()
+            testFrmProjDetails()
             'testFrmEmail()
-            testFrmSearch()
+            'testFrmSearch()
             'testFrmKeyword()
             'testFrmSearchUpdate()
             'testFrmEmail_Grouped()
