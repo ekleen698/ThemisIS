@@ -419,9 +419,9 @@ Public Class ImportEmails
 
         End With
 
-        'Iterate all attachments in current item, insert new rows in dbo.Attachments
+        'Iterate all attachments in current item, insert new rows in dbo.Attachments, skip embedded attachments
         rAttachments = rMail.Attachments
-        If rAttachments.Count > 0 Then
+        If iEmbAttID = 0 AndAlso rAttachments.Count > 0 Then
             loopAttachments(iEmailID, rMail)
         End If
         ReleaseComObject(rAttachments)

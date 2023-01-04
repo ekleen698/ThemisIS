@@ -355,21 +355,47 @@ Public Class frmAttachments
         'Opens attachment as a temporary file
 
         Dim iAttachID As Integer
+        Dim iEmbEmailID As Integer
+        Dim sOLType As String           'identifies embedded messages vs. other attachments
         Dim sFileName As String = ""    'used for error reporting
+        Dim sExportFile As String
+
 
         Try
             'Store attachment information
             iAttachID = Convert.ToInt32(dgvAttachments.Rows(e.RowIndex).Cells("ID").Value)
+            sOLType = dgvAttachments.Rows(e.RowIndex).Cells("OLType").Value.ToString
             sFileName = dgvAttachments.Rows(e.RowIndex).Cells("FileName").Value.ToString
 
-            'Call procedure to open attachment file from SQL FILESTREAM data
-            openFile(iAttachID)
+            'Handle embedded Outlook email attachments different from file attachments
+            If sOLType = "olEmbeddedItem" Then
+
+                'Update data source for embedded email display
+                With CurrProjDB.Connection.CreateCommand
+                    .CommandText = "SELECT ib.EmailID
+		                    FROM Inbox ib
+		                    WHERE ib.[EmbAttID] = @EmbAttachID;"
+                    .Parameters.Add("@EmbAttachID", SqlDbType.Int).Value = iAttachID
+                    iEmbEmailID = .ExecuteScalar()
+                End With
+
+                'Open new Email Display form with embedded email, position new form lower and right of current form
+                With New frmEmail(iTopOffset:=50, iLeftOffset:=50, iEmbEmailID:=iEmbEmailID)
+                    .ShowDialog()
+                End With
+
+            Else
+                'Export attachment file from SQL FILESTREAM data to current user's temp folder
+                sExportFile = export_attachment(iAttachID, Path.GetTempPath)
+
+                'Open the new file.
+                Process.Start($"{Path.GetTempPath}\{sExportFile}")
+
+            End If
 
         Catch ex As Exception
-            MsgBox($"{DateTime.Now} > {ex.GetType}", , "Open Attachment Error")
-            Logger.WriteToLog($"{ex.GetType} occurred while opening " &
-                $"Attachment '{sFileName}' from Attachment ID={_AttachID}.")
             Logger.WriteToLog(ex.ToString)
+            MsgBox($"{DateTime.Now} > {ex.GetType}", , "Open Attachment Error")
 
         End Try
 
@@ -444,23 +470,5 @@ Public Class frmAttachments
         End Select
 
     End Sub
-
-    Private Sub openFile(iAttachID As Integer)
-        'Create file in current user's temporary file location and open file
-        'Throws exception
-
-        Dim sFile As String
-
-        With CurrProjDB.Connection.CreateCommand
-            'export file from BLOB data
-            sFile = export_attachment(iAttachID, Path.GetTempPath)
-
-            'Open the new file.
-            Process.Start($"{Path.GetTempPath}\{sFile}")
-
-        End With
-
-    End Sub
-
 
 End Class

@@ -22,15 +22,14 @@ Partial Class frmAttachments
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.cmdRedact = New System.Windows.Forms.Button()
         Me.cmdNonResponsive = New System.Windows.Forms.Button()
         Me.cmdReset = New System.Windows.Forms.Button()
         Me.cmdExempt = New System.Windows.Forms.Button()
         Me.cmdProduce = New System.Windows.Forms.Button()
         Me.dgvAttachments = New System.Windows.Forms.DataGridView()
-        Me.Label1 = New System.Windows.Forms.Label()
         Me.chkMarkAll = New System.Windows.Forms.CheckBox()
         CType(Me.dgvAttachments, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -100,23 +99,23 @@ Partial Class frmAttachments
         Me.dgvAttachments.AllowUserToAddRows = False
         Me.dgvAttachments.AllowUserToDeleteRows = False
         Me.dgvAttachments.AllowUserToResizeRows = False
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.dgvAttachments.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
+        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.dgvAttachments.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
         Me.dgvAttachments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.dgvAttachments.DefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.dgvAttachments.DefaultCellStyle = DataGridViewCellStyle2
         Me.dgvAttachments.Location = New System.Drawing.Point(25, 38)
         Me.dgvAttachments.Margin = New System.Windows.Forms.Padding(2)
         Me.dgvAttachments.Name = "dgvAttachments"
@@ -127,19 +126,6 @@ Partial Class frmAttachments
         Me.dgvAttachments.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.dgvAttachments.Size = New System.Drawing.Size(577, 199)
         Me.dgvAttachments.TabIndex = 34
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.ForeColor = System.Drawing.Color.Red
-        Me.Label1.Location = New System.Drawing.Point(24, 243)
-        Me.Label1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(451, 15)
-        Me.Label1.TabIndex = 35
-        Me.Label1.Text = "Note: Message files (.msg) are included in emails and not treated as attachments." &
-    ""
         '
         'chkMarkAll
         '
@@ -160,7 +146,6 @@ Partial Class frmAttachments
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(785, 273)
         Me.Controls.Add(Me.chkMarkAll)
-        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.dgvAttachments)
         Me.Controls.Add(Me.cmdRedact)
         Me.Controls.Add(Me.cmdNonResponsive)
@@ -183,6 +168,5 @@ Partial Class frmAttachments
     Friend WithEvents cmdExempt As System.Windows.Forms.Button
     Friend WithEvents cmdProduce As System.Windows.Forms.Button
     Friend WithEvents dgvAttachments As System.Windows.Forms.DataGridView
-    Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents chkMarkAll As System.Windows.Forms.CheckBox
 End Class

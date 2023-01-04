@@ -73,10 +73,10 @@ Public Class frmEmail
                 .DataSource = _dtAttachments
                 .ColumnHeadersHeight = h
                 .RowTemplate.Height = h
-                .Columns("FileName").Width = Convert.ToInt32(250 * _ScaleFactor)
+                .Columns("FileName").Width = Convert.ToInt32(300 * _ScaleFactor)
                 .Columns("FileExt").Width = Convert.ToInt32(50 * _ScaleFactor)
                 .Columns("Status").Width = Convert.ToInt32(77 * _ScaleFactor)
-                .Columns("EmailID").Width = Convert.ToInt32(50 * _ScaleFactor)
+                .Columns("EmailID").Visible = False
                 .Columns("ID").Visible = False
                 .Columns("OLType").Visible = False
             End With
@@ -249,25 +249,14 @@ Public Class frmEmail
     Private Sub cmdAttachments_Click(sender As Object, e As EventArgs) Handles cmdAttachments.Click
         'Opens Attachment Review form for all attachments other than msg files.
 
-        Dim result() As DataRow
-
         Try
-            result = _dtAttachments.Select("OLType<>'olEmbeddedItem'")
-
-            If result.Count = 0 Then
-                'If no applicable attachments, display message and exit
-                MsgBox($"Message attachments (.msg) are included in emails " & Environment.NewLine &
-                        "and are not treated as attachments.",, "No Valid Attachments")
-            Else
-                With New frmAttachments(_dtEmail.Rows(0).Item("EmailID"))
-                    .ShowDialog(Me)
-                End With
-            End If
+            With New frmAttachments(_dtEmail.Rows(0).Item("EmailID"))
+                .ShowDialog(Me)
+            End With
 
             updateForm()
 
         Catch ex As Exception
-            Logger.WriteToLog($"{ex.GetType} occurred while opening Attachment Review form.")
             Logger.WriteToLog(ex.ToString)
             MsgBox($"{DateTime.Now} > {ex.GetType}", , "Form Open Error")
 
@@ -731,25 +720,6 @@ Public Class frmEmail
                 .Fill(_dtEmail)
             End With
 
-            'Clear attachments DataTable and fill with with attachments for current EmailID
-            _dtAttachments.Clear()
-            sSQL = $"SELECT a.[FileName], a.[FileExt], ib.[EmailID], a.[ID], a.[OLType],
-	                COALESCE(ty.[Exemption_Type],'Unreviewed') AS [Status]
-                FROM dbo.[Attachments] a
-                LEFT JOIN (
-	                SELECT t1.[AttachID], MAX(t2.[TypeID]) AS [maxid]
-	                FROM dbo.[AttachExemptStatus] t1
-	                INNER JOIN dbo.[sys_Exemptions] t2 ON t1.[ExemptionID]=t2.[ID]
-	                GROUP BY t1.[AttachID] ) AS st ON a.[ID]=st.[AttachID]
-                LEFT JOIN dbo.[sys_ExemptionTypes] ty ON st.[maxid]=ty.[ID]
-                LEFT JOIN dbo.[Inbox] ib ON a.[ID]=ib.[EmbAttID]
-                WHERE a.[EmailID]=@EmailID 
-                AND a.[FileExt]<>'ics';"
-            With New SqlDataAdapter(sSQL, CurrProjDB.Connection)
-                .SelectCommand.Parameters.Add("@EmailID", SqlDbType.Int).Value = row.Item("EmailID")
-                .Fill(_dtAttachments)
-            End With
-
             'Set textbox values from email DataTable
             Me.txtSentOn.Text = _dtEmail.Rows(0).Item("SentOn").ToString
             Me.txtFromName.Text = _dtEmail.Rows(0).Item("SenderName").ToString
@@ -765,6 +735,24 @@ Public Class frmEmail
             'Update Email ID and count labels
             Me.lblEmailID.Text = $"EmailID {_dtEmail.Rows(0).Item("EmailID").ToString}"
             Me.lblNumEmails.Text = $"{_bsEmailID.Position + 1} of {_iRows} Email(s)"
+
+            ' Hide controls for viewing Embedded Email attachment
+            If _iEmbEmailID <> -1 Then
+                Me.lblEmailID.Visible = False
+                Me.lblAttachments.Visible = False
+                Me.dgvAttachments.Visible = False
+                Me.cmdAttachments.Visible = False
+                Me.cmdMarkAsEmail.Visible = False
+                Me.chkFlag.Visible = False
+                Me.cmdProduce.Visible = False
+                Me.cmdNonResponsive.Visible = False
+                Me.cmdRedact.Visible = False
+                Me.cmdExempt.Visible = False
+                Me.cmdReset.Visible = False
+                Me.cmdOutlook.Visible = False
+                Me.cmdExport.Visible = False
+                Exit Sub
+            End If
 
             ' Update Flag checkbox
             Me.chkFlag.Checked = CBool(_dtEmail.Rows(0).Item("Flag").ToString)
@@ -811,6 +799,25 @@ Public Class frmEmail
                     Exit Select
             End Select
 
+            'Clear attachments DataTable and fill with with attachments for current EmailID
+            _dtAttachments.Clear()
+            sSQL = $"SELECT a.[FileName], a.[FileExt], ib.[EmailID], a.[ID], a.[OLType],
+	                COALESCE(ty.[Exemption_Type],'Unreviewed') AS [Status]
+                FROM dbo.[Attachments] a
+                LEFT JOIN (
+	                SELECT t1.[AttachID], MAX(t2.[TypeID]) AS [maxid]
+	                FROM dbo.[AttachExemptStatus] t1
+	                INNER JOIN dbo.[sys_Exemptions] t2 ON t1.[ExemptionID]=t2.[ID]
+	                GROUP BY t1.[AttachID] ) AS st ON a.[ID]=st.[AttachID]
+                LEFT JOIN dbo.[sys_ExemptionTypes] ty ON st.[maxid]=ty.[ID]
+                LEFT JOIN dbo.[Inbox] ib ON a.[ID]=ib.[EmbAttID]
+                WHERE a.[EmailID]=@EmailID 
+                AND a.[FileExt]<>'ics';"
+            With New SqlDataAdapter(sSQL, CurrProjDB.Connection)
+                .SelectCommand.Parameters.Add("@EmailID", SqlDbType.Int).Value = row.Item("EmailID")
+                .Fill(_dtAttachments)
+            End With
+
             'Sort attachment filenames in list box and make sure none are selected
             With Me.dgvAttachments
                 .Sort(.Columns("FileName"), ListSortDirection.Ascending)
@@ -820,10 +827,6 @@ Public Class frmEmail
         Catch ex As Exception
             Logger.WriteToLog($"{ex.GetType} occurred while updating Email Display form.")
             Logger.WriteToLog(ex.ToString)
-
-        Finally
-            'Cleanup method objects
-            row = Nothing
 
         End Try
 
