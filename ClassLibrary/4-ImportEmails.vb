@@ -1,6 +1,7 @@
 ﻿Imports ClassLibrary.GlobalObjects
 Imports ClassLibrary.GlobalFunctions
 Imports System.Data.SqlClient
+Imports System.IO
 Imports System.Threading
 Imports System.Runtime.InteropServices.Marshal
 Imports Redemption
@@ -271,7 +272,7 @@ Public Class ImportEmails
 
     End Sub
 
-    Private Sub insertEmail(ByRef rMail As RDOMail, sParent As String, Optional iEmbAttID As Integer = 0)
+    Private Sub insertEmail(ByRef rMail As RDOMail, sParent As String)
         'Parent is folder name for regular emails, EntryID for embedded messages
 
         Dim sSQL As String = ""
@@ -356,10 +357,10 @@ Public Class ImportEmails
 
         'Initialize command object for dbo.Inbox insert
         sSQL = "INSERT INTO [dbo].[Inbox] (
-                [FileID], [Parent], [EntryID], [EmbAttID], [Importance], [MessageClass], [Subject], 
+                [FileID], [Parent], [EntryID], [Importance], [MessageClass], [Subject], 
                 [SentOn], [Sender], [SenderName], [To], [To_Name], [CC], [CC_Name], [BCC], [BCC_Name], 
                 [Recipients], [ReceivedTime], [Size], [CreationTime], [Attachments], [Body]) 
-            VALUES (@FileID, @Parent, @EntryID, @EmbAttId, @Importance, @MessageClass, @Subject, 
+            VALUES (@FileID, @Parent, @EntryID, @Importance, @MessageClass, @Subject, 
                 @SentOn, @Sender, @SenderName, @To, @To_Name, @CC, @CC_Name, @BCC, @BCC_Name,
                 @Recipients, @ReceivedTime, @Size, @CreationTime, @Attachments, @Body); 
             SELECT CAST([last_used_value] AS INT) AS [EmailID]
@@ -369,7 +370,6 @@ Public Class ImportEmails
             .Parameters.Add("@FileID", SqlDbType.Int)
             .Parameters.Add("@Parent", SqlDbType.VarChar, 255)
             .Parameters.Add("@EntryID", SqlDbType.VarChar, 50)
-            .Parameters.Add("@EmbAttID", SqlDbType.Int)
             .Parameters.Add("@Importance", SqlDbType.Int)
             .Parameters.Add("@MessageClass", SqlDbType.VarChar, 255)
             .Parameters.Add("@Subject", SqlDbType.VarChar)
@@ -393,7 +393,6 @@ Public Class ImportEmails
             .Parameters("@FileID").Value = _File.ID
             .Parameters("@Parent").Value = sParent
             .Parameters("@EntryID").Value = sEntryID
-            .Parameters("@EmbAttID").Value = iEmbAttID
             .Parameters("@Importance").Value = rMail.Importance
             .Parameters("@MessageClass").Value = rMail.MessageClass
             .Parameters("@Subject").Value = Nz(rMail.Subject)
@@ -421,7 +420,7 @@ Public Class ImportEmails
 
         'Iterate all attachments in current item, insert new rows in dbo.Attachments, skip embedded attachments
         rAttachments = rMail.Attachments
-        If iEmbAttID = 0 AndAlso rAttachments.Count > 0 Then
+        If rAttachments.Count > 0 Then
             loopAttachments(iEmailID, rMail)
         End If
         ReleaseComObject(rAttachments)
@@ -431,21 +430,22 @@ Public Class ImportEmails
     Private Sub loopAttachments(iEmailID As Integer, ByRef rMail As RDOMail)
         'Iterates all attachments in current item and inserts rows into dbo.Attachments
 
+        ' TODO: remove lines deactivated in v3.0.0.13
         Dim rAttachments As RDOAttachments
         Dim rAttachment As RDOAttachment
-        Dim rEmbMsg As RDOMail
+        'Dim rEmbMsg As RDOMail
         Dim buffer As Byte()
-        Dim sSQL1 As String = ""
+        'Dim sSQL1 As String = ""
         Dim sSQL2 As String = ""
         Dim sFileName As String = ""
         Dim sType As String = ""
         Dim iID As Integer = 0
 
         'For inserting rows that have .msg or .ics attachments (does not add file binary data)
-        sSQL1 = "INSERT INTO [dbo].[Attachments] ([EmailID], [OLType], [FileName], [FileExt]) 
-                VALUES (@EmailID, @OLType, @FileName, @FileExt);
-                SELECT (SELECT CAST([last_used_value] AS INT) 
-                    FROM [sys].[sequences] WHERE [name] ='sAttachments_PK') AS [ID];"
+        'sSQL1 = "INSERT INTO [dbo].[Attachments] ([EmailID], [OLType], [FileName], [FileExt]) 
+        '        VALUES (@EmailID, @OLType, @FileName, @FileExt);
+        '        SELECT (SELECT CAST([last_used_value] AS INT) 
+        '            FROM [sys].[sequences] WHERE [name] ='sAttachments_PK') AS [ID];"
         'For inserting all other rows (adds file binary data to FILESTREAM column)
         sSQL2 = $"INSERT INTO [Attachments] (EmailID, OLType, FileName, FileExt, FileStream)
                     VALUES (@EmailID, @OLType, @FileName, @FileExt, @BLOB);
@@ -471,17 +471,31 @@ Public Class ImportEmails
 
                 'Based on type of attachment, perform insert operation
                 If rAttachment.Type = rdoAttachmentType.olEmbeddedItem Then
-                    'cannot convert .msg files to binary data, add embedded message to email table
-                    .CommandText = sSQL1
-                    iID = .ExecuteScalar
-                    rEmbMsg = rAttachment.EmbeddedMsg
-                    insertEmail(rEmbMsg, iEmailID, iID)
-                    ReleaseComObject(rEmbMsg)
+                    ' save embedded msg to temp folder
+                    Dim sSavePath = Path.Combine(Path.GetTempPath, sFileName)
+                    rAttachment.SaveAsFile(sSavePath)
 
-                ElseIf (sType = "ics") Then
-                    'for .ics (calendar), create row in table and skip inserting file binary data
-                    .CommandText = sSQL1
+                    ' import saved file
+                    Using fs As New FileStream(sSavePath, FileMode.Open)
+                        Using rdr As New BinaryReader(fs)
+                            buffer = rdr.ReadBytes(rdr.BaseStream.Length)
+                        End Using
+                    End Using
+                    .CommandText = sSQL2
+                    .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
                     iID = .ExecuteScalar()
+
+                    '.CommandText = sSQL1
+                    'iID = .ExecuteScalar
+                    'rEmbMsg = rAttachment.EmbeddedMsg
+                    'insertEmail(rEmbMsg, iEmailID, iID)
+                    'ReleaseComObject(rEmbMsg)
+
+                ElseIf ({"ics", "", "bin"}.contains(sType)) Then
+                    'skip inserting file
+
+                    '.CommandText = sSQL1  
+                    'iID = .ExecuteScalar() 
 
                 Else
                     'insert new row in table and include file binary data
@@ -489,6 +503,7 @@ Public Class ImportEmails
                     .CommandText = sSQL2
                     .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
                     iID = .ExecuteScalar()
+
                 End If
 
             End With
@@ -502,7 +517,7 @@ Public Class ImportEmails
     Private Function attType(sFileName As String) As String
         Dim sType As String
 
-        If Len(sFileName) = 0 Then
+        If Len(sFileName) = 0 OrElse (Not sFileName.Contains(".")) Then
             sType = ""
         Else
             sType = Mid(sFileName, InStrRev(sFileName, ".") + 1)

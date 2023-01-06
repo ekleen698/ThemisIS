@@ -52,7 +52,6 @@ Public Class frmAttachments
                 .Columns("FileName").Width = Convert.ToInt32(500 * _ScaleFactor)
                 .Columns("FileExt").Width = Convert.ToInt32(75 * _ScaleFactor)
                 .Columns("Status").Visible = False
-                .Columns("EmailID").Visible = False
                 .Columns("ID").Visible = False
                 .Columns("OLType").Visible = False
             End With
@@ -355,43 +354,13 @@ Public Class frmAttachments
         'Opens attachment as a temporary file
 
         Dim iAttachID As Integer
-        Dim iEmbEmailID As Integer
-        Dim sOLType As String           'identifies embedded messages vs. other attachments
-        Dim sFileName As String = ""    'used for error reporting
         Dim sExportFile As String
 
-
         Try
-            'Store attachment information
+            ' Export attachment file to current user's temp folder and open file
             iAttachID = Convert.ToInt32(dgvAttachments.Rows(e.RowIndex).Cells("ID").Value)
-            sOLType = dgvAttachments.Rows(e.RowIndex).Cells("OLType").Value.ToString
-            sFileName = dgvAttachments.Rows(e.RowIndex).Cells("FileName").Value.ToString
-
-            'Handle embedded Outlook email attachments different from file attachments
-            If sOLType = "olEmbeddedItem" Then
-
-                'Update data source for embedded email display
-                With CurrProjDB.Connection.CreateCommand
-                    .CommandText = "SELECT ib.EmailID
-		                    FROM Inbox ib
-		                    WHERE ib.[EmbAttID] = @EmbAttachID;"
-                    .Parameters.Add("@EmbAttachID", SqlDbType.Int).Value = iAttachID
-                    iEmbEmailID = .ExecuteScalar()
-                End With
-
-                'Open new Email Display form with embedded email, position new form lower and right of current form
-                With New frmEmail(iTopOffset:=50, iLeftOffset:=50, iEmbEmailID:=iEmbEmailID)
-                    .ShowDialog()
-                End With
-
-            Else
-                'Export attachment file from SQL FILESTREAM data to current user's temp folder
-                sExportFile = export_attachment(iAttachID, Path.GetTempPath)
-
-                'Open the new file.
-                Process.Start($"{Path.GetTempPath}\{sExportFile}")
-
-            End If
+            sExportFile = export_attachment(iAttachID, Path.GetTempPath)
+            Process.Start($"{Path.GetTempPath}\{sExportFile}")
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -407,7 +376,7 @@ Public Class frmAttachments
 
         'Clear attachments datatable and fill with all attachments for current email
         _dtAttachments.Clear()
-        sSQL = $"SELECT a.[FileName], a.[FileExt], ib.[EmailID], a.[ID], a.[OLType],
+        sSQL = $"SELECT a.[FileName], a.[FileExt], a.[ID], a.[OLType],
 	                COALESCE(ty.[Exemption_Type],'Unreviewed') AS [Status]
                 FROM dbo.[Attachments] a
                 LEFT JOIN (
@@ -416,7 +385,6 @@ Public Class frmAttachments
 	                INNER JOIN dbo.[sys_Exemptions] t2 ON t1.[ExemptionID]=t2.[ID]
 	                GROUP BY t1.[AttachID] ) AS st ON a.[ID]=st.[AttachID]
                 LEFT JOIN dbo.[sys_ExemptionTypes] ty ON st.[maxid]=ty.[ID]
-                LEFT JOIN dbo.[Inbox] ib ON a.[ID]=ib.[EmbAttID]
                 WHERE a.[EmailID]=@EmailID 
                 AND a.[FileExt]<>'ics' ;"
         With New SqlDataAdapter(sSQL, CurrProjDB.Connection)

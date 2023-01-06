@@ -68,14 +68,14 @@ Public Class Exporter
 	                , ex.Exemption [Reason], st.[Description] [Reason Description]
                 FROM dbo.[Attachments] a 
                 JOIN dbo.[Inbox] ib ON a.EmailID=ib.EmailID 
-                JOIN dbo.[EmailExemptStatus] est ON ib.EmailID=est.EmailID
+                LEFT JOIN dbo.[EmailExemptStatus] est ON ib.EmailID=est.EmailID
                 JOIN dbo.[Files] f ON ib.FileID=f.ID
                 JOIN dbo.[AttachExemptStatus] st ON a.[ID]=st.[AttachID]
                 JOIN dbo.[sys_Exemptions] ex ON st.[ExemptionID]=ex.[ID]
                 JOIN dbo.[sys_ExemptionTypes] ty ON ex.[TypeID]=ty.[ID] 
                 WHERE 1=1
                 AND ib.EntryID<>'Embedded'
-                AND est.Flag=0
+                AND ISNULL(est.Flag,0)=0
                 AND a.FileExt<>'bin'
                 AND ty.[Exemption_Type]=@Type
                 ORDER BY f.[FileName], a.[EmailID], a.[ID];"

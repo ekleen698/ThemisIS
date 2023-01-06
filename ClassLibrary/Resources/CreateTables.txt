@@ -87,7 +87,6 @@ CREATE TABLE dbo.[Inbox] (
 [FileID] INTEGER NOT NULL, 
 [Parent] VARCHAR(255) NOT NULL,
 [EntryID] VARCHAR(50) NOT NULL, 
-[EmbAttID] INTEGER NULL,
 [Importance] INTEGER NOT NULL, 
 [MessageClass] VARCHAR(255) NOT NULL, 
 [Size] INTEGER, 
@@ -109,7 +108,7 @@ CREATE TABLE dbo.[Inbox] (
 [ChkSum] AS CHECKSUM(SentOn, Sender, Recipients, [Subject], Body, Attachments),
 [Duplicate] BIT DEFAULT 0,
 CONSTRAINT PK_Inbox_ID PRIMARY KEY ([EmailID]),
-CONSTRAINT UN_Inbox_File_Entry_Embed UNIQUE ([FileID], [EntryID], [EmbAttID]),
+CONSTRAINT UN_Inbox_File_Entry_Embed UNIQUE ([FileID], [EntryID]),
 CONSTRAINT FK_Inbox_Files_ID FOREIGN KEY ([FileID]) 
 	REFERENCES dbo.Files([ID]) ON DELETE CASCADE
 );

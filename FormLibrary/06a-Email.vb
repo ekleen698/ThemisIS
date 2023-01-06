@@ -14,14 +14,12 @@ Public Class frmEmail
     Private _iRows As Integer = 0
     Private _iTopOffset As Integer
     Private _iLeftOffset As Integer
-    Private _iEmbEmailID As Integer
     Private _cBackcolor As Drawing.Color
     Private _cColor As Drawing.Color
     Private _Boxes As RichTextBox()
     Private _ScaleFactor As Single
 
-    Public Sub New(Optional iTopOffset As Integer = 0, Optional iLeftOffset As Integer = 0,
-                   Optional iEmbEmailID As Integer = -1)
+    Public Sub New(Optional iTopOffset As Integer = 0, Optional iLeftOffset As Integer = 0)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -34,7 +32,6 @@ Public Class frmEmail
         'Initialize class properties
         _iTopOffset = Convert.ToInt32(iTopOffset * _ScaleFactor)
         _iLeftOffset = Convert.ToInt32(iLeftOffset * _ScaleFactor)
-        _iEmbEmailID = iEmbEmailID
 
     End Sub
 
@@ -76,7 +73,6 @@ Public Class frmEmail
                 .Columns("FileName").Width = Convert.ToInt32(300 * _ScaleFactor)
                 .Columns("FileExt").Width = Convert.ToInt32(50 * _ScaleFactor)
                 .Columns("Status").Width = Convert.ToInt32(77 * _ScaleFactor)
-                .Columns("EmailID").Visible = False
                 .Columns("ID").Visible = False
                 .Columns("OLType").Visible = False
             End With
@@ -89,18 +85,9 @@ Public Class frmEmail
             _Boxes = {Me.txtFrom, Me.txtFromName, Me.txtTo, Me.txtToName, Me.txtCC, Me.txtBCC, Me.txtSubject, Me.txtBody}
 
             ' Get EmailID data from source, sent date used for sorting id's
-            If _iEmbEmailID = -1 Then
-                'Open form with all emails in DisplayEmailIDs
-                sSQL = $"SELECT de.EmailID, de.SentOn 
+            sSQL = $"
+                SELECT de.EmailID, de.SentOn 
                 FROM dbo.DisplayEmailIDs de;"
-            Else
-                ' Open form with single email from Embedded Outlook attachment
-                sSQL = $"SELECT ib.EmailID, ib.SentOn 
-                FROM dbo.Inbox ib
-                WHERE ib.EmailID={_iEmbEmailID};"
-            End If
-
-            ' Fill EmailID DataTable used by form BindingSource
             With New SqlDataAdapter(sSQL, CurrProjDB.Connection)
                 .Fill(_dtEmailID)
             End With
@@ -646,42 +633,13 @@ Public Class frmEmail
 
         Dim iEmailID As Integer = _dtEmail.Rows(0).Item("EmailID")
         Dim iAttachID As Integer
-        Dim iEmbEmailID As Integer
-        Dim sOLType As String           'identifies embedded messages vs. other attachments
-        Dim sFileName As String = ""    'used for error reporting
         Dim sExportFile As String
 
         Try
-            'Store attachment information
+            'Export attachment file to current user's temp folder and open file
             iAttachID = Convert.ToInt32(dgvAttachments.Rows(e.RowIndex).Cells("ID").Value)
-            sOLType = dgvAttachments.Rows(e.RowIndex).Cells("OLType").Value.ToString
-            sFileName = dgvAttachments.Rows(e.RowIndex).Cells("FileName").Value.ToString
-
-            'Handle embedded Outlook email attachments different from file attachments
-            If sOLType = "olEmbeddedItem" Then
-
-                'Update data source for embedded email display
-                With CurrProjDB.Connection.CreateCommand
-                    .CommandText = "SELECT ib.EmailID
-		                    FROM Inbox ib
-		                    WHERE ib.[EmbAttID] = @EmbAttachID;"
-                    .Parameters.Add("@EmbAttachID", SqlDbType.Int).Value = iAttachID
-                    iEmbEmailID = .ExecuteScalar()
-                End With
-
-                'Open new Email Display form with embedded email, position new form lower and right of current form
-                With New frmEmail(iTopOffset:=50, iLeftOffset:=50, iEmbEmailID:=iEmbEmailID)
-                    .ShowDialog()
-                End With
-
-            Else
-                'Export attachment file from SQL FILESTREAM data to current user's temp folder
-                sExportFile = export_attachment(iAttachID, Path.GetTempPath)
-
-                'Open the new file.
-                Process.Start($"{Path.GetTempPath}\{sExportFile}")
-
-            End If
+            sExportFile = export_attachment(iAttachID, Path.GetTempPath)
+            Process.Start($"{Path.GetTempPath}\{sExportFile}")
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -736,24 +694,6 @@ Public Class frmEmail
             Me.lblEmailID.Text = $"EmailID {_dtEmail.Rows(0).Item("EmailID").ToString}"
             Me.lblNumEmails.Text = $"{_bsEmailID.Position + 1} of {_iRows} Email(s)"
 
-            ' Hide controls for viewing Embedded Email attachment
-            If _iEmbEmailID <> -1 Then
-                Me.lblEmailID.Visible = False
-                Me.lblAttachments.Visible = False
-                Me.dgvAttachments.Visible = False
-                Me.cmdAttachments.Visible = False
-                Me.cmdMarkAsEmail.Visible = False
-                Me.chkFlag.Visible = False
-                Me.cmdProduce.Visible = False
-                Me.cmdNonResponsive.Visible = False
-                Me.cmdRedact.Visible = False
-                Me.cmdExempt.Visible = False
-                Me.cmdReset.Visible = False
-                Me.cmdOutlook.Visible = False
-                Me.cmdExport.Visible = False
-                Exit Sub
-            End If
-
             ' Update Flag checkbox
             Me.chkFlag.Checked = CBool(_dtEmail.Rows(0).Item("Flag").ToString)
 
@@ -801,7 +741,7 @@ Public Class frmEmail
 
             'Clear attachments DataTable and fill with with attachments for current EmailID
             _dtAttachments.Clear()
-            sSQL = $"SELECT a.[FileName], a.[FileExt], ib.[EmailID], a.[ID], a.[OLType],
+            sSQL = $"SELECT a.[FileName], a.[FileExt], a.[ID], a.[OLType],
 	                COALESCE(ty.[Exemption_Type],'Unreviewed') AS [Status]
                 FROM dbo.[Attachments] a
                 LEFT JOIN (
@@ -810,7 +750,6 @@ Public Class frmEmail
 	                INNER JOIN dbo.[sys_Exemptions] t2 ON t1.[ExemptionID]=t2.[ID]
 	                GROUP BY t1.[AttachID] ) AS st ON a.[ID]=st.[AttachID]
                 LEFT JOIN dbo.[sys_ExemptionTypes] ty ON st.[maxid]=ty.[ID]
-                LEFT JOIN dbo.[Inbox] ib ON a.[ID]=ib.[EmbAttID]
                 WHERE a.[EmailID]=@EmailID 
                 AND a.[FileExt]<>'ics';"
             With New SqlDataAdapter(sSQL, CurrProjDB.Connection)
