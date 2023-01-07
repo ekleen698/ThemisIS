@@ -21,10 +21,10 @@ Module Main
             Application.EnableVisualStyles()    ' required for marquee animation in progress bar
             LoadLibrary("riched20")     ' prevents error when frmEmail opened due to rich text box
 
-            'frmDirectory()
+            frmDirectory()
 
             'testFrmProjUpdate("Edit")
-            testFrmProjDetails()
+            'testFrmProjDetails()
             'testFrmEmail()
             'testFrmSearch()
             'testFrmKeyword()
@@ -223,7 +223,8 @@ Module Main
         Try
             testConnect()
 
-            Dim sWhere = $"AND ib.[FileID] IN (1)"
+            'Dim sWhere = $"AND ib.EmailID IN (select EmailID from dbo.Attachments where OLType='olEmbeddedItem')"
+            Dim sWhere = $"AND ib.EmailID=3737"
 
             ' Update display email list
             With CurrProjDB.Connection.CreateCommand
@@ -430,37 +431,23 @@ Module Main
     Private Sub testEmailProperties()
 
         Dim sFolder As String = "C:\Users\eric.kleen\Desktop\PF\PST Files"
-        Dim sFileName As String = "Bp1_1.pst"
-        Dim oFile As FileInfo = New FileInfo(Path.Combine(sFolder, sFileName))
-        Dim sEntryID As String = "00000000EACD56F67A33E04686C6F8F6993920BBE4552000"
+        'Dim sFileName As String = "Bp1_2.pst"
+        'Dim oFile As FileInfo = New FileInfo(Path.Combine(sFolder, sFileName))
+        'Dim sEntryID As String = "00000000616D240F36596A4D8624AE4BEB7884E904DB2000"
 
         Try
+            Dim sFileNames = New List(Of String) From {"Bp1_1.pst", "Bp1_2.pst", "Bp1_3.pst", "Bp1_4.pst",
+                "bp2_1.pst", "bp2_2.pst"}
+            Dim sEntryID As String = ""
 
-            Testing.email_properties(oFile.FullName, sEntryID)
-
-        Catch ex As Exception
-            Throw ex
-
-        End Try
-
-    End Sub
-
-    Private Sub testImportEmail()
-
-
-        Try
-            testConnect()
-
-            Dim oPSTFile = New PSTFile(2)
-            Dim sEntryID As String = "00000000616D240F36596A4D8624AE4BEB7884E9C4DA2000"
-
-            Testing.importEmail(oPSTFile, sEntryID)
+            For Each sFileName As String In sFileNames
+                Dim oFile As FileInfo = New FileInfo(Path.Combine(sFolder, sFileName))
+                Debug.WriteLine(oFile.Name)
+                Testing.email_properties(oFile.FullName, sEntryID)
+            Next
 
         Catch ex As Exception
             Debug.WriteLine(ex)
-
-        Finally
-            testClose()
 
         End Try
 
