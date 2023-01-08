@@ -38,7 +38,7 @@ Public Class Exporter
         _Type = Type
 
         ' Get Emails for the specified type
-        ' Exclude: Embedded Emails, Flagged Emails
+        ' Exclude: Flagged Emails
         Dim sSQL = "
             SELECT DISTINCT f.[FileName], ib.[EmailID]
                 , ib.[SentOn], ib.[Sender], ib.[To], ib.[CC], ib.[BCC], ib.[Subject], ib.Attachments
@@ -51,7 +51,6 @@ Public Class Exporter
             JOIN dbo.[sys_ExemptionTypes] ty ON ex.TypeID=ty.ID 
 			LEFT JOIN dbo.[vRedactedFiles] rf ON ib.EmailID=rf.EmailID
             WHERE 1=1
-            AND ib.EntryID<>'Embedded'
             AND st.Flag=0
             AND (IIF(ty.Exemption_Type='Redaction', ISNULL(rf.ID,0), 1))>0
             AND ty.Exemption_Type=@Type
@@ -62,7 +61,7 @@ Public Class Exporter
         End With
 
         ' Get Attachments for the specified type
-        ' Exclude: Attachments for Embedded or Flagged emails, .bin files
+        ' Exclude: Attachments for Flagged emails
         sSQL = $"SELECT DISTINCT f.[FileName], a.[EmailID]
                     , a.ID [AttachID], a.[FileName] [Attachment]
 	                , ex.Exemption [Reason], st.[Description] [Reason Description]
@@ -74,9 +73,7 @@ Public Class Exporter
                 JOIN dbo.[sys_Exemptions] ex ON st.[ExemptionID]=ex.[ID]
                 JOIN dbo.[sys_ExemptionTypes] ty ON ex.[TypeID]=ty.[ID] 
                 WHERE 1=1
-                AND ib.EntryID<>'Embedded'
                 AND ISNULL(est.Flag,0)=0
-                AND a.FileExt<>'bin'
                 AND ty.[Exemption_Type]=@Type
                 ORDER BY f.[FileName], a.[EmailID], a.[ID];"
         With New SqlDataAdapter(sSQL, CurrProjDB.Connection)

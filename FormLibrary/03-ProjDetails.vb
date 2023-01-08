@@ -106,7 +106,7 @@ Public Class frmProjDetails
             Next
 
             'Get .pst file names from the Files table and add to listview
-            fillDataTable()
+            updateForm()
 
             ' Reset Selected property after DGV filled
             Selected = False
@@ -142,7 +142,7 @@ Public Class frmProjDetails
                         ' Loop all files in selected folder and subfolders
                         loopFolders(oFolder)
                         ' Update datatable with new file info
-                        fillDataTable()
+                        updateForm()
                         ' Re-perform file path validation, exits While if all paths are valid
                         bPass = validateFilePaths()
                     Else
@@ -190,7 +190,7 @@ Public Class frmProjDetails
 
             'Select folder, import file info for each pst file
             CurrProjDB.AddPSTFiles()
-            fillDataTable()
+            updateForm()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -205,7 +205,7 @@ Public Class frmProjDetails
     End Sub
 
     Private Sub mnuRemovePSTFiles_Click(sender As Object, e As EventArgs) Handles mnuRemovePSTFiles.Click
-        'For each file selected in dgv delete all emails, attachments, and embedded msgs
+        'For each file selected in dgv delete all emails and attachments
 
         Dim result() As DataRow
 
@@ -253,7 +253,7 @@ Public Class frmProjDetails
             End With
 
             'Refresh dgv
-            fillDataTable()
+            updateForm()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -268,7 +268,7 @@ Public Class frmProjDetails
     End Sub
 
     Private Sub mnuImportEmails_Click(sender As Object, e As EventArgs) Handles mnuImportEmails.Click
-        'For each file selected in dgv import all email, attachments, and embedded msgs
+        'For each file selected in dgv import all email and attachments
 
         Dim PSTFiles As New PSTFiles
         Dim result() As DataRow
@@ -300,7 +300,7 @@ Public Class frmProjDetails
                 End With
 
                 'Update ListView
-                fillDataTable()
+                updateForm()
             End If
 
         Catch ex As Exception
@@ -355,7 +355,7 @@ Public Class frmProjDetails
             End With
 
             'Refresh dgv after Email Display form closes to update Reviewed items
-            fillDataTable()
+            updateForm()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -419,7 +419,7 @@ Public Class frmProjDetails
             End With
 
             'Refresh dgv after form closes to update Reviewed items
-            fillDataTable()
+            updateForm()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -441,7 +441,7 @@ Public Class frmProjDetails
             End With
 
             'Refresh dgv after form closes to update Reviewed items
-            fillDataTable()
+            updateForm()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -483,7 +483,7 @@ Public Class frmProjDetails
             End With
 
             'Refresh dgv after Email Display form closes to update Reviewed items
-            fillDataTable()
+            updateForm()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
@@ -662,7 +662,7 @@ Public Class frmProjDetails
 
     End Sub
 
-    Private Sub fillDataTable()
+    Private Sub updateForm()
         'Refresh the datagridview object
 
         Dim sSQL As String
@@ -703,7 +703,7 @@ Public Class frmProjDetails
 					JOIN dbo.sys_ExemptionTypes ty ON ex.TypeID=ty.ID
 					GROUP BY EmailID, ty.Exemption_Type
 					) st ON ib.[EmailID]=st.[EmailID]
-				WHERE ib.EntryID<>'Embedded'
+				WHERE 1=1
 				GROUP BY [FileID]
 				) ibx ON f.ID=ibx.FileID
 			ORDER BY f.Filename;"

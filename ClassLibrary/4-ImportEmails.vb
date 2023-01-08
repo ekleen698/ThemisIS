@@ -273,10 +273,10 @@ Public Class ImportEmails
     End Sub
 
     Private Sub insertEmail(ByRef rMail As RDOMail, sParent As String)
-        'Parent is folder name for regular emails, EntryID for embedded messages
+        'Parent is folder name for regular emails
 
         Dim sSQL As String = ""
-        Dim sEntryID As String = ""
+        Dim sEntryID As String = rMail.EntryID
         Dim sRecipients As String = ""
         Dim sTo As String = ""
         Dim sTo_Name As String = ""
@@ -290,13 +290,6 @@ Public Class ImportEmails
         Dim rRecipient As RDORecipient = Nothing
         Dim rAttachments As RDOAttachments = Nothing
         Dim rSender As RDOAddressEntry = Nothing
-
-        'First embedded message returns EntryID of parent email, further embedded messages return nothing
-        If Nz(rMail.EntryID) = "" Then
-            sEntryID = "Embedded"
-        Else
-            sEntryID = rMail.EntryID
-        End If
 
         'Resolve common causes of errors
         If Not IsNothing(rMail.Sender) Then
@@ -418,7 +411,7 @@ Public Class ImportEmails
 
         End With
 
-        'Iterate all attachments in current item, insert new rows in dbo.Attachments, skip embedded attachments
+        'Iterate all attachments in current item, insert new rows in dbo.Attachments
         rAttachments = rMail.Attachments
         If rAttachments.Count > 0 Then
             loopAttachments(iEmailID, rMail)
@@ -436,7 +429,7 @@ Public Class ImportEmails
         'Dim rEmbMsg As RDOMail
         Dim buffer As Byte()
         'Dim sSQL1 As String = ""
-        Dim sSQL2 As String = ""
+        Dim sSQL As String = ""
         Dim sFileName As String = ""
         Dim sType As String = ""
         Dim iID As Integer = 0
@@ -447,7 +440,7 @@ Public Class ImportEmails
         '        SELECT (SELECT CAST([last_used_value] AS INT) 
         '            FROM [sys].[sequences] WHERE [name] ='sAttachments_PK') AS [ID];"
         'For inserting all other rows (adds file binary data to FILESTREAM column)
-        sSQL2 = $"INSERT INTO [Attachments] (EmailID, OLType, FileName, FileExt, FileStream)
+        sSQL = $"INSERT INTO [Attachments] (EmailID, OLType, FileName, FileExt, FileStream)
                     VALUES (@EmailID, @OLType, @FileName, @FileExt, @BLOB);
                 SELECT (SELECT CAST([last_used_value] AS INT) 
                     FROM [sys].[sequences] WHERE [name] ='sAttachments_PK') AS [ID];"
@@ -481,26 +474,17 @@ Public Class ImportEmails
                             buffer = rdr.ReadBytes(rdr.BaseStream.Length)
                         End Using
                     End Using
-                    .CommandText = sSQL2
+                    .CommandText = sSQL
                     .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
                     iID = .ExecuteScalar()
 
-                    '.CommandText = sSQL1
-                    'iID = .ExecuteScalar
-                    'rEmbMsg = rAttachment.EmbeddedMsg
-                    'insertEmail(rEmbMsg, iEmailID, iID)
-                    'ReleaseComObject(rEmbMsg)
-
-                ElseIf ({"ics", "", "bin"}.contains(sType)) Then
+                ElseIf ({"ics", "", "bin"}.Contains(sType)) Then
                     'skip inserting file
-
-                    '.CommandText = sSQL1  
-                    'iID = .ExecuteScalar() 
 
                 Else
                     'insert new row in table and include file binary data
                     buffer = rAttachment.AsArray
-                    .CommandText = sSQL2
+                    .CommandText = sSQL
                     .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
                     iID = .ExecuteScalar()
 

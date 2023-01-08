@@ -24,7 +24,6 @@ BEGIN
 					, ib.EmailID ASC) row_num
 			FROM Inbox ib
 			WHERE 1=1
-			AND ib.EntryID<>'Embedded'
 			) sub
 		WHERE sub.ChkSum_Count>1 and sub.row_num>1 
 		);

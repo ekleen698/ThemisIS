@@ -572,35 +572,27 @@ Public Class frmEmail
             sParent = oRdr.GetSqlString(2).Value
             oRdr.Close()
 
-            If sEntryID = "Embedded" Then
-                'Embedded messages have no EntryID and can only be opened from parent email
-                MsgBox($"Message is an attachment to EmailID {sParent}.{vbCrLf}" +
-                    "To view in Outlook, open parent email in Outlook then select attachment.")
+            'Initialize Outlook objects
+            olns = ol.GetNamespace("MAPI")
+            olns.Logon("", "", False, True)
+            ol.Session.AddStore(sFilePath)
+            For Each s As Outlook.Store In olns.Stores
+                'Only way to select a specific Store from Namespace
+                If s.FilePath = sFilePath Then
+                    ols = s
+                    Exit For
+                End If
+            Next
+            olm = olns.GetItemFromID(sEntryID, ols.StoreID)
 
-            Else
-                'Initialize Outlook objects
-                olns = ol.GetNamespace("MAPI")
-                olns.Logon("", "", False, True)
-                ol.Session.AddStore(sFilePath)
-                For Each s As Outlook.Store In olns.Stores
-                    'Only way to select a specific Store from Namespace
-                    If s.FilePath = sFilePath Then
-                        ols = s
-                        Exit For
-                    End If
-                Next
-                olm = olns.GetItemFromID(sEntryID, ols.StoreID)
+            'Open Outlook Inspector window, min+max to bring window to front 
+            olm.Display()
+            olm.GetInspector.WindowState = Outlook.OlWindowState.olMinimized
+            olm.GetInspector.WindowState = Outlook.OlWindowState.olMaximized
 
-                'Open Outlook Inspector window, min+max to bring window to front
-                olm.Display()
-                olm.GetInspector.WindowState = Outlook.OlWindowState.olMinimized
-                olm.GetInspector.WindowState = Outlook.OlWindowState.olMaximized
-
-                'Remove pst file from Outlook and logoff
-                olns.RemoveStore(olns.Folders(ols.DisplayName))
-                ol.Session.Logoff()
-
-            End If
+            'Remove pst file from Outlook and logoff
+            olns.RemoveStore(olns.Folders(ols.DisplayName))
+            ol.Session.Logoff()
 
         Catch ex As Exception
             Logger.WriteToLog(ex.ToString)
