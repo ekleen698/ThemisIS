@@ -1,44 +1,60 @@
-
 --Used in frmProjDetails, frmBasicSearch, frmPatternSearch
 --Updates list of EmailID's in DisplayEmailIDs
 --DisplayEmailIDs is the data source for frmEmail
 
-CREATE OR ALTER PROCEDURE [dbo].[fUpdate_DisplayEmailIDs]
+CREATE OR ALTER   PROCEDURE [dbo].[fUpdate_DisplayEmailIDs]
 @Where NVARCHAR(MAX),	--Where clause conditions
 @Unreviewed BIT,		--Include unreviewed emails
 @Reviewed BIT,			--Include reviewed emails
 @Types NVARCHAR(100),	--Exemption Types
-@Flagged BIT			--Filter for only emails with Flag in EmailExemptionStatus
+@Flagged BIT,			--Filter for only emails with Flag in EmailExemptionStatus
+@FilterOption TINYINT   --0=Email&Attach, 1=Email, 2=Attach
 AS
 BEGIN
 	DECLARE @UnrevPred NVARCHAR(255) = N'(1=0)';
 	DECLARE @RevPred NVARCHAR(255) = N'(1=0)';
 	DECLARE @FlagPred NVARCHAR(20) = N'(1=1)';
-	DECLARE @Pred NVARCHAR(255);
+	DECLARE @Pred NVARCHAR(MAX) = N'';
 	DECLARE @SQL NVARCHAR(MAX);
 
 	IF @Unreviewed=1
-		SET @UnrevPred = N'(ees.EmailID IS NULL)';
+		SET @UnrevPred = N'(ees.EmailID IS NULL OR aes.AttachID IS NULL)';
 
 	IF @Flagged=1
 		SET @FlagPred = N'(ees.Flag=1)';
 
 	IF @Reviewed=1
-		SET @RevPred = N'(ty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+		BEGIN
+		IF @FilterOption=0
+			BEGIN
+			SET @RevPred = N'(ety.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ') ';
+			SET @RevPred = @RevPred + N'OR (aty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+			END;
+		IF @FilterOption=1
+			SET @RevPred = N'(ety.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+		IF @FilterOption=2
+			SET @RevPred = N'(aty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+		END;
 
-	SET @Pred = N'
+	IF @Where <> ''
+		SET @Pred = N'
+		AND (' + @Where + ')';
+
+	SET @Pred = @Pred + N'
 		AND (' + @UnrevPred + ' OR ' + @RevPred + ')';
 		
 	SET @SQL = N'DELETE FROM dbo.DisplayEmailIDs;
 		INSERT INTO dbo.DisplayEmailIDs (EmailID, SentOn)
 		SELECT DISTINCT ib.EmailID, ib.SentOn
 		FROM dbo.Inbox ib
-		LEFT JOIN dbo.EmailExemptStatus ees on ib.EmailID=ees.EmailID
-		LEFT JOIN dbo.sys_Exemptions ex ON ees.ExemptionID=ex.ID
-		LEFT JOIN dbo.sys_ExemptionTypes ty ON ex.TypeID=ty.ID
+		LEFT JOIN dbo.EmailExemptStatus ees ON ib.EmailID=ees.EmailID
+		LEFT JOIN dbo.sys_Exemptions eex ON ees.ExemptionID=eex.ID
+		LEFT JOIN dbo.sys_ExemptionTypes ety ON eex.TypeID=ety.ID
+		LEFT JOIN dbo.Attachments att ON ib.EmailID=att.EmailID
+		LEFT JOIN dbo.AttachExemptStatus aes ON att.ID=aes.AttachID
+		LEFT JOIN dbo.sys_Exemptions aex ON aes.ExemptionID=aex.ID
+		LEFT JOIN dbo.sys_ExemptionTypes aty ON aex.TypeID=aty.ID
 		WHERE 1=1
-		AND ib.Duplicate=0
-		AND ib.EntryID<>''Embedded''
-		' + @Where + @Pred;
+		AND ib.Duplicate=0 ' + @Pred + N';';
 	EXECUTE sp_executesql @SQL;
 END;
