@@ -453,7 +453,7 @@ Public Class frmEmail
 
         Try
             'Exit if email status not 'Exemption' or 'Unreviewed'
-            If New List(Of String) From {"Unreviewed", "Redaction"}.Contains(sOrigStatus) Then
+            If {"Unreviewed", "Redaction"}.Contains(sOrigStatus) Then
                 'Create new exemption(s) for current email
                 With New frmEmailExemption("Redaction", iEmailID)
                     .ShowDialog(Me)

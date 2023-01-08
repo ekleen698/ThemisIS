@@ -18,7 +18,7 @@ BEGIN
 	DECLARE @SQL NVARCHAR(MAX);
 
 	IF @Unreviewed=1
-		SET @UnrevPred = N'(ees.EmailID IS NULL OR aes.AttachID IS NULL)';
+		SET @UnrevPred = N'(ees.EmailID IS NULL OR (att.ID IS NOT NULL AND aes.AttachID IS NULL))';
 
 	IF @Flagged=1
 		SET @FlagPred = N'(ees.Flag=1)';
