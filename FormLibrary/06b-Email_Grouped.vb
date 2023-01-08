@@ -320,16 +320,17 @@ Public Class frmEmail_Grouped
         'Open current email in Email Display form
 
         Dim iEmailID As Integer = dgvEmails.CurrentRow.Cells("EmailID").Value
-        Dim sWhere As String = $"AND ib.EmailID = {iEmailID}"
+        Dim sWhere As String = $"ib.EmailID = {iEmailID}"
         Debug.WriteLine($"{iEmailID} > {sWhere}")
 
         With CurrProjDB.Connection.CreateCommand
-            .CommandText = $"EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged;"
+            .CommandText = $"EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged, @FilterOption;"
             .Parameters.Add("@Where", SqlDbType.NVarChar).Value = sWhere
             .Parameters.Add("@Unreviewed", SqlDbType.Bit).Value = 1
             .Parameters.Add("@Reviewed", SqlDbType.Bit).Value = 1
             .Parameters.Add("@Types", SqlDbType.NVarChar).Value = "'Produce', 'Non-Responsive', 'Exemption', 'Redaction'"
             .Parameters.Add("@Flagged", SqlDbType.Bit).Value = 0
+            .Parameters.Add("@FilterOption", SqlDbType.TinyInt).Value = 0
             .ExecuteNonQuery()
         End With
 
@@ -354,15 +355,16 @@ Public Class frmEmail_Grouped
         Try
             ' Update Display EmailID table for bulk update operation
             Dim iChkSum As Integer = _bsChkSum.Current.Item("ChkSum")
-            Dim sWhere As String = $"AND ib.EmailID IN (SELECT EmailID FROM #v WHERE Chksum={iChkSum})"
+            Dim sWhere As String = $"ib.EmailID IN (SELECT EmailID FROM #v WHERE Chksum={iChkSum})"
 
             With CurrProjDB.Connection.CreateCommand
-                .CommandText = $"EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged;"
+                .CommandText = $"EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged, @FilterOption;"
                 .Parameters.Add("@Where", SqlDbType.NVarChar).Value = sWhere
                 .Parameters.Add("@Unreviewed", SqlDbType.Bit).Value = 1
                 .Parameters.Add("@Reviewed", SqlDbType.Bit).Value = 1
                 .Parameters.Add("@Types", SqlDbType.NVarChar).Value = "'Produce', 'Non-Responsive', 'Exemption', 'Redaction'"
                 .Parameters.Add("@Flagged", SqlDbType.Bit).Value = 0
+                .Parameters.Add("@FilterOption", SqlDbType.TinyInt).Value = 0
                 .ExecuteNonQuery()
             End With
 

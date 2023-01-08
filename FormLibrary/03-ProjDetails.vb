@@ -327,18 +327,25 @@ Public Class frmProjDetails
             Dim bUnreviewed = Me.chkUnreviewed.Checked
             Dim bReviewed = Me.chkReviewed.Checked
             Dim sTypes As String = ""
-            Dim bFlagged = (Me.chkReviewed.Checked And Me.chkFlagged.Checked)
+            Dim bFlagged = False
+            Dim iFilterOption As Integer = 0
 
-            ' If View Option is 'Reviewed', create Types list
+            ' If View Option is 'Reviewed', create Types list and set Flagged option
             If chkReviewed.Checked Then
                 If Me.chkProduce.Checked Then sTypes += "'Produce', "
                 If Me.chkNonResponsive.Checked Then sTypes += "'Non-Responsive', "
                 If Me.chkExempt.Checked Then sTypes += "'Exemption', "
                 If Me.chkRedact.Checked Then sTypes += "'Redaction', "
                 sTypes = sTypes.Remove(sTypes.Length - 2)
+                bFlagged = Me.chkFlagged.Checked
+                If cmbFilter.Text = "Emails Only" Then
+                    iFilterOption = 1
+                ElseIf cmbFilter.Text = "Attach. Only" Then
+                    iFilterOption = 2
+                End If
             End If
 
-            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged) Then
+            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged, iFilterOption) Then
                 Exit Sub
             End If
 
@@ -374,6 +381,7 @@ Public Class frmProjDetails
             Dim bReviewed = Me.chkReviewed.Checked
             Dim sTypes As String = ""
             Dim bFlagged = (Me.chkReviewed.Checked And Me.chkFlagged.Checked)
+            Dim iFilterOption As Integer = 0
 
             ' If View Option is 'Reviewed', create Types list
             If chkReviewed.Checked Then
@@ -382,9 +390,14 @@ Public Class frmProjDetails
                 If Me.chkExempt.Checked Then sTypes += "'Exemption', "
                 If Me.chkRedact.Checked Then sTypes += "'Redaction', "
                 sTypes = sTypes.Remove(sTypes.Length - 2)
+                If cmbFilter.Text = "Emails Only" Then
+                    iFilterOption = 1
+                ElseIf cmbFilter.Text = "Attach. Only" Then
+                    iFilterOption = 2
+                End If
             End If
 
-            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged) Then
+            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged, iFilterOption) Then
                 Exit Sub
             End If
 
@@ -454,12 +467,13 @@ Public Class frmProjDetails
             Me.Cursor = Cursors.WaitCursor
 
             ' Call stored procedure to update display email list
-            Dim sWhere As String = $"AND ib.EmailID={iEmailID}"
+            Dim sWhere As String = $"ib.EmailID={iEmailID}"
             Dim bUnreviewed = True
             Dim bReviewed = True
             Dim sTypes As String = "'Produce', 'Non-Responsive', 'Exemption', 'Redaction'"
             Dim bFlagged = False
-            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged) Then
+            Dim iFilterOption As Integer = 0
+            If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged, iFilterOption) Then
                 Exit Sub
             End If
 
@@ -759,7 +773,7 @@ Public Class frmProjDetails
     End Sub
 
     Private Function updateDisplayEmailIDs(sWhere As String, bUnreviewed As Boolean,
-                    bReviewed As Boolean, sTypes As String, bFlagged As Boolean) As Boolean
+                    bReviewed As Boolean, sTypes As String, bFlagged As Boolean, iFilterOption As Integer) As Boolean
         'Update DisplayEmailIDs
 
         Dim iCount As Integer = 0
@@ -767,13 +781,14 @@ Public Class frmProjDetails
         ' Update table of EmailIDs to be used by frmEmail or frmSearchUpdate
         With CurrProjDB.Connection.CreateCommand
             .CommandText = $"
-                EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged;
+                EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged, @FilterOption;
                 SELECT COUNT(0) FROM dbo.DisplayEmailIDs;"
             .Parameters.Add("@Where", SqlDbType.NVarChar).Value = sWhere
             .Parameters.Add("@Unreviewed", SqlDbType.Bit).Value = bUnreviewed
             .Parameters.Add("@Reviewed", SqlDbType.Bit).Value = bReviewed
             .Parameters.Add("@Types", SqlDbType.NVarChar).Value = sTypes
             .Parameters.Add("@Flagged", SqlDbType.Bit).Value = bFlagged
+            .Parameters.Add("@FilterOption", SqlDbType.TinyInt).Value = iFilterOption
             iCount = .ExecuteScalar
         End With
 

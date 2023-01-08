@@ -60,6 +60,7 @@ Partial Class frmSearch
         Me.mnuViewEmails = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuUpdateEmails = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
+        Me.cmbFilter = New System.Windows.Forms.ComboBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
@@ -333,12 +334,13 @@ Partial Class frmSearch
         '
         Me.Panel2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Panel2.BackColor = System.Drawing.SystemColors.Control
+        Me.Panel2.Controls.Add(Me.cmbFilter)
         Me.Panel2.Controls.Add(Me.GroupBox3)
         Me.Panel2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Panel2.Location = New System.Drawing.Point(718, 139)
+        Me.Panel2.Location = New System.Drawing.Point(718, 128)
         Me.Panel2.Margin = New System.Windows.Forms.Padding(2)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(144, 152)
+        Me.Panel2.Size = New System.Drawing.Size(144, 193)
         Me.Panel2.TabIndex = 42
         Me.Panel2.Visible = False
         '
@@ -350,7 +352,7 @@ Partial Class frmSearch
         Me.GroupBox3.Controls.Add(Me.chkExempt)
         Me.GroupBox3.Controls.Add(Me.chkNonResponsive)
         Me.GroupBox3.Controls.Add(Me.chkProduce)
-        Me.GroupBox3.Location = New System.Drawing.Point(5, 5)
+        Me.GroupBox3.Location = New System.Drawing.Point(5, 44)
         Me.GroupBox3.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Padding = New System.Windows.Forms.Padding(2)
@@ -428,7 +430,7 @@ Partial Class frmSearch
         Me.Panel1.BackColor = System.Drawing.SystemColors.Control
         Me.Panel1.Controls.Add(Me.GroupBox5)
         Me.Panel1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Panel1.Location = New System.Drawing.Point(718, 40)
+        Me.Panel1.Location = New System.Drawing.Point(718, 32)
         Me.Panel1.Margin = New System.Windows.Forms.Padding(2)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(144, 83)
@@ -528,6 +530,16 @@ Partial Class frmSearch
         Me.MenuStrip1.Text = "MenuStrip1"
         Me.MenuStrip1.Visible = False
         '
+        'cmbFilter
+        '
+        Me.cmbFilter.FormattingEnabled = True
+        Me.cmbFilter.Items.AddRange(New Object() {"Emails and Attach.", "Emails Only", "Attach. Only"})
+        Me.cmbFilter.Location = New System.Drawing.Point(9, 8)
+        Me.cmbFilter.Name = "cmbFilter"
+        Me.cmbFilter.Size = New System.Drawing.Size(128, 23)
+        Me.cmbFilter.TabIndex = 19
+        Me.cmbFilter.Text = "Emails and Attach."
+        '
         'frmSearch
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -608,4 +620,5 @@ Partial Class frmSearch
     Friend WithEvents mnuViewEmails As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents mnuUpdateEmails As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
+    Friend WithEvents cmbFilter As System.Windows.Forms.ComboBox
 End Class

@@ -485,7 +485,8 @@ Public Class frmSearch
         Dim bUnreviewed = Me.chkUnreviewed.Checked
         Dim bReviewed = Me.chkReviewed.Checked
         Dim sTypes As String = ""
-        Dim bFlagged = (Me.chkReviewed.Checked And Me.chkFlagged.Checked)
+        Dim bFlagged = False
+        Dim iFilterOption As Integer = 0
         Dim iCount As Integer = 0
 
         Me.lblNoResults.Visible = False
@@ -510,6 +511,12 @@ Public Class frmSearch
             If Me.chkExempt.Checked Then sTypes += "'Exemption', "
             If Me.chkRedact.Checked Then sTypes += "'Redaction', "
             sTypes = sTypes.Remove(sTypes.Length - 2)
+            bFlagged = Me.chkFlagged.Checked
+            If cmbFilter.Text = "Emails Only" Then
+                iFilterOption = 1
+            ElseIf cmbFilter.Text = "Attach. Only" Then
+                iFilterOption = 2
+            End If
         End If
 
         If _iSearchOption <> 4 Then
@@ -518,26 +525,27 @@ Public Class frmSearch
 
             ' Include or Exclude option
             If _iIncludeOption = 1 Then
-                sWhere = $"AND CONTAINS(({sFieldList}), '{sSearchString}')"
+                sWhere = $"CONTAINS(({sFieldList}), '{sSearchString}')"
             ElseIf _iIncludeOption = 2 Then
-                sWhere = $"AND NOT CONTAINS(({sFieldList}), '{sSearchString}')"
+                sWhere = $"NOT CONTAINS(({sFieldList}), '{sSearchString}')"
             End If
 
         Else
             ' SQL search uses the text string exactly as is wrapped in an 'AND' statement
-            sWhere = $"AND ({sSearchString})"
+            sWhere = $"{sSearchString}"
         End If
 
         ' Update table of EmailIDs to be used by frmEmail or frmSearchUpdate
         With CurrProjDB.Connection.CreateCommand
             .CommandText = $"
-                EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged;
+                EXEC dbo.fUpdate_DisplayEmailIDs @Where, @Unreviewed, @Reviewed, @Types, @Flagged, @FilterOption;
                 SELECT COUNT(0) FROM dbo.DisplayEmailIDs;"
             .Parameters.Add("@Where", SqlDbType.NVarChar).Value = sWhere
             .Parameters.Add("@Unreviewed", SqlDbType.Bit).Value = bUnreviewed
             .Parameters.Add("@Reviewed", SqlDbType.Bit).Value = bReviewed
             .Parameters.Add("@Types", SqlDbType.NVarChar).Value = sTypes
             .Parameters.Add("@Flagged", SqlDbType.Bit).Value = bFlagged
+            .Parameters.Add("@FilterOption", SqlDbType.TinyInt).Value = iFilterOption
             iCount = .ExecuteScalar
         End With
 
