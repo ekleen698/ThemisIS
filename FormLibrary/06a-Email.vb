@@ -512,19 +512,21 @@ Public Class frmEmail
         If _dtEmail.Rows(0).Item("Email_Status") = "Unreviewed" Then Exit Sub
 
         'Exit if cancelled by user
-        If MsgBox("Reset status for this email and all attachments?", MsgBoxStyle.YesNo,
+        If MsgBox("Reset status for this email and all attachments and delete all Redacted files?", MsgBoxStyle.YesNo,
                       "Confirm Reset") = MsgBoxResult.No Then
             Exit Sub
         End If
 
         Try
-            'Delete all email and attachments reviews for current email
-            ' TODO: Change to store procedure
+            'Delete all email and attachments reviews and redacted files for current email
+            ' TODO: Change to stored procedure
             With CurrProjDB.Connection.CreateCommand
-                .CommandText = "DELETE FROM dbo.[EmailExemptStatus] WHERE [EmailID]=@EmailID;
+                .CommandText = "
+                    DELETE FROM dbo.[EmailExemptStatus] WHERE [EmailID]=@EmailID;
                     DELETE [AttachExemptStatus]
                     WHERE [AttachID] IN 
-                        (SELECT [ID] FROM [Attachments] WHERE [EmailID] = @EmailID);"
+                        (SELECT [ID] FROM [Attachments] WHERE [EmailID] = @EmailID);
+	                DELETE FROM dbo.RedactedFiles WHERE [EmailID]=@EmailID;"
                 .Parameters.Add("@EmailID", SqlDbType.Int).Value = iEmailID
                 .ExecuteNonQuery()
             End With
