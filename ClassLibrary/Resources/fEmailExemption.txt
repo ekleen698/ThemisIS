@@ -1,6 +1,6 @@
 --Used by frmEmail, frmEmailDupe, frmEmailExemptions, frmSearchUpdate
 --Insert new row(s) into Email Exemption Status table
-CREATE OR ALTER PROCEDURE [dbo].[fEmailExemption]
+CREATE OR ALTER   PROCEDURE [dbo].[fEmailExemption]
 @EmailID INT
 , @Exemptions TVP READONLY --custom type (TABLE)
 
@@ -30,15 +30,24 @@ BEGIN
 	-- Update a single Email
 	ELSE
 		BEGIN
+			-- If existing Exemption(s), get Flag and Flag Comment from lowest ID
+			DECLARE @ID INT = (SELECT ISNULL(MIN(ID),0) FROM dbo.[EmailExemptStatus] WHERE EmailID=@EmailID);
+			DECLARE @Flag BIT = 0;
+			DECLARE @FlagComment VARCHAR(MAX) = '';
+			IF @ID>0
+				BEGIN
+				SET @Flag = (SELECT Flag FROM dbo.[EmailExemptStatus] WHERE ID=@ID);
+				SET @FlagComment = (SELECT FlagComment FROM dbo.[EmailExemptStatus] WHERE ID=@ID);
+				END;
+
 			-- Delete any existing Exemptions
 			DELETE FROM dbo.[EmailExemptStatus] 
 			WHERE EmailID = @EmailID;
 
 			-- Insert rows for selected Exemptions
-			INSERT INTO dbo.[EmailExemptStatus] ([EmailID], [ExemptionID], [Description])
-			SELECT DISTINCT ib.EmailID, ex.ID, ex.[Description]
-			FROM (SELECT @EmailID [EmailID]) ib
-			, @Exemptions ex
+			INSERT INTO dbo.[EmailExemptStatus] ([EmailID], [ExemptionID], [Description], [Flag], [FlagComment])
+			SELECT DISTINCT ib.EmailID, ex.ID, ex.[Description], @Flag, @FlagComment
+			FROM (SELECT @EmailID [EmailID]) ib, @Exemptions ex
 			ORDER BY ib.EmailID, ex.ID;
 		END;
 

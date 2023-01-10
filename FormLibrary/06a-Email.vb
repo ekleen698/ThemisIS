@@ -316,6 +316,7 @@ Public Class frmEmail
 
         Try
             If chkFlag.Checked Then
+                ' Open dialog to get flag comment, allows blank comment
                 Dim result As Integer = 0
                 With New frmInput("Flag Comment", "Enter comment for flag or click OK to leave blank")
                     result = .ShowDialog()

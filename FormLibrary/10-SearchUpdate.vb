@@ -67,7 +67,8 @@ Public Class frmSearchUpdate
         Try
             'Get user confirmation to continue with update
             If MsgBox($"You are about to update {_iEmails} emails as '{sStatus}'." + vbCrLf + vbCrLf +
-                      "If any emails or attachments are already marked, the marking will be changed.",
+                      "If any emails or attachments are already marked, the marking will be changed " + vbCrLf +
+                      "and all flags and flag comments will be removed.",
                       MsgBoxStyle.Exclamation + MsgBoxStyle.OkCancel, "Confirm Update") = MsgBoxResult.Cancel Then
                 Exit Sub
             End If
@@ -113,7 +114,8 @@ Public Class frmSearchUpdate
         Try
             'Get user confirmation to continue with update
             If MsgBox($"You are about to update {_iEmails} emails as '{sStatus}'." + vbCrLf + vbCrLf +
-                      "If any emails or attachments are already marked, the marking will be changed.",
+                      "If any emails or attachments are already marked, the marking will be changed " + vbCrLf +
+                      "and all flags and flag comments will be removed.",
                       MsgBoxStyle.Exclamation + MsgBoxStyle.OkCancel, "Confirm Update") = MsgBoxResult.Cancel Then
                 Exit Sub
             End If
@@ -158,7 +160,8 @@ Public Class frmSearchUpdate
 
         'Get user confirmation to continue with update
         If MsgBox($"You are about to update {_iEmails} emails as '{sStatus}'." + vbCrLf + vbCrLf +
-                      "If any emails or attachments are already marked, the marking will be changed.",
+                      "If any emails or attachments are already marked, the marking will be changed " + vbCrLf +
+                      "and all flags and flag comments will be removed.",
                       MsgBoxStyle.Exclamation + MsgBoxStyle.OkCancel, "Confirm Update") = MsgBoxResult.Cancel Then
             Exit Sub
         End If
