@@ -70,6 +70,11 @@ Public Class frmProjDetails
             _dtFilesCols.Add({"Non-Responsive", Convert.ToInt32(87 * _ScaleFactor), True, True})
             _dtFilesCols.Add({"Exemption", Convert.ToInt32(60 * _ScaleFactor), True, True})
             _dtFilesCols.Add({"Redaction", Convert.ToInt32(60 * _ScaleFactor), True, True})
+            _dtFilesCols.Add({"Redacted_Files", 0, False, True})
+            _dtFilesCols.Add({"Pr_Flag", 0, False, True})
+            _dtFilesCols.Add({"NR_Flag", 0, False, True})
+            _dtFilesCols.Add({"Ex_Flag", 0, False, True})
+            _dtFilesCols.Add({"Re_Flag", 0, False, True})
 
             _dtTotalsCols.Add({"Files", Convert.ToInt32(57 * _ScaleFactor), True, True})
             _dtTotalsCols.Add({"Folders", Convert.ToInt32(57 * _ScaleFactor), True, True})
@@ -82,6 +87,11 @@ Public Class frmProjDetails
             _dtTotalsCols.Add({"Non-Responsive", Convert.ToInt32(87 * _ScaleFactor), True, True})
             _dtTotalsCols.Add({"Exemption", Convert.ToInt32(60 * _ScaleFactor), True, True})
             _dtTotalsCols.Add({"Redaction", Convert.ToInt32(60 * _ScaleFactor), True, True})
+            _dtTotalsCols.Add({"Redacted_Files", 0, False, True})
+            _dtTotalsCols.Add({"Pr_Flag", 0, False, True})
+            _dtTotalsCols.Add({"NR_Flag", 0, False, True})
+            _dtTotalsCols.Add({"Ex_Flag", 0, False, True})
+            _dtTotalsCols.Add({"Re_Flag", 0, False, True})
 
             ' Datagridview properties
             h = Convert.ToInt32(22 * _ScaleFactor)
@@ -672,41 +682,53 @@ Public Class frmProjDetails
 
         'Create dataset of files, folder count, item totals, and reviewed items
         sSQL = $"
-			SELECT CAST('False' AS BIT) AS [Select], f.[ID], f.[FileName], f.[FilePath]
+            SELECT CAST('False' AS BIT) AS [Select], f.[ID], f.[FileName], f.[FilePath]
                 , pf.[Folders], pf.[Total] AS [Emails]
-				, COALESCE(ibx.[Imported], 0) [Imported]
-				, COALESCE(ibx.[Unique],0) [Unique]
-				, COALESCE(ibx.[Reviewed], 0) [Reviewed]
-				, COALESCE(ibx.[Flagged], 0) [Flagged]
-				, COALESCE(ibx.[Produce], 0) [Produce]
-				, COALESCE(ibx.[Non-Responsive], 0) [Non-Responsive]
-				, COALESCE(ibx.[Exemption], 0) [Exemption]
-				, COALESCE(ibx.[Redaction], 0) [Redaction]
+	            , COALESCE(ibx.[Imported], 0) [Imported]
+	            , COALESCE(ibx.[Unique],0) [Unique]
+	            , COALESCE(ibx.[Reviewed], 0) [Reviewed]
+	            , COALESCE(ibx.[Flagged], 0) [Flagged]
+	            , COALESCE(ibx.[Produce], 0) [Produce]
+	            , COALESCE(ibx.[Non-Responsive], 0) [Non-Responsive]
+	            , COALESCE(ibx.[Exemption], 0) [Exemption]
+	            , COALESCE(ibx.[Redaction], 0) [Redaction]
+	            , COALESCE(ibx.[Redacted_Files], 0) [Redacted_Files]
+	            , COALESCE(ibx.[Pr_Flag], 0) [Pr_Flag]
+	            , COALESCE(ibx.[NR_Flag], 0) [NR_Flag]
+	            , COALESCE(ibx.[Ex_Flag], 0) [Ex_Flag]
+	            , COALESCE(ibx.[Re_Flag], 0) [Re_Flag]
             FROM dbo.[Files] f
             LEFT JOIN (SELECT [FileID], COUNT(*) AS [Folders], SUM([ItemCount]) AS [Total] 
 	            FROM dbo.[PSTFolders] WHERE [ItemCount]>0 GROUP BY [FileID]) pf ON f.ID=pf.FileID
             LEFT JOIN (
-				SELECT [FileID]
-					, COUNT(ib.[EmailID]) AS [Imported]
-					, SUM(IIF(ib.[Duplicate]=0,1,0)) AS [Unique]
-					, COUNT(st.[EmailID]) AS [Reviewed]
-					, SUM(st.[Flag]) AS [Flagged]
-					, SUM(IIF(st.Exemption_Type='Produce',1,0)) [Produce]
-					, SUM(IIF(st.Exemption_Type='Non-Responsive',1,0)) [Non-Responsive]
-					, SUM(IIF(st.Exemption_Type='Exemption',1,0)) [Exemption]
-					, SUM(IIF(st.Exemption_Type='Redaction',1,0)) [Redaction]
-				FROM [Inbox] ib
-				LEFT JOIN (
-					SELECT ees.EmailID, ty.Exemption_Type, MAX(CAST(ees.Flag AS INT)) [Flag]
-					FROM dbo.EmailExemptStatus ees
-					JOIN dbo.sys_Exemptions ex ON ees.ExemptionID=ex.ID
-					JOIN dbo.sys_ExemptionTypes ty ON ex.TypeID=ty.ID
-					GROUP BY EmailID, ty.Exemption_Type
-					) st ON ib.[EmailID]=st.[EmailID]
-				WHERE 1=1
-				GROUP BY [FileID]
-				) ibx ON f.ID=ibx.FileID
-			ORDER BY f.Filename;"
+	            SELECT ib.[FileID]
+		            , COUNT(ib.[EmailID]) AS [Imported]
+		            , SUM(IIF(ib.[Duplicate]=0,1,0)) AS [Unique]
+		            , COUNT(st.[EmailID]) AS [Reviewed]
+		            , SUM(st.[Flag]) AS [Flagged]
+		            , SUM(IIF(st.Exemption_Type='Produce',1,0)) [Produce]
+		            , SUM(IIF(st.Exemption_Type='Non-Responsive',1,0)) [Non-Responsive]
+		            , SUM(IIF(st.Exemption_Type='Exemption',1,0)) [Exemption]
+		            , SUM(IIF(st.Exemption_Type='Redaction',1,0)) [Redaction]
+		            , SUM(IIF(st.RF_seq>0,1,0)) [Redacted_Files]
+		            , SUM(IIF(st.Exemption_Type='Produce' AND st.Flag=1,1,0)) [Pr_Flag]
+		            , SUM(IIF(st.Exemption_Type='Non-Responsive' AND st.Flag=1,1,0)) [NR_Flag]
+		            , SUM(IIF(st.Exemption_Type='Exemption' AND st.Flag=1,1,0)) [Ex_Flag]
+		            , SUM(IIF(st.Exemption_Type='Redaction' AND st.Flag=1,1,0)) [Re_Flag]
+	            FROM [Inbox] ib
+	            LEFT JOIN (
+		            SELECT ees.EmailID, ty.Exemption_Type, MAX(CAST(ees.Flag AS INT)) [Flag]
+			            , MAX(ISNULL(rf.seq,0)) [RF_seq]
+		            FROM dbo.EmailExemptStatus ees
+		            JOIN dbo.sys_Exemptions ex ON ees.ExemptionID=ex.ID
+		            JOIN dbo.sys_ExemptionTypes ty ON ex.TypeID=ty.ID
+		            LEFT JOIN dbo.RedactedFiles rf ON ees.EmailID=rf.EmailID
+		            GROUP BY ees.EmailID, ty.Exemption_Type
+		            ) st ON ib.[EmailID]=st.[EmailID]
+	            WHERE 1=1
+	            GROUP BY [FileID]
+	            ) ibx ON f.ID=ibx.FileID
+            ORDER BY f.[Filename];"
         With New SqlDataAdapter
             .SelectCommand = New SqlCommand(sSQL, CurrProjDB.Connection)
             .Fill(_dtFiles)
@@ -733,7 +755,8 @@ Public Class frmProjDetails
         _dtTotals.Rows(0)("Files") = _dtFiles.Rows.Count
 
         Dim Columns = {"Folders", "Emails", "Imported", "Unique", "Reviewed", "Flagged",
-            "Produce", "Non-Responsive", "Exemption", "Redaction"}
+            "Produce", "Non-Responsive", "Exemption", "Redaction", "Redacted_Files",
+            "Pr_Flag", "NR_Flag", "Ex_Flag", "Re_Flag"}
         For Each c In Columns
             _dtTotals.Columns.Add(c, GetType(Integer))
             _dtTotals.Rows(0)(c) = _dtFiles.AsEnumerable().Sum(Function(row) row.Field(Of Integer)(c))
@@ -763,10 +786,10 @@ Public Class frmProjDetails
         Me.mnuExport.Enabled = bEnabled
 
         ' Enable Export menu items if at least one email is reviewed
-        Me.mnuExportProduce.Enabled = (_dtTotals(0)("Produce") > 0)
-        Me.mnuExportNonResponsive.Enabled = (_dtTotals(0)("Non-Responsive") > 0)
-        Me.mnuExportExemption.Enabled = (_dtTotals(0)("Exemption") > 0)
-        Me.mnuExportRedaction.Enabled = (_dtTotals(0)("Redaction") > 0)
+        Me.mnuExportProduce.Enabled = ((_dtTotals(0)("Produce") > 0) AndAlso _dtTotals(0)("Pr_Flag") = 0)
+        Me.mnuExportNonResponsive.Enabled = ((_dtTotals(0)("Non-Responsive") > 0) AndAlso _dtTotals(0)("NR_Flag") = 0)
+        Me.mnuExportExemption.Enabled = ((_dtTotals(0)("Exemption") > 0) AndAlso _dtTotals(0)("Ex_Flag") = 0)
+        Me.mnuExportRedaction.Enabled = ((_dtTotals(0)("Redacted_Files") > 0) AndAlso _dtTotals(0)("Re_Flag") = 0)
 
         resize_dgv()
 
