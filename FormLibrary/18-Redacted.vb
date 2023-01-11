@@ -311,7 +311,8 @@ Public Class frmRedacted
         Next
 
         ' Confirm operation
-        If MsgBox($"Import {dict.Count} file(s)?", vbYesNo + vbQuestion, "Confirm Import") <> MsgBoxResult.Yes Then Exit Sub
+        If MsgBox($"Import {dict.Count} file(s)?", vbYesNo + vbQuestion,
+                  "Confirm Import") <> MsgBoxResult.Yes Then Exit Sub
 
         ' Add each file to the database
         With CurrProjDB.Connection.CreateCommand()
