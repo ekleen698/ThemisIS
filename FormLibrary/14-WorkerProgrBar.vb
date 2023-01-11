@@ -5,6 +5,14 @@ Imports System.Windows.Forms
 Imports ClassLibrary.GlobalObjects
 
 Public Class frmWorkerProgress
+    ' Disable Close button
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim param As CreateParams = MyBase.CreateParams
+            param.ClassStyle = param.ClassStyle Or &H200
+            Return param
+        End Get
+    End Property
 
     Public Event ConvertStatus(sender As Object, Count As Integer) ' updates parent form status bar
     Public Event ConvertComplete(sender As Object, Status As String) ' signals all workers complete

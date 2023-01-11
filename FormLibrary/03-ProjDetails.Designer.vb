@@ -26,6 +26,7 @@ Partial Class frmProjDetails
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmProjDetails))
         Me.Label2 = New System.Windows.Forms.Label()
         Me.dgvPSTFiles = New System.Windows.Forms.DataGridView()
         Me.cmdSelectAll = New System.Windows.Forms.Button()
@@ -378,6 +379,7 @@ Partial Class frmProjDetails
         Me.mnuExportProduce.Name = "mnuExportProduce"
         Me.mnuExportProduce.Size = New System.Drawing.Size(186, 24)
         Me.mnuExportProduce.Text = "Produce"
+        Me.mnuExportProduce.ToolTipText = "Export Produce Emails/Attachments " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "when no Flagged Emails exist."
         '
         'mnuExportNonResponsive
         '
@@ -385,6 +387,7 @@ Partial Class frmProjDetails
         Me.mnuExportNonResponsive.Name = "mnuExportNonResponsive"
         Me.mnuExportNonResponsive.Size = New System.Drawing.Size(186, 24)
         Me.mnuExportNonResponsive.Text = "Non-Responsive"
+        Me.mnuExportNonResponsive.ToolTipText = "Export Non-Responsive Emails/Attachments " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "when no Flagged Emails exist." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
         '
         'mnuExportExemption
         '
@@ -392,6 +395,7 @@ Partial Class frmProjDetails
         Me.mnuExportExemption.Name = "mnuExportExemption"
         Me.mnuExportExemption.Size = New System.Drawing.Size(186, 24)
         Me.mnuExportExemption.Text = "Exemption"
+        Me.mnuExportExemption.ToolTipText = "Export Exempt Emails/Attachments " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "when no Flagged Emails exist."
         '
         'mnuExportRedaction
         '
@@ -399,6 +403,8 @@ Partial Class frmProjDetails
         Me.mnuExportRedaction.Name = "mnuExportRedaction"
         Me.mnuExportRedaction.Size = New System.Drawing.Size(186, 24)
         Me.mnuExportRedaction.Text = "Redaction"
+        Me.mnuExportRedaction.ToolTipText = "Export Redaction Emails/Attachments " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "when no Flagged Emails exist and Redacted" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) &
+    "pdf files have been imported."
         '
         'Panel2
         '
@@ -570,12 +576,13 @@ Partial Class frmProjDetails
         Me.Controls.Add(Me.dgvPSTFiles)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.MenuStrip1)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MainMenuStrip = Me.MenuStrip1
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.MinimumSize = New System.Drawing.Size(857, 50)
         Me.Name = "frmProjDetails"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Database Items"
+        Me.Text = "Project Details"
         CType(Me.dgvPSTFiles, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()

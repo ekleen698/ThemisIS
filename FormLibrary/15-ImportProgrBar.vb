@@ -4,6 +4,14 @@ Imports ClassLibrary
 Imports ClassLibrary.GlobalObjects
 
 Public Class frmImportProgress
+    ' Disable Close button
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim param As CreateParams = MyBase.CreateParams
+            param.ClassStyle = param.ClassStyle Or &H200
+            Return param
+        End Get
+    End Property
 
     ' Declare objects needed for ImportThread in ImportEmails
     Dim WithEvents oImport As ImportEmails

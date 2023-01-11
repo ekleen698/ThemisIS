@@ -31,12 +31,16 @@ Public Class frmRedacted
         set_form_width()
 
         ' Menu bar properties
-        Dim w = Convert.ToInt32(100 * _ScaleFactor)
-        Dim h = Convert.ToInt32(25 * _ScaleFactor)
-        Dim MenuList = New List(Of ToolStripMenuItem) From {mnuImport, mnuExport}
-        For Each itm In MenuList
-            itm.Width = w
-            itm.Height = h
+        Dim h = 25
+        Dim MenuDict = New Dictionary(Of ToolStripMenuItem, Integer) From {
+            {Me.mnuImport, 100},
+            {Me.mnuExport, 125}
+            }
+        For Each itm In MenuDict
+            Dim mnu = itm.Key
+            Dim w = itm.Value
+            mnu.Width = Convert.ToInt32(w * _ScaleFactor)
+            mnu.Height = Convert.ToInt32(h * _ScaleFactor)
         Next
 
         ' Fill data tables

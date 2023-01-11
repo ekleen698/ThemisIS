@@ -23,6 +23,7 @@ Partial Class frmSearch
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmSearch))
         Me.optAny = New System.Windows.Forms.RadioButton()
         Me.optAll = New System.Windows.Forms.RadioButton()
         Me.optCustom = New System.Windows.Forms.RadioButton()
@@ -45,6 +46,7 @@ Partial Class frmSearch
         Me.optInclude = New System.Windows.Forms.RadioButton()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.cmbFilter = New System.Windows.Forms.ComboBox()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.chkFlagged = New System.Windows.Forms.CheckBox()
         Me.chkRedact = New System.Windows.Forms.CheckBox()
@@ -60,7 +62,6 @@ Partial Class frmSearch
         Me.mnuViewEmails = New System.Windows.Forms.ToolStripMenuItem()
         Me.mnuUpdateEmails = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
-        Me.cmbFilter = New System.Windows.Forms.ComboBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
@@ -344,6 +345,16 @@ Partial Class frmSearch
         Me.Panel2.TabIndex = 42
         Me.Panel2.Visible = False
         '
+        'cmbFilter
+        '
+        Me.cmbFilter.FormattingEnabled = True
+        Me.cmbFilter.Items.AddRange(New Object() {"Emails and Attach.", "Emails Only", "Attach. Only"})
+        Me.cmbFilter.Location = New System.Drawing.Point(9, 8)
+        Me.cmbFilter.Name = "cmbFilter"
+        Me.cmbFilter.Size = New System.Drawing.Size(128, 23)
+        Me.cmbFilter.TabIndex = 19
+        Me.cmbFilter.Text = "Emails and Attach."
+        '
         'GroupBox3
         '
         Me.GroupBox3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -530,16 +541,6 @@ Partial Class frmSearch
         Me.MenuStrip1.Text = "MenuStrip1"
         Me.MenuStrip1.Visible = False
         '
-        'cmbFilter
-        '
-        Me.cmbFilter.FormattingEnabled = True
-        Me.cmbFilter.Items.AddRange(New Object() {"Emails and Attach.", "Emails Only", "Attach. Only"})
-        Me.cmbFilter.Location = New System.Drawing.Point(9, 8)
-        Me.cmbFilter.Name = "cmbFilter"
-        Me.cmbFilter.Size = New System.Drawing.Size(128, 23)
-        Me.cmbFilter.TabIndex = 19
-        Me.cmbFilter.Text = "Emails and Attach."
-        '
         'frmSearch
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -561,6 +562,7 @@ Partial Class frmSearch
         Me.Controls.Add(Me.txtTerms)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.MenuStrip1)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MainMenuStrip = Me.MenuStrip1
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmSearch"

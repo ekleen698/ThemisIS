@@ -24,6 +24,7 @@ Partial Class frmKeywords
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmKeywords))
         Me.cmdKeywords = New System.Windows.Forms.Button()
         Me.cmbSearch = New System.Windows.Forms.ComboBox()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -244,6 +245,7 @@ Partial Class frmKeywords
         Me.Controls.Add(Me.cmbSearch)
         Me.Controls.Add(Me.cmdKeywords)
         Me.Controls.Add(Me.Panel1)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmKeywords"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

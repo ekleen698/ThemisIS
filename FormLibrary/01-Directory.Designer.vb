@@ -23,6 +23,7 @@ Partial Class frmDirectory
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmDirectory))
         Me.lblServer = New System.Windows.Forms.Label()
         Me.cmdConnectServer = New System.Windows.Forms.Button()
         Me.cmdOpen = New System.Windows.Forms.Button()
@@ -263,7 +264,6 @@ Partial Class frmDirectory
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(787, 369)
-        Me.ControlBox = False
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.cmdSettings)
@@ -281,7 +281,10 @@ Partial Class frmDirectory
         Me.Controls.Add(Me.cmdOpen)
         Me.Controls.Add(Me.cmdConnectServer)
         Me.Controls.Add(Me.lblServer)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "frmDirectory"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Project Directory"

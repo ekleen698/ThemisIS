@@ -24,6 +24,7 @@ Partial Class frmAttachments
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmAttachments))
         Me.cmdRedact = New System.Windows.Forms.Button()
         Me.cmdNonResponsive = New System.Windows.Forms.Button()
         Me.cmdReset = New System.Windows.Forms.Button()
@@ -152,6 +153,7 @@ Partial Class frmAttachments
         Me.Controls.Add(Me.cmdReset)
         Me.Controls.Add(Me.cmdExempt)
         Me.Controls.Add(Me.cmdProduce)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmAttachments"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent

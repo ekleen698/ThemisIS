@@ -22,6 +22,7 @@ Partial Class frmSearchUpdate
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmSearchUpdate))
         Me.lblNumEmails = New System.Windows.Forms.Label()
         Me.cmdProduce = New System.Windows.Forms.Button()
         Me.cmdExempt = New System.Windows.Forms.Button()
@@ -173,6 +174,7 @@ Partial Class frmSearchUpdate
         Me.Controls.Add(Me.cmdExempt)
         Me.Controls.Add(Me.cmdProduce)
         Me.Controls.Add(Me.lblNumEmails)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(100, 100)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmSearchUpdate"

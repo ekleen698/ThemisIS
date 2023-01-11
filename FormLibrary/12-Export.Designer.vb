@@ -22,6 +22,7 @@ Partial Class frmExport
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmExport))
         Me.txtFolder = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.lnkBrowse = New System.Windows.Forms.LinkLabel()
@@ -39,7 +40,7 @@ Partial Class frmExport
         Me.txtFolder.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.txtFolder.Font = New System.Drawing.Font("Arial", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtFolder.Location = New System.Drawing.Point(16, 43)
-        Me.txtFolder.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.txtFolder.Margin = New System.Windows.Forms.Padding(2)
         Me.txtFolder.Name = "txtFolder"
         Me.txtFolder.Size = New System.Drawing.Size(355, 24)
         Me.txtFolder.TabIndex = 0
@@ -73,7 +74,7 @@ Partial Class frmExport
         Me.cmdExport.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdExport.Font = New System.Drawing.Font("Arial", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdExport.Location = New System.Drawing.Point(368, 75)
-        Me.cmdExport.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.cmdExport.Margin = New System.Windows.Forms.Padding(2)
         Me.cmdExport.Name = "cmdExport"
         Me.cmdExport.Size = New System.Drawing.Size(117, 27)
         Me.cmdExport.TabIndex = 7
@@ -83,7 +84,7 @@ Partial Class frmExport
         'cmdLocation
         '
         Me.cmdLocation.Location = New System.Drawing.Point(237, 11)
-        Me.cmdLocation.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.cmdLocation.Margin = New System.Windows.Forms.Padding(2)
         Me.cmdLocation.Name = "cmdLocation"
         Me.cmdLocation.Size = New System.Drawing.Size(59, 27)
         Me.cmdLocation.TabIndex = 8
@@ -94,7 +95,7 @@ Partial Class frmExport
         'cmdSize
         '
         Me.cmdSize.Location = New System.Drawing.Point(307, 11)
-        Me.cmdSize.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.cmdSize.Margin = New System.Windows.Forms.Padding(2)
         Me.cmdSize.Name = "cmdSize"
         Me.cmdSize.Size = New System.Drawing.Size(59, 27)
         Me.cmdSize.TabIndex = 9
@@ -127,8 +128,9 @@ Partial Class frmExport
         Me.Controls.Add(Me.lnkBrowse)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.txtFolder)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(500, 300)
-        Me.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.Margin = New System.Windows.Forms.Padding(2)
         Me.MaximizeBox = False
         Me.MaximumSize = New System.Drawing.Size(1072, 213)
         Me.MinimizeBox = False

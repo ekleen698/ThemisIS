@@ -453,9 +453,9 @@ Public Class frmEmail
         Dim sOrigStatus = _dtEmail.Rows()(0)("Email_Status")
 
         Try
-            'Exit if email status not 'Exemption' or 'Unreviewed'
+            'Exit if email status not 'Redaction' or 'Unreviewed'
             If {"Unreviewed", "Redaction"}.Contains(sOrigStatus) Then
-                'Create new exemption(s) for current email
+                'Create new or update existing redaction(s) for current email
                 With New frmEmailExemption("Redaction", iEmailID)
                     .ShowDialog(Me)
                 End With
@@ -470,7 +470,7 @@ Public Class frmEmail
                 Dim result As MsgBoxResult = MsgBoxResult.No
                 If sOrigStatus = "Redaction" Then
                     ' TODO: replace this with a check for a redacted pdf file in the database
-                    result = MsgBox("Create pdf?", vbYesNo, "Confirm")
+                    result = MsgBox("Create Redacted pdf?", vbYesNo, "Confirm")
                 ElseIf sOrigStatus = "Unreviewed" Then
                     result = MsgBoxResult.Yes
                 End If

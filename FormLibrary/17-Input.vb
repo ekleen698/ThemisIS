@@ -1,4 +1,14 @@
-﻿Public Class frmInput
+﻿Imports System.Windows.Forms
+
+Public Class frmInput
+    ' Disable Close button
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim param As CreateParams = MyBase.CreateParams
+            param.ClassStyle = param.ClassStyle Or &H200
+            Return param
+        End Get
+    End Property
 
     Private _Title As String
     Private _Prompt As String

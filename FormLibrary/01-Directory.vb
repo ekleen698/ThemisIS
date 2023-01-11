@@ -5,6 +5,15 @@ Imports System.ComponentModel
 Imports System.IO
 
 Public Class frmDirectory
+    ' Disable Close button
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim param As CreateParams = MyBase.CreateParams
+            param.ClassStyle = param.ClassStyle Or &H200
+            Return param
+        End Get
+    End Property
+
     Private _dtProjects As New DataTable
     Private _oSettings As New ClassLibrary.My.MySettings
     Private _ScaleFactor As Single
@@ -388,7 +397,7 @@ Public Class frmDirectory
                 MsgBox("Invalid file name", , "Invalid Operation")
                 Exit Sub
 
-            ElseIf (Path.GetExtension(oFile.name) <> ".bak")  Then
+            ElseIf (Path.GetExtension(oFile.Name) <> ".bak") Then
                 MsgBox("File must be .bak file", , "Invalid Operation")
                 Exit Sub
 

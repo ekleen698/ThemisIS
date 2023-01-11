@@ -4,6 +4,14 @@ Imports System.Data.SqlClient
 Imports System.ComponentModel
 
 Public Class frmEmailExemption
+    ' Disable Close button
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim param As CreateParams = MyBase.CreateParams
+            param.ClassStyle = param.ClassStyle Or &H200
+            Return param
+        End Get
+    End Property
 
     Private _dtExemptions As New DataTable  'Store rows from dbo.EmailExemptStatus
     Private _EmailID As Integer             'Current Email

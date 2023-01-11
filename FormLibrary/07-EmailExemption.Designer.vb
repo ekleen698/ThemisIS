@@ -24,6 +24,7 @@ Partial Class frmEmailExemption
     Private Sub InitializeComponent()
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmEmailExemption))
         Me.dgvExemptions = New System.Windows.Forms.DataGridView()
         Me.cmdSaveClose = New System.Windows.Forms.Button()
         Me.cmdCancel = New System.Windows.Forms.Button()
@@ -118,13 +119,15 @@ Partial Class frmEmailExemption
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(874, 377)
-        Me.ControlBox = False
         Me.Controls.Add(Me.lblDirty)
         Me.Controls.Add(Me.cmdGetSize)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.cmdSaveClose)
         Me.Controls.Add(Me.dgvExemptions)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "frmEmailExemption"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Email Exemption"

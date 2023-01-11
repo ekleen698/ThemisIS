@@ -6,6 +6,15 @@ Imports System.Windows.Forms
 'Imports System.Data.SqlClient
 
 Public Class frmProjUpdate
+    ' Disable Close button
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim param As CreateParams = MyBase.CreateParams
+            param.ClassStyle = param.ClassStyle Or &H200
+            Return param
+        End Get
+    End Property
+
     Private _sMode As String = ""   'either "Create" or "Edit"
     Private _oProject As Project = Nothing  'Project object affected by this form
     Private _dirty As Boolean = False   'indicates whether or not changes have been made

@@ -22,6 +22,7 @@ Partial Class frmWorkerProgress
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmWorkerProgress))
         Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
         Me.lblCount1 = New System.Windows.Forms.Label()
         Me.lblFolder1 = New System.Windows.Forms.Label()
@@ -297,7 +298,6 @@ Partial Class frmWorkerProgress
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.CancelButton = Me.cmdLocation
         Me.ClientSize = New System.Drawing.Size(500, 481)
-        Me.ControlBox = False
         Me.Controls.Add(Me.cmdClose)
         Me.Controls.Add(Me.lblStep5)
         Me.Controls.Add(Me.lblFolder5)
@@ -320,8 +320,11 @@ Partial Class frmWorkerProgress
         Me.Controls.Add(Me.lblFolder1)
         Me.Controls.Add(Me.lblCount1)
         Me.Controls.Add(Me.ProgressBar1)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(280, 250)
         Me.Margin = New System.Windows.Forms.Padding(2)
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "frmWorkerProgress"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Worker Progress"
