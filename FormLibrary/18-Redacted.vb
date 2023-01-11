@@ -314,7 +314,8 @@ Public Class frmRedacted
         If MsgBox($"Import {dict.Count} file(s)?", vbYesNo + vbQuestion,
                   "Confirm Import") <> MsgBoxResult.Yes Then Exit Sub
 
-        ' Add each file to the database
+        ' Add each file to the database if the EmailID exists in vRadactedFiles
+        Dim iFailed As Integer = 0
         With CurrProjDB.Connection.CreateCommand()
             .Parameters.Add("@EmailID", SqlDbType.Int)
             .Parameters.Add("@FileName", SqlDbType.VarChar, 255)
@@ -324,9 +325,12 @@ Public Class frmRedacted
                 .Parameters("@EmailID").Value = iEmailID
                 .Parameters("@FileName").Value = dict(iEmailID).Name
                 .Parameters("@FilePath").Value = dict(iEmailID).FullName
-                .ExecuteNonQuery()
+                If (.ExecuteNonQuery()) < 1 Then iFailed += 1
             Next
         End With
+
+        If iFailed > 0 Then MsgBox($"{iFailed} file(s) failed to import because no Redacted email exists.",
+            vbOKOnly, "Redacted File Import Status")
 
         ' Refresh data table
         fill_emails_table()

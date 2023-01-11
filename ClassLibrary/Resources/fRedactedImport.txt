@@ -1,20 +1,22 @@
- 
 -- Imported Redacted pdf files
-CREATE OR ALTER PROCEDURE [dbo].[fRedactedImport]
+CREATE OR ALTER   PROCEDURE [dbo].[fRedactedImport]
 @EmailID INT,
 @FileName NVARCHAR(255),
 @FilePath NVARCHAR(255)
 
 AS
 BEGIN
-	DECLARE @Seq INT = (select isnull(max(Seq),0)+1 from dbo.RedactedFiles where emailid=@EmailID);
-	DECLARE @SQL NVARCHAR(MAX) = N'
-		INSERT INTO [RedactedFiles] (EmailID, Seq, [FileName], [FileStream])
-		SELECT @P1, @P2, @P3, CAST(bulkcolumn AS VARBINARY(MAX))
-		FROM OPENROWSET(
-			BULK
-			''' + @FilePath + N''',
-			SINGLE_BLOB 
-			) AS [Target];'
-	EXEC sp_executesql @SQL, N'@P1 INT, @P2 INT, @P3 NVARCHAR(255)', @P1=@EmailID, @P2=@Seq, @P3=@FileName;
+	IF EXISTS(SELECT 1 FROM dbo.vRedactedFiles WHERE EmailID=@EmailID)
+	BEGIN
+		DECLARE @Seq INT = (select isnull(max(Seq),0)+1 from dbo.RedactedFiles where emailid=@EmailID);
+		DECLARE @SQL NVARCHAR(MAX) = N'
+			INSERT INTO [RedactedFiles] (EmailID, Seq, [FileName], [FileStream])
+			SELECT @P1, @P2, @P3, CAST(bulkcolumn AS VARBINARY(MAX))
+			FROM OPENROWSET(
+				BULK
+				''' + @FilePath + N''',
+				SINGLE_BLOB 
+				) AS [Target];'
+		EXEC sp_executesql @SQL, N'@P1 INT, @P2 INT, @P3 NVARCHAR(255)', @P1=@EmailID, @P2=@Seq, @P3=@FileName;
+	END;
 END;
