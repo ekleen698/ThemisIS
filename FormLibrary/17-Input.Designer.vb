@@ -79,6 +79,8 @@ Partial Class frmInput
         Me.Controls.Add(Me.lblPrompt)
         Me.Controls.Add(Me.txtComment)
         Me.Name = "frmInput"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Title"
         Me.ResumeLayout(False)

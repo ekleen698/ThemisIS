@@ -236,6 +236,7 @@ Partial Class frmProjUpdate
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(583, 309)
+        Me.ControlBox = False
         Me.Controls.Add(Me.lblVersion)
         Me.Controls.Add(Me.txtVersion)
         Me.Controls.Add(Me.cmdCancel)
@@ -258,6 +259,8 @@ Partial Class frmProjUpdate
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmProjUpdate"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Project Update"
         Me.ResumeLayout(False)

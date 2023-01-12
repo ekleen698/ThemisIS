@@ -111,7 +111,7 @@ Partial Class frmSearch
         Me.GroupBox1.Controls.Add(Me.optCustom)
         Me.GroupBox1.Controls.Add(Me.optAll)
         Me.GroupBox1.Font = New System.Drawing.Font("Arial", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox1.Location = New System.Drawing.Point(43, 85)
+        Me.GroupBox1.Location = New System.Drawing.Point(27, 73)
         Me.GroupBox1.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Padding = New System.Windows.Forms.Padding(2)
@@ -147,7 +147,7 @@ Partial Class frmSearch
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtTerms.Font = New System.Drawing.Font("Arial", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtTerms.Location = New System.Drawing.Point(43, 166)
+        Me.txtTerms.Location = New System.Drawing.Point(27, 154)
         Me.txtTerms.Margin = New System.Windows.Forms.Padding(2)
         Me.txtTerms.Multiline = True
         Me.txtTerms.Name = "txtTerms"
@@ -162,7 +162,7 @@ Partial Class frmSearch
         Me.lblExample.BackColor = System.Drawing.Color.WhiteSmoke
         Me.lblExample.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblExample.Font = New System.Drawing.Font("Arial", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblExample.Location = New System.Drawing.Point(41, 337)
+        Me.lblExample.Location = New System.Drawing.Point(25, 329)
         Me.lblExample.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblExample.Name = "lblExample"
         Me.lblExample.Size = New System.Drawing.Size(652, 102)
@@ -173,7 +173,7 @@ Partial Class frmSearch
         '
         Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Label1.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(41, 312)
+        Me.Label1.Location = New System.Drawing.Point(25, 304)
         Me.Label1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(269, 19)
@@ -199,7 +199,7 @@ Partial Class frmSearch
         Me.lblNoResults.AutoSize = True
         Me.lblNoResults.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblNoResults.ForeColor = System.Drawing.Color.Red
-        Me.lblNoResults.Location = New System.Drawing.Point(609, 139)
+        Me.lblNoResults.Location = New System.Drawing.Point(593, 127)
         Me.lblNoResults.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblNoResults.Name = "lblNoResults"
         Me.lblNoResults.Size = New System.Drawing.Size(82, 18)
@@ -271,7 +271,7 @@ Partial Class frmSearch
         Me.GroupBox2.Controls.Add(Me.chkSender)
         Me.GroupBox2.Controls.Add(Me.chkSubject)
         Me.GroupBox2.Font = New System.Drawing.Font("Arial", 10.0!)
-        Me.GroupBox2.Location = New System.Drawing.Point(43, 35)
+        Me.GroupBox2.Location = New System.Drawing.Point(27, 23)
         Me.GroupBox2.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Padding = New System.Windows.Forms.Padding(2)
@@ -283,7 +283,7 @@ Partial Class frmSearch
         'cmdGetSize
         '
         Me.cmdGetSize.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.cmdGetSize.Location = New System.Drawing.Point(619, 52)
+        Me.cmdGetSize.Location = New System.Drawing.Point(603, 40)
         Me.cmdGetSize.Margin = New System.Windows.Forms.Padding(2)
         Me.cmdGetSize.Name = "cmdGetSize"
         Me.cmdGetSize.Size = New System.Drawing.Size(64, 21)
@@ -323,7 +323,7 @@ Partial Class frmSearch
         Me.GroupBox4.Controls.Add(Me.optInclude)
         Me.GroupBox4.Controls.Add(Me.optExclude)
         Me.GroupBox4.Font = New System.Drawing.Font("Arial", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox4.Location = New System.Drawing.Point(43, 133)
+        Me.GroupBox4.Location = New System.Drawing.Point(27, 121)
         Me.GroupBox4.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Padding = New System.Windows.Forms.Padding(2)
@@ -490,7 +490,7 @@ Partial Class frmSearch
         '
         Me.cmdView.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdView.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdView.Location = New System.Drawing.Point(488, 300)
+        Me.cmdView.Location = New System.Drawing.Point(472, 292)
         Me.cmdView.Name = "cmdView"
         Me.cmdView.Size = New System.Drawing.Size(92, 28)
         Me.cmdView.TabIndex = 43
@@ -501,7 +501,7 @@ Partial Class frmSearch
         '
         Me.cmdUpdate.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdUpdate.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdUpdate.Location = New System.Drawing.Point(588, 300)
+        Me.cmdUpdate.Location = New System.Drawing.Point(572, 292)
         Me.cmdUpdate.Name = "cmdUpdate"
         Me.cmdUpdate.Size = New System.Drawing.Size(92, 28)
         Me.cmdUpdate.TabIndex = 44

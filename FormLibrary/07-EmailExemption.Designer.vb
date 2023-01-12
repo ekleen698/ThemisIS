@@ -119,6 +119,7 @@ Partial Class frmEmailExemption
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(874, 377)
+        Me.ControlBox = False
         Me.Controls.Add(Me.lblDirty)
         Me.Controls.Add(Me.cmdGetSize)
         Me.Controls.Add(Me.cmdCancel)
@@ -129,6 +130,8 @@ Partial Class frmEmailExemption
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmEmailExemption"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Email Exemption"
         CType(Me.dgvExemptions, System.ComponentModel.ISupportInitialize).EndInit()

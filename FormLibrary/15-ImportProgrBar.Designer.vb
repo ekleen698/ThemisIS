@@ -80,6 +80,7 @@ Partial Class frmImportProgress
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(625, 127)
+        Me.ControlBox = False
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.lblFile)
         Me.Controls.Add(Me.lblCount)
@@ -89,6 +90,8 @@ Partial Class frmImportProgress
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmImportProgress"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Email Import Status"
         Me.ResumeLayout(False)

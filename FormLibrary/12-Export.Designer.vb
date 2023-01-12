@@ -136,6 +136,8 @@ Partial Class frmExport
         Me.MinimizeBox = False
         Me.MinimumSize = New System.Drawing.Size(492, 163)
         Me.Name = "frmExport"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Export Options"
         Me.ResumeLayout(False)

@@ -107,6 +107,7 @@ Partial Class frmAttachExemption
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(874, 377)
+        Me.ControlBox = False
         Me.Controls.Add(Me.lblDirty)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.cmdSaveClose)
@@ -116,6 +117,8 @@ Partial Class frmAttachExemption
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmAttachExemption"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Attachment Exemption"
         CType(Me.dgvExemptions, System.ComponentModel.ISupportInitialize).EndInit()

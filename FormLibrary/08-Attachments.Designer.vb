@@ -156,6 +156,8 @@ Partial Class frmAttachments
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmAttachments"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "frmAttachments"
         CType(Me.dgvAttachments, System.ComponentModel.ISupportInitialize).EndInit()

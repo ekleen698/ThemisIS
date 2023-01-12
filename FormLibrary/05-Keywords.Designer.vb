@@ -248,6 +248,8 @@ Partial Class frmKeywords
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmKeywords"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Keyword Search"
         CType(Me.dgvTerms, System.ComponentModel.ISupportInitialize).EndInit()

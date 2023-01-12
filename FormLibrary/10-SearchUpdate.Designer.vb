@@ -178,6 +178,8 @@ Partial Class frmSearchUpdate
         Me.Location = New System.Drawing.Point(100, 100)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmSearchUpdate"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "frmSearchUpdate"
         Me.ResumeLayout(False)

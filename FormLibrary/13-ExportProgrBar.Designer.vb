@@ -127,6 +127,8 @@ Partial Class frmExportProgress
         Me.Location = New System.Drawing.Point(280, 250)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.Name = "frmExportProgress"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Export Progress Bar"
         Me.ResumeLayout(False)

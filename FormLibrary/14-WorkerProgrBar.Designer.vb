@@ -298,6 +298,7 @@ Partial Class frmWorkerProgress
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.CancelButton = Me.cmdLocation
         Me.ClientSize = New System.Drawing.Size(500, 481)
+        Me.ControlBox = False
         Me.Controls.Add(Me.cmdClose)
         Me.Controls.Add(Me.lblStep5)
         Me.Controls.Add(Me.lblFolder5)
@@ -326,6 +327,8 @@ Partial Class frmWorkerProgress
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmWorkerProgress"
+        Me.ShowIcon = False
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Worker Progress"
         Me.ResumeLayout(False)
