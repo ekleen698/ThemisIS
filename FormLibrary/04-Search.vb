@@ -504,6 +504,13 @@ Public Class frmSearch
             Return bResult
         End If
 
+        ' Set Filter Option
+        If cmbFilter.Text = "Emails Only" Then
+            iFilterOption = 1
+        ElseIf cmbFilter.Text = "Attach. Only" Then
+            iFilterOption = 2
+        End If
+
         ' If View Option is 'Reviewed', create Types list
         If chkReviewed.Checked Then
             If Me.chkProduce.Checked Then sTypes += "'Produce', "
@@ -512,11 +519,6 @@ Public Class frmSearch
             If Me.chkRedact.Checked Then sTypes += "'Redaction', "
             sTypes = sTypes.Remove(sTypes.Length - 2)
             bFlagged = Me.chkFlagged.Checked
-            If cmbFilter.Text = "Emails Only" Then
-                iFilterOption = 1
-            ElseIf cmbFilter.Text = "Attach. Only" Then
-                iFilterOption = 2
-            End If
         End If
 
         If _iSearchOption <> 4 Then

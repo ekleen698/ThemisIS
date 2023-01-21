@@ -340,6 +340,13 @@ Public Class frmProjDetails
             Dim bFlagged = False
             Dim iFilterOption As Integer = 0
 
+            ' Set Filter Option
+            If cmbFilter.Text = "Emails Only" Then
+                iFilterOption = 1
+            ElseIf cmbFilter.Text = "Attach. Only" Then
+                iFilterOption = 2
+            End If
+
             ' If View Option is 'Reviewed', create Types list and set Flagged option
             If chkReviewed.Checked Then
                 If Me.chkProduce.Checked Then sTypes += "'Produce', "
@@ -348,11 +355,6 @@ Public Class frmProjDetails
                 If Me.chkRedact.Checked Then sTypes += "'Redaction', "
                 sTypes = sTypes.Remove(sTypes.Length - 2)
                 bFlagged = Me.chkFlagged.Checked
-                If cmbFilter.Text = "Emails Only" Then
-                    iFilterOption = 1
-                ElseIf cmbFilter.Text = "Attach. Only" Then
-                    iFilterOption = 2
-                End If
             End If
 
             If Not updateDisplayEmailIDs(sWhere, bUnreviewed, bReviewed, sTypes, bFlagged, iFilterOption) Then
@@ -535,6 +537,9 @@ Public Class frmProjDetails
         With New frmRedacted()
             .ShowDialog(Me)
         End With
+
+        'Refresh dgv after Email Display form closes to update Reviewed items
+        updateForm()
 
     End Sub
 
@@ -785,11 +790,15 @@ Public Class frmProjDetails
         Me.mnuRedacted.Enabled = bEnabled
         Me.mnuExport.Enabled = bEnabled
 
-        ' Enable Export menu items if at least one email is reviewed
-        Me.mnuExportProduce.Enabled = ((_dtTotals(0)("Produce") > 0) AndAlso _dtTotals(0)("Pr_Flag") = 0)
-        Me.mnuExportNonResponsive.Enabled = ((_dtTotals(0)("Non-Responsive") > 0) AndAlso _dtTotals(0)("NR_Flag") = 0)
-        Me.mnuExportExemption.Enabled = ((_dtTotals(0)("Exemption") > 0) AndAlso _dtTotals(0)("Ex_Flag") = 0)
-        Me.mnuExportRedaction.Enabled = ((_dtTotals(0)("Redacted_Files") > 0) AndAlso _dtTotals(0)("Re_Flag") = 0)
+        ' Enable Export menu items if:
+        ' 1) at least one email is reviewed
+        ' 2) no emails are flagged
+        ' 3) (for Redacted) all emails have an imported Redacted File
+        Me.mnuExportProduce.Enabled = ((_dtTotals(0)("Produce") > 0) AndAlso (_dtTotals(0)("Pr_Flag") = 0))
+        Me.mnuExportNonResponsive.Enabled = ((_dtTotals(0)("Non-Responsive") > 0) AndAlso (_dtTotals(0)("NR_Flag") = 0))
+        Me.mnuExportExemption.Enabled = ((_dtTotals(0)("Exemption") > 0) AndAlso (_dtTotals(0)("Ex_Flag") = 0))
+        Me.mnuExportRedaction.Enabled = ((_dtTotals(0)("Redaction") > 0) AndAlso (_dtTotals(0)("Re_Flag") = 0) _
+            AndAlso (_dtTotals(0)("Redaction") = _dtTotals(0)("Redacted_Files")))
 
         resize_dgv()
 

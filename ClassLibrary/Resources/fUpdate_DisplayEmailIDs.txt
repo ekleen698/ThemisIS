@@ -2,7 +2,7 @@
 --Updates list of EmailID's in DisplayEmailIDs
 --DisplayEmailIDs is the data source for frmEmail
 
-CREATE OR ALTER   PROCEDURE [dbo].[fUpdate_DisplayEmailIDs]
+CREATE OR ALTER PROCEDURE [dbo].[fUpdate_DisplayEmailIDs]
 @Where NVARCHAR(MAX),	--Where clause conditions
 @Unreviewed BIT,		--Include unreviewed emails
 @Reviewed BIT,			--Include reviewed emails
@@ -11,38 +11,54 @@ CREATE OR ALTER   PROCEDURE [dbo].[fUpdate_DisplayEmailIDs]
 @FilterOption TINYINT   --0=Email&Attach, 1=Email, 2=Attach
 AS
 BEGIN
-	DECLARE @UnrevPred NVARCHAR(255) = N'(1=0)';
-	DECLARE @RevPred NVARCHAR(255) = N'(1=0)';
-	DECLARE @FlagPred NVARCHAR(20) = N'(1=1)';
+	DECLARE @UnrevPred NVARCHAR(255) = N'(1=0)'; -- default to no Unreviewed emails/attachments
+	DECLARE @RevPred NVARCHAR(255) = N'(1=0)'; -- default to no Reviewed emails/attachments
+	DECLARE @FlagPred NVARCHAR(20) = N'(1=1)'; -- default to no filter for Flagged
 	DECLARE @Pred NVARCHAR(MAX) = N'';
 	DECLARE @SQL NVARCHAR(MAX);
 
 	IF @Unreviewed=1
-		SET @UnrevPred = N'(ees.EmailID IS NULL OR (att.ID IS NOT NULL AND aes.AttachID IS NULL))';
+		BEGIN
+		IF @FilterOption=0
+			-- No email review status OR no attachment review status
+			SET @UnrevPred = N'(ees.EmailID IS NULL OR (att.ID IS NOT NULL AND aes.AttachID IS NULL)) ';
+		IF @FilterOption=1
+			-- No email review status
+			SET @UnrevPred = N'(ees.EmailID IS NULL) ';
+		IF @FilterOption=2
+			-- No attachment review status
+			SET @UnrevPred = N'(att.ID IS NOT NULL AND aes.AttachID IS NULL) ';
+		END;
 
 	IF @Flagged=1
-		SET @FlagPred = N'(ees.Flag=1)';
+		-- Filter for only flagged emails
+		SET @FlagPred = N'(ees.Flag=1) ';
 
 	IF @Reviewed=1
 		BEGIN
 		IF @FilterOption=0
+			-- Email review status in Type list OR attachment review status in Type list
 			BEGIN
 			SET @RevPred = N'(ety.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ') ';
-			SET @RevPred = @RevPred + N'OR (aty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+			SET @RevPred = @RevPred + N'OR (aty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ') ';
 			END;
 		IF @FilterOption=1
-			SET @RevPred = N'(ety.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+			-- Email review status in Type list
+			SET @RevPred = N'(ety.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ') ';
 		IF @FilterOption=2
-			SET @RevPred = N'(aty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ')';
+			-- Attachment review status in Type list
+			SET @RevPred = N'(aty.Exemption_Type IN (' + @Types + ') AND ' + @FlagPred + ') ';
 		END;
 
+	-- Build predicate statement
 	IF @Where <> ''
 		SET @Pred = N'
-		AND (' + @Where + ')';
+		AND (' + @Where + ') ';
 
 	SET @Pred = @Pred + N'
-		AND (' + @UnrevPred + ' OR ' + @RevPred + ')';
+		AND (' + @UnrevPred + ' OR ' + @RevPred + ') ';
 		
+	-- Build query and execute
 	SET @SQL = N'DELETE FROM dbo.DisplayEmailIDs;
 		INSERT INTO dbo.DisplayEmailIDs (EmailID, SentOn)
 		SELECT DISTINCT ib.EmailID, ib.SentOn

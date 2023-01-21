@@ -150,6 +150,7 @@ Partial Class frmProjDetails
         'GroupBox1
         '
         Me.GroupBox1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.GroupBox1.Controls.Add(Me.cmbFilter)
         Me.GroupBox1.Controls.Add(Me.chkReviewed)
         Me.GroupBox1.Controls.Add(Me.chkUnreviewed)
         Me.GroupBox1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -157,7 +158,7 @@ Partial Class frmProjDetails
         Me.GroupBox1.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Padding = New System.Windows.Forms.Padding(2)
-        Me.GroupBox1.Size = New System.Drawing.Size(133, 72)
+        Me.GroupBox1.Size = New System.Drawing.Size(133, 107)
         Me.GroupBox1.TabIndex = 17
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "View Options"
@@ -165,7 +166,7 @@ Partial Class frmProjDetails
         'chkReviewed
         '
         Me.chkReviewed.AutoSize = True
-        Me.chkReviewed.Location = New System.Drawing.Point(8, 45)
+        Me.chkReviewed.Location = New System.Drawing.Point(8, 77)
         Me.chkReviewed.Margin = New System.Windows.Forms.Padding(2)
         Me.chkReviewed.Name = "chkReviewed"
         Me.chkReviewed.Size = New System.Drawing.Size(80, 19)
@@ -178,7 +179,7 @@ Partial Class frmProjDetails
         Me.chkUnreviewed.AutoSize = True
         Me.chkUnreviewed.Checked = True
         Me.chkUnreviewed.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkUnreviewed.Location = New System.Drawing.Point(8, 24)
+        Me.chkUnreviewed.Location = New System.Drawing.Point(8, 56)
         Me.chkUnreviewed.Margin = New System.Windows.Forms.Padding(2)
         Me.chkUnreviewed.Name = "chkUnreviewed"
         Me.chkUnreviewed.Size = New System.Drawing.Size(91, 19)
@@ -195,7 +196,7 @@ Partial Class frmProjDetails
         Me.Panel1.Location = New System.Drawing.Point(683, 40)
         Me.Panel1.Margin = New System.Windows.Forms.Padding(2)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(144, 83)
+        Me.Panel1.Size = New System.Drawing.Size(144, 116)
         Me.Panel1.TabIndex = 19
         '
         'dgvTotals
@@ -360,7 +361,7 @@ Partial Class frmProjDetails
         '
         Me.mnuRedactedManage.Font = New System.Drawing.Font("Segoe UI", 11.0!)
         Me.mnuRedactedManage.Name = "mnuRedactedManage"
-        Me.mnuRedactedManage.Size = New System.Drawing.Size(165, 24)
+        Me.mnuRedactedManage.Size = New System.Drawing.Size(180, 24)
         Me.mnuRedactedManage.Text = "Manage Files"
         '
         'mnuExport
@@ -403,20 +404,19 @@ Partial Class frmProjDetails
         Me.mnuExportRedaction.Name = "mnuExportRedaction"
         Me.mnuExportRedaction.Size = New System.Drawing.Size(186, 24)
         Me.mnuExportRedaction.Text = "Redaction"
-        Me.mnuExportRedaction.ToolTipText = "Export Redaction Emails/Attachments " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "when no Flagged Emails exist and Redacted" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) &
-    "pdf files have been imported."
+        Me.mnuExportRedaction.ToolTipText = "Export Redaction Emails/Attachments " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "when no Flagged Emails exist and all " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Reda" &
+    "cted pdf files have been imported."
         '
         'Panel2
         '
         Me.Panel2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Panel2.BackColor = System.Drawing.SystemColors.Control
-        Me.Panel2.Controls.Add(Me.cmbFilter)
         Me.Panel2.Controls.Add(Me.GroupBox2)
         Me.Panel2.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Panel2.Location = New System.Drawing.Point(683, 139)
+        Me.Panel2.Location = New System.Drawing.Point(684, 172)
         Me.Panel2.Margin = New System.Windows.Forms.Padding(2)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(144, 193)
+        Me.Panel2.Size = New System.Drawing.Size(144, 156)
         Me.Panel2.TabIndex = 20
         Me.Panel2.Visible = False
         '
@@ -424,7 +424,7 @@ Partial Class frmProjDetails
         '
         Me.cmbFilter.FormattingEnabled = True
         Me.cmbFilter.Items.AddRange(New Object() {"Emails and Attach.", "Emails Only", "Attach. Only"})
-        Me.cmbFilter.Location = New System.Drawing.Point(8, 8)
+        Me.cmbFilter.Location = New System.Drawing.Point(3, 24)
         Me.cmbFilter.Name = "cmbFilter"
         Me.cmbFilter.Size = New System.Drawing.Size(128, 23)
         Me.cmbFilter.TabIndex = 18
@@ -438,7 +438,7 @@ Partial Class frmProjDetails
         Me.GroupBox2.Controls.Add(Me.chkExempt)
         Me.GroupBox2.Controls.Add(Me.chkNonResponsive)
         Me.GroupBox2.Controls.Add(Me.chkProduce)
-        Me.GroupBox2.Location = New System.Drawing.Point(5, 44)
+        Me.GroupBox2.Location = New System.Drawing.Point(4, 8)
         Me.GroupBox2.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Padding = New System.Windows.Forms.Padding(2)
