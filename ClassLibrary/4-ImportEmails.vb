@@ -28,6 +28,7 @@ Public Class ImportEmails
     Private _TotalScanned As Integer = 0       'total items iterated over in each pst file
     Private _TotalImported As Integer = 0      'successfully imported items
     Private _TotalSkipped As Integer = 0       'items skipped during import due to Unique Key
+    Private _AttachErrors As Integer = 0       'attachments which fail to import
 
     Public Sub StartImport(PSTFiles As PSTFiles)
 
@@ -155,6 +156,12 @@ Public Class ImportEmails
                 Logger.WriteToLog($"DisplayTerms table updated.")
             End With
 
+            ' Display message if any attachments failed to import
+            If _AttachErrors > 0 Then
+                MsgBox($"{_AttachErrors} attachment(s) failed to import, see log file for details.", vbOKOnly,
+                       "Attachment Import Errors")
+            End If
+
         Catch ex As Exception
             MsgBox($"{DateTime.Now} > {ex.GetType}", , "Import Email Error")
             Logger.WriteToLog($"{ex.GetType} occurred while importing emails from '{_File.Name}'.")
@@ -247,6 +254,7 @@ Public Class ImportEmails
             Catch ex As SqlException
                 _Trans.Rollback()
                 If ex.Number = 2627 Then
+                    ' Unique Key = FileID + EntryID
                     _TotalSkipped += 1
                     Logger.WriteToLog($"{sEntryID} skipped due to unique key violation.")
                 Else
@@ -423,23 +431,15 @@ Public Class ImportEmails
     Private Sub loopAttachments(iEmailID As Integer, ByRef rMail As RDOMail)
         'Iterates all attachments in current item and inserts rows into dbo.Attachments
 
-        ' TODO: remove lines deactivated in v3.0.0.13
         Dim rAttachments As RDOAttachments
         Dim rAttachment As RDOAttachment
-        'Dim rEmbMsg As RDOMail
         Dim buffer As Byte()
-        'Dim sSQL1 As String = ""
         Dim sSQL As String = ""
         Dim sFileName As String = ""
         Dim sType As String = ""
         Dim iID As Integer = 0
 
-        'For inserting rows that have .msg or .ics attachments (does not add file binary data)
-        'sSQL1 = "INSERT INTO [dbo].[Attachments] ([EmailID], [OLType], [FileName], [FileExt]) 
-        '        VALUES (@EmailID, @OLType, @FileName, @FileExt);
-        '        SELECT (SELECT CAST([last_used_value] AS INT) 
-        '            FROM [sys].[sequences] WHERE [name] ='sAttachments_PK') AS [ID];"
-        'For inserting all other rows (adds file binary data to FILESTREAM column)
+
         sSQL = $"INSERT INTO [Attachments] (EmailID, OLType, FileName, FileExt, FileStream)
                     VALUES (@EmailID, @OLType, @FileName, @FileExt, @BLOB);
                 SELECT (SELECT CAST([last_used_value] AS INT) 
@@ -483,10 +483,18 @@ Public Class ImportEmails
 
                 Else
                     'insert new row in table and include file binary data
-                    buffer = rAttachment.AsArray
-                    .CommandText = sSQL
-                    .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
-                    iID = .ExecuteScalar()
+                    Try
+                        buffer = rAttachment.AsArray
+                        .CommandText = sSQL
+                        .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
+                        iID = .ExecuteScalar()
+
+                    Catch e As Exception
+                        _AttachErrors += 1
+                        Logger.WriteToLog(e.ToString)
+                        Logger.WriteToLog($"EmailID: {iEmailID} / Filename: {sFileName} / OLType: {sType}")
+
+                    End Try
 
                 End If
 

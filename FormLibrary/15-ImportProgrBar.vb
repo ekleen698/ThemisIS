@@ -5,13 +5,13 @@ Imports ClassLibrary.GlobalObjects
 
 Public Class frmImportProgress
     ' Disable Close button
-    Protected Overrides ReadOnly Property CreateParams() As CreateParams
-        Get
-            Dim param As CreateParams = MyBase.CreateParams
-            param.ClassStyle = param.ClassStyle Or &H200
-            Return param
-        End Get
-    End Property
+    'Protected Overrides ReadOnly Property CreateParams() As CreateParams
+    '    Get
+    '        Dim param As CreateParams = MyBase.CreateParams
+    '        param.ClassStyle = param.ClassStyle Or &H200
+    '        Return param
+    '    End Get
+    'End Property
 
     ' Declare objects needed for ImportThread in ImportEmails
     Dim WithEvents oImport As ImportEmails
@@ -92,6 +92,7 @@ Public Class frmImportProgress
             Me.ProgressBar1.Maximum = iTotal
         End If
 
+        ' Close form once import process completes
         If bEnd Then
             Close()
         End If
