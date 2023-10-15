@@ -7,7 +7,7 @@ Imports System.Runtime.InteropServices
 Public Class GlobalFunctions
     'Returns "" when string object not instantiated
 
-    Public Shared Function Nz(ByRef Value As String) As String
+    Public Shared Function Nz(ByRef Value As Object) As String
         If IsNothing(Value) Then
             Return ""
         Else
@@ -165,6 +165,7 @@ Public Class GlobalObjects
 
     ' Instantiate Log object 
     Public Shared Logger As New Log
+    Public Shared ErrLogger As New ErrorLog
 
     ' Define global objects to be instantiated later
     Public Shared CurrServer As Server
@@ -241,22 +242,22 @@ Public Class Log
     ' The Log Class is used to create a Global Logger object used throughout 
     '  the program to log events.
 
-    Private ReadOnly _Path As String
+    Private ReadOnly Property Path As String
 
     Public Sub New()
         ' Constructor to initialize new Log object
 
         Dim oFolder As Folder
+        Dim timestamp As String = Now.ToString("yyyy-MM-dd_HH-mm-ss")
 
         ' Define folder path on User's Desktop
         _Path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) & "\Themis Logs"
 
         ' Creates new folder if it does not exist
         oFolder = Folder.GetFolder(_Path)
-        oFolder = Nothing
 
         ' Define file path of log file and initialize log file
-        _Path = $"{_Path}\LogFile_{Now.ToString("yyyy-MM-dd_HH-mm-ss")}.txt"
+        _Path = $"{_Path}\LogFile_{timestamp}.txt"
         WriteToLog($"Begin logging for user <{Environment.UserName}>.")
 
     End Sub
@@ -268,6 +269,44 @@ Public Class Log
         Using writer As New StreamWriter(_Path, True)
             writer.Flush()
             writer.WriteLine($"{Now.ToString("MM/dd/yyyy HH:mm:ss")} > {sText}")
+            writer.Flush()
+            writer.Close()
+        End Using
+
+    End Sub
+
+End Class
+
+Public Class ErrorLog
+    ' 
+
+    Private ReadOnly Property Path As String
+
+    Public Sub New()
+        ' Constructor to initialize new Log object
+
+        Dim oFolder As Folder
+        Dim timestamp As String = Now.ToString("yyyy-MM-dd_HH-mm-ss")
+
+        ' Define folder path on User's Desktop
+        _Path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) & "\Themis Logs"
+
+        ' Creates new folder if it does not exist
+        oFolder = Folder.GetFolder(_Path)
+
+        ' Define file path of log file and initialize log file
+        _Path = $"{_Path}\ErrorLog_{timestamp}.txt"
+        WriteToLog($"FileName|EntryID")
+
+    End Sub
+
+    Public Sub WriteToLog(ByVal sText As String)
+        ' Method used to write text to log file
+
+        'Debug.WriteLine(sText)
+        Using writer As New StreamWriter(_Path, True)
+            writer.Flush()
+            writer.WriteLine(sText)
             writer.Flush()
             writer.Close()
         End Using

@@ -28,6 +28,7 @@ Public Class ImportEmails
     Private _TotalScanned As Integer = 0       'total items iterated over in each pst file
     Private _TotalImported As Integer = 0      'successfully imported items
     Private _TotalSkipped As Integer = 0       'items skipped during import due to Unique Key
+    Private _TotalErrors As Integer = 0        'emails that failed to import
     Private _AttachErrors As Integer = 0       'attachments which fail to import
 
     Public Sub StartImport(PSTFiles As PSTFiles)
@@ -77,6 +78,7 @@ Public Class ImportEmails
                 _TotalScanned = 0
                 _TotalImported = 0
                 _TotalSkipped = 0
+                _TotalErrors = 0
 
                 'Get Folders object from pst file
                 _Store = _Stores.AddPSTStore(_File.Path)
@@ -84,21 +86,22 @@ Public Class ImportEmails
                 _Folders = _IPMRoot.Folders
 
                 'Release memory of com objects
-                ReleaseComObject(_Store)
                 ReleaseComObject(_IPMRoot)
 
                 'iterate each folder in pst file and import all items
                 loopPSTFolders(_Folders)
 
                 'Release memory of com object
+                ReleaseComObject(_Store)
                 ReleaseComObject(_Folders)
 
                 'output results
-                Logger.WriteToLog($"{_TotalImported} items of {_TotalItems} items imported.")
-                If _TotalSkipped > 0 Then
-                    Logger.WriteToLog(
-                        $"{_TotalSkipped} items skipped.")
-                End If
+                Logger.WriteToLog($"{_File.Name} Results >> " &
+                                  $"Total Items: {_TotalItems}" & " | " &
+                                  $"Imported Items: {_TotalImported}" & " | " &
+                                  $"Skipped Items: {_TotalSkipped}" & " | " &
+                                  $"Errored Items: {_TotalErrors}")
+
             Next
 
             'Release memory of com object
@@ -232,6 +235,9 @@ Public Class ImportEmails
             If _bStop Then Exit For
 
             Try
+                'Begin transaction to allow rollback of all insert operations if error occurs
+                _Trans = CurrProjDB.Connection.BeginTransaction("Current")
+
                 _TotalScanned += 1
                 rMail = rItems(i)
                 rParent = rMail.Parent  'Outlook folder containing rMail
@@ -241,13 +247,11 @@ Public Class ImportEmails
                 RaiseEvent ImportStatus(Me, _TotalScanned, _TotalItems, _File.Name, False)
                 Thread.Sleep(10)
 
-                'Begin transaction to allow rollback of all insert operations if error occurs
-                _Trans = CurrProjDB.Connection.BeginTransaction("Current")
+                ' Test email for valid MAPI info
+                _Store.GetMessageFromID(sEntryID)
 
-                'Insert message data into database
+                ' Insert Email, commit all insert operations if no errors, update imported items counter
                 insertEmail(rMail, rParent.Name)
-
-                'Commit all insert operations if no errors, update completed items counter
                 _Trans.Commit()
                 _TotalImported += 1
 
@@ -259,12 +263,19 @@ Public Class ImportEmails
                     Logger.WriteToLog($"{sEntryID} skipped due to unique key violation.")
                 Else
                     Debug.WriteLine(ex)
-                    Throw New Exception("loopItems Error", ex)
+                    Throw New Exception("loopItems SQL Error", ex)
                 End If
+
+            Catch ex As Runtime.InteropServices.COMException
+                ' This occurs when _Store.GetMessageFromID fails due to invalid MAPI info
+                _Trans.Rollback()
+                _TotalErrors += 1
+                ErrLogger.WriteToLog($"{_File.Name}|{sEntryID}")
 
             Catch ex As Exception
                 'Undo current transaction
                 _Trans.Rollback()
+                Logger.WriteToLog($"EntryID :: {sEntryID}")
                 Throw New Exception("loopItems Error", ex)
 
             Finally
@@ -294,6 +305,7 @@ Public Class ImportEmails
         Dim sBCC_Name As String = ""
         Dim sSender As String = ""
         Dim iEmailID As Integer = 0
+        Dim iAttachmentCount As Integer = 0
         Dim rRecipients As RDORecipients = Nothing
         Dim rRecipient As RDORecipient = Nothing
         Dim rAttachments As RDOAttachments = Nothing
@@ -305,7 +317,9 @@ Public Class ImportEmails
             sSender = rSender.Address
             ReleaseComObject(rSender)
         End If
+
         If Len(sSender) = 0 Then sSender = "No Sender"
+
         If Not IsNothing(rMail.To) Then
             sTo_Name = rMail.To.ToString
         End If
@@ -319,7 +333,6 @@ Public Class ImportEmails
         'Build string containing all recipient email addresses (To, CC, BCC)
         If Not IsNothing(rMail.Recipients) Then
             rRecipients = rMail.Recipients
-
             For i = 1 To rRecipients.Count
                 rRecipient = rRecipients(i)
                 If Not IsNothing(rRecipient.Address) Then
@@ -340,21 +353,26 @@ Public Class ImportEmails
             Next
             ReleaseComObject(rRecipients)
 
-            'Trim "; " from end of strings
-            If sRecipients.Length > 2 Then
-                sRecipients = sRecipients.Remove(sRecipients.Length - 2)
-            End If
-            If sTo.Length > 2 Then
-                sTo = sTo.Remove(sTo.Length - 2)
-            End If
-            If sCC.Length > 2 Then
-                sCC = sCC.Remove(sCC.Length - 2)
-            End If
-            If sBCC.Length > 2 Then
-                sBCC = sBCC.Remove(sBCC.Length - 2)
+                'Trim "; " from end of strings
+                If sRecipients.Length > 2 Then
+                    sRecipients = sRecipients.Remove(sRecipients.Length - 2)
+                End If
+                If sTo.Length > 2 Then
+                    sTo = sTo.Remove(sTo.Length - 2)
+                End If
+                If sCC.Length > 2 Then
+                    sCC = sCC.Remove(sCC.Length - 2)
+                End If
+                If sBCC.Length > 2 Then
+                    sBCC = sBCC.Remove(sBCC.Length - 2)
+                End If
+
             End If
 
-        End If
+        rAttachments = rMail.Attachments
+        iAttachmentCount = rAttachments.Count
+        ReleaseComObject(rAttachments)
+
 
         'Initialize command object for dbo.Inbox insert
         sSQL = "INSERT INTO [dbo].[Inbox] (
@@ -366,6 +384,7 @@ Public Class ImportEmails
                 @Recipients, @ReceivedTime, @Size, @CreationTime, @Attachments, @Body); 
             SELECT CAST([last_used_value] AS INT) AS [EmailID]
                 FROM [sys].[sequences] WHERE [name] ='sInbox_PK';"
+
         With CurrProjDB.Connection.CreateCommand
             .CommandText = sSQL
             .Parameters.Add("@FileID", SqlDbType.Int)
@@ -410,7 +429,7 @@ Public Class ImportEmails
             .Parameters("@ReceivedTime").Value = rMail.ReceivedTime
             .Parameters("@Size").Value = rMail.Size
             .Parameters("@CreationTime").Value = rMail.CreationTime
-            .Parameters("@Attachments").Value = rMail.Attachments.Count
+            .Parameters("@Attachments").Value = iAttachmentCount
             .Parameters("@Body").Value = Nz(rMail.Body)
 
             'Row ID of new row, used in dbo.Attachments insert operation
@@ -420,11 +439,10 @@ Public Class ImportEmails
         End With
 
         'Iterate all attachments in current item, insert new rows in dbo.Attachments
-        rAttachments = rMail.Attachments
-        If rAttachments.Count > 0 Then
+
+        If iAttachmentCount > 0 Then
             loopAttachments(iEmailID, rMail)
         End If
-        ReleaseComObject(rAttachments)
 
     End Sub
 
