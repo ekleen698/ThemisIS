@@ -9,7 +9,8 @@ Public Class Directory
     Public ReadOnly Property Connection As New SqlConnection
     Public ReadOnly Property IsConnected As Boolean = False
     Public ReadOnly Property Projects As New Dictionary(Of Integer, Project)
-    Public ReadOnly Property MinAppVer As String = "3.0"
+    Private ReadOnly Property MinAppVer As String = "3.1"
+    ' version = {major rev}.{minor rev}.{update}.{build}
     Public ReadOnly Property AppVersion As String = "0.0"
     Public ReadOnly Property IsCompatible As Boolean = False
 
@@ -434,8 +435,10 @@ Public Class Directory
 
     Private Function compatible() As Boolean
 
-        Dim result = False
         Dim version = ""
+        Dim verTokens() As String
+        Dim dAppVersion As Decimal
+        Dim dMinVersion As Decimal
 
         Try
             With _Connection.CreateCommand
@@ -450,23 +453,24 @@ Public Class Directory
                 version = .ExecuteScalar
             End With
 
-            _AppVersion = version.Substring(0, 3)
-            Dim major = version.Split(".")(0)
-            Dim minor = version.Split(".")(1)
-            Dim min_major = _MinAppVer.Split(".")(0)
-            Dim min_minor = _MinAppVer.Split(".")(1)
+            verTokens = version.Split(".")
+            dAppVersion = CDec($"{verTokens(0)}.{verTokens(1)}")
+            _AppVersion = $"{dAppVersion}"
 
-            If CInt(major) >= CInt(min_major) Then
-                If CInt(minor) >= CInt(min_minor) Then
-                    result = True
-                End If
+            verTokens = _MinAppVer.Split(".")
+            dMinVersion = CDec($"{verTokens(0)}.{verTokens(1)}")
+
+            If dAppVersion >= dMinVersion Then
+                Return True
+            Else
+                Return False
+
             End If
 
         Catch
+            Return False
 
         End Try
-
-        Return result
 
     End Function
 
