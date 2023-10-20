@@ -28,6 +28,8 @@ Public Class ImportEmails
     Private _TotalScanned As Integer = 0       'total items iterated over in each pst file
     Private _TotalImported As Integer = 0      'successfully imported items
     Private _TotalSkipped As Integer = 0       'items skipped during import due to Unique Key
+    Private _TotalErrors As Integer = 0        'emails that failed to import
+    Private _AttachErrors As Integer = 0       'attachments which fail to import
 
     Public Sub StartImport(PSTFiles As PSTFiles)
 
@@ -76,6 +78,7 @@ Public Class ImportEmails
                 _TotalScanned = 0
                 _TotalImported = 0
                 _TotalSkipped = 0
+                _TotalErrors = 0
 
                 'Get Folders object from pst file
                 _Store = _Stores.AddPSTStore(_File.Path)
@@ -83,21 +86,22 @@ Public Class ImportEmails
                 _Folders = _IPMRoot.Folders
 
                 'Release memory of com objects
-                ReleaseComObject(_Store)
                 ReleaseComObject(_IPMRoot)
 
                 'iterate each folder in pst file and import all items
                 loopPSTFolders(_Folders)
 
                 'Release memory of com object
+                ReleaseComObject(_Store)
                 ReleaseComObject(_Folders)
 
                 'output results
-                Logger.WriteToLog($"{_TotalImported} items of {_TotalItems} items imported.")
-                If _TotalSkipped > 0 Then
-                    Logger.WriteToLog(
-                        $"{_TotalSkipped} items skipped.")
-                End If
+                Logger.WriteToLog($"{_File.Name} Results >> " &
+                                  $"Total Items: {_TotalItems}" & " | " &
+                                  $"Imported Items: {_TotalImported}" & " | " &
+                                  $"Skipped Items: {_TotalSkipped}" & " | " &
+                                  $"Errored Items: {_TotalErrors}")
+
             Next
 
             'Release memory of com object
@@ -154,6 +158,12 @@ Public Class ImportEmails
                 .ExecuteNonQuery()
                 Logger.WriteToLog($"DisplayTerms table updated.")
             End With
+
+            ' Display message if any attachments failed to import
+            If _AttachErrors > 0 Then
+                MsgBox($"{_AttachErrors} attachment(s) failed to import, see log file for details.", vbOKOnly,
+                       "Attachment Import Errors")
+            End If
 
         Catch ex As Exception
             MsgBox($"{DateTime.Now} > {ex.GetType}", , "Import Email Error")
@@ -225,41 +235,58 @@ Public Class ImportEmails
             If _bStop Then Exit For
 
             Try
-                _TotalScanned += 1
-                rMail = rItems(i)
-                rParent = rMail.Parent  'Outlook folder containing rMail
-                sEntryID = rMail.EntryID
-
-                ' Raise the import status event after each email
-                RaiseEvent ImportStatus(Me, _TotalScanned, _TotalItems, _File.Name, False)
-                Thread.Sleep(10)
-
                 'Begin transaction to allow rollback of all insert operations if error occurs
                 _Trans = CurrProjDB.Connection.BeginTransaction("Current")
 
-                'Insert message data into database
-                insertEmail(rMail, rParent.Name)
+                ' Raise the import status event after each email
+                _TotalScanned += 1
+                RaiseEvent ImportStatus(Me, _TotalScanned, _TotalItems, _File.Name, False)
+                Thread.Sleep(10)
 
-                'Commit all insert operations if no errors, update completed items counter
+                ' Test for corrupted emails
+                rMail = rItems(i)
+                rParent = rMail.Parent  'Outlook folder containing rMail
+                sEntryID = rMail.EntryID
+                Try
+                    _Store.GetMessageFromID(sEntryID)
+
+                Catch ex As Runtime.InteropServices.COMException
+                    Throw New CorruptEmailException(ex)
+
+                End Try
+
+                ' Insert Email, commit all insert operations if no errors, update imported items counter
+                insertEmail(rMail, rParent.Name)
                 _Trans.Commit()
                 _TotalImported += 1
 
             Catch ex As SqlException
                 _Trans.Rollback()
                 If ex.Number = 2627 Then
+                    ' Unique Key = FileID + EntryID
                     _TotalSkipped += 1
                     Logger.WriteToLog($"{sEntryID} skipped due to unique key violation.")
+                    ErrLogger.WriteToLog($"{Now.ToString("yyyy-MM-dd_HH-mm-ss")}|UniqueKeyViolation|" &
+                                     $"{_File.Name}|{sEntryID}")
                 Else
+                    ' Log error and end operation
                     Debug.WriteLine(ex)
-                    Throw New Exception("loopItems Error", ex)
+                    Throw New Exception("loopItems SQL Error", ex)
                 End If
 
-            Catch ex As Exception
-                'Undo current transaction
+            Catch ex As CorruptEmailException
                 _Trans.Rollback()
+                _TotalErrors += 1
+                ErrLogger.WriteToLog($"{Now.ToString("yyyy-MM-dd_HH-mm-ss")}|CorruptEmailException|" &
+                                     $"{_File.Name}|{sEntryID}")
+                'ErrLogger.WriteToLog($"CorruptEmailException ----> {ex.InnerException}") ' for debugging
+
+            Catch ex As Exception
+                _Trans.Rollback()
+                Logger.WriteToLog($"EntryID :: {sEntryID}")
                 Throw New Exception("loopItems Error", ex)
 
-            Finally
+                Finally
                 'Release memory of com objects
                 ReleaseComObject(rParent)
                 ReleaseComObject(rMail)
@@ -277,76 +304,81 @@ Public Class ImportEmails
 
         Dim sSQL As String = ""
         Dim sEntryID As String = rMail.EntryID
-        Dim sRecipients As String = ""
+        Dim sSender As String = ""
+        Dim sSep As String = "; "
+        Dim slstTO As New List(Of String)
+        Dim slstCC As New List(Of String)
+        Dim slstBCC As New List(Of String)
         Dim sTo As String = ""
         Dim sTo_Name As String = ""
         Dim sCC As String = ""
         Dim sCC_Name As String = ""
         Dim sBCC As String = ""
         Dim sBCC_Name As String = ""
-        Dim sSender As String = ""
+        Dim sRecipients As String = ""
         Dim iEmailID As Integer = 0
+        Dim iAttachmentCount As Integer = 0
+        'Dim rSender As RDOAddressEntry = Nothing
         Dim rRecipients As RDORecipients = Nothing
         Dim rRecipient As RDORecipient = Nothing
         Dim rAttachments As RDOAttachments = Nothing
-        Dim rSender As RDOAddressEntry = Nothing
 
-        'Resolve common causes of errors
-        If Not IsNothing(rMail.Sender) Then
-            rSender = rMail.Sender
-            sSender = rSender.Address
-            ReleaseComObject(rSender)
+        'Properties using OutlookSpy
+        Dim PIDTAGSENDERSMTPADDRESS_W As String = "http://schemas.microsoft.com/mapi/proptag/0x5D01001F"
+        Dim OTHERSENDERPROP As String = "http://schemas.microsoft.com/mapi/proptag/0x5D0A001F"
+
+        'Get sender email address
+        If rMail.SenderEmailType = "EX" Then
+            ' Exchange emails
+            sSender = rMail.Fields(PIDTAGSENDERSMTPADDRESS_W)
+            If IsNothing(sSender) OrElse sSender = "" Then
+                sSender = rMail.Fields(OTHERSENDERPROP)
+            End If
+        Else
+            ' SMTP emails
+            sSender = rMail.SenderEmailAddress
         End If
-        If Len(sSender) = 0 Then sSender = "No Sender"
-        If Not IsNothing(rMail.To) Then
-            sTo_Name = rMail.To.ToString
-        End If
-        If Not IsNothing(rMail.CC) Then
-            sCC_Name = rMail.CC.ToString
-        End If
-        If Not IsNothing(rMail.BCC) Then
-            sBCC_Name = rMail.BCC.ToString
-        End If
+
+        'Get display string for each address type
+        If Not IsNothing(rMail.To) Then sTo_Name = rMail.To.ToString
+        If Not IsNothing(rMail.CC) Then sCC_Name = rMail.CC.ToString
+        If Not IsNothing(rMail.BCC) Then sBCC_Name = rMail.BCC.ToString
 
         'Build string containing all recipient email addresses (To, CC, BCC)
-        If Not IsNothing(rMail.Recipients) Then
+        Try
             rRecipients = rMail.Recipients
-
-            For i = 1 To rRecipients.Count
+            For i As Integer = 1 To rRecipients.Count
                 rRecipient = rRecipients(i)
-                If Not IsNothing(rRecipient.Address) Then
-                    sRecipients = sRecipients & rRecipient.Address.ToString & "; "
-                    Select Case rRecipient.Type
-                        Case 1 'To
-                            sTo = sTo & rRecipient.Address.ToString & "; "
-                            Exit Select
-                        Case 2 'CC
-                            sCC = sCC & rRecipient.Address.ToString & "; "
-                            Exit Select
-                        Case 3 'BCC
-                            sBCC = sBCC & rRecipient.Address.ToString & "; "
-                            Exit Select
-                    End Select
+                If rRecipient.Type = 1 Then  'TO
+                    slstTO.Add(rRecipient.SMTPAddress)
+                ElseIf rRecipient.Type = 2 Then  'CC
+                    slstCC.Add(rRecipient.SMTPAddress)
+                ElseIf rRecipient.Type = 3 Then  'BCC
+                    slstBCC.Add(rRecipient.SMTPAddress)
                 End If
                 ReleaseComObject(rRecipient)
             Next
             ReleaseComObject(rRecipients)
 
-            'Trim "; " from end of strings
-            If sRecipients.Length > 2 Then
-                sRecipients = sRecipients.Remove(sRecipients.Length - 2)
-            End If
-            If sTo.Length > 2 Then
-                sTo = sTo.Remove(sTo.Length - 2)
-            End If
-            If sCC.Length > 2 Then
-                sCC = sCC.Remove(sCC.Length - 2)
-            End If
-            If sBCC.Length > 2 Then
-                sBCC = sBCC.Remove(sBCC.Length - 2)
-            End If
+            sTo = String.Join(sSep, slstTO)
+            sCC = String.Join(sSep, slstCC)
+            sBCC = String.Join(sSep, slstBCC)
+            sRecipients = String.Join(sSep, {sTo, sCC, sBCC})
 
-        End If
+        Catch ex As Runtime.InteropServices.COMException
+            ' no Recipients object
+
+        End Try
+
+        Try
+            rAttachments = rMail.Attachments
+            iAttachmentCount = rAttachments.Count
+            ReleaseComObject(rAttachments)
+
+        Catch ex As Runtime.InteropServices.COMException
+            ' no Attachments object
+
+        End Try
 
         'Initialize command object for dbo.Inbox insert
         sSQL = "INSERT INTO [dbo].[Inbox] (
@@ -358,6 +390,7 @@ Public Class ImportEmails
                 @Recipients, @ReceivedTime, @Size, @CreationTime, @Attachments, @Body); 
             SELECT CAST([last_used_value] AS INT) AS [EmailID]
                 FROM [sys].[sequences] WHERE [name] ='sInbox_PK';"
+
         With CurrProjDB.Connection.CreateCommand
             .CommandText = sSQL
             .Parameters.Add("@FileID", SqlDbType.Int)
@@ -390,7 +423,7 @@ Public Class ImportEmails
             .Parameters("@MessageClass").Value = rMail.MessageClass
             .Parameters("@Subject").Value = Nz(rMail.Subject)
             .Parameters("@SentOn").Value = rMail.SentOn
-            .Parameters("@Sender").Value = sSender
+            .Parameters("@Sender").Value = Nz(sSender)
             .Parameters("@SenderName").Value = Nz(rMail.SenderName)
             .Parameters("@To").Value = sTo
             .Parameters("@To_Name").Value = sTo_Name
@@ -402,7 +435,7 @@ Public Class ImportEmails
             .Parameters("@ReceivedTime").Value = rMail.ReceivedTime
             .Parameters("@Size").Value = rMail.Size
             .Parameters("@CreationTime").Value = rMail.CreationTime
-            .Parameters("@Attachments").Value = rMail.Attachments.Count
+            .Parameters("@Attachments").Value = iAttachmentCount
             .Parameters("@Body").Value = Nz(rMail.Body)
 
             'Row ID of new row, used in dbo.Attachments insert operation
@@ -412,34 +445,25 @@ Public Class ImportEmails
         End With
 
         'Iterate all attachments in current item, insert new rows in dbo.Attachments
-        rAttachments = rMail.Attachments
-        If rAttachments.Count > 0 Then
+
+        If iAttachmentCount > 0 Then
             loopAttachments(iEmailID, rMail)
         End If
-        ReleaseComObject(rAttachments)
 
     End Sub
 
     Private Sub loopAttachments(iEmailID As Integer, ByRef rMail As RDOMail)
         'Iterates all attachments in current item and inserts rows into dbo.Attachments
 
-        ' TODO: remove lines deactivated in v3.0.0.13
         Dim rAttachments As RDOAttachments
         Dim rAttachment As RDOAttachment
-        'Dim rEmbMsg As RDOMail
         Dim buffer As Byte()
-        'Dim sSQL1 As String = ""
         Dim sSQL As String = ""
         Dim sFileName As String = ""
         Dim sType As String = ""
         Dim iID As Integer = 0
 
-        'For inserting rows that have .msg or .ics attachments (does not add file binary data)
-        'sSQL1 = "INSERT INTO [dbo].[Attachments] ([EmailID], [OLType], [FileName], [FileExt]) 
-        '        VALUES (@EmailID, @OLType, @FileName, @FileExt);
-        '        SELECT (SELECT CAST([last_used_value] AS INT) 
-        '            FROM [sys].[sequences] WHERE [name] ='sAttachments_PK') AS [ID];"
-        'For inserting all other rows (adds file binary data to FILESTREAM column)
+
         sSQL = $"INSERT INTO [Attachments] (EmailID, OLType, FileName, FileExt, FileStream)
                     VALUES (@EmailID, @OLType, @FileName, @FileExt, @BLOB);
                 SELECT (SELECT CAST([last_used_value] AS INT) 
@@ -483,10 +507,20 @@ Public Class ImportEmails
 
                 Else
                     'insert new row in table and include file binary data
-                    buffer = rAttachment.AsArray
-                    .CommandText = sSQL
-                    .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
-                    iID = .ExecuteScalar()
+                    Try
+                        If (rAttachment.Type = rdoAttachmentType.olByValue) And (Not rAttachment.Hidden) Then
+                            buffer = rAttachment.AsArray
+                            .CommandText = sSQL
+                            .Parameters.Add("@BLOB", SqlDbType.VarBinary).Value = buffer
+                            iID = .ExecuteScalar()
+                        End If
+
+                    Catch e As Exception
+                        _AttachErrors += 1
+                        Logger.WriteToLog(e.ToString)
+                        Logger.WriteToLog($"EmailID: {iEmailID} / Filename: {sFileName} / OLType: {sType}")
+
+                    End Try
 
                 End If
 
@@ -510,5 +544,18 @@ Public Class ImportEmails
         Return sType
 
     End Function
+
+End Class
+
+Public Class CorruptEmailException
+    Inherits Exception
+
+    Public Sub New()
+        MyBase.New()
+    End Sub
+
+    Public Sub New(ByVal inner_exception As Exception)
+        MyBase.New("", inner_exception)
+    End Sub
 
 End Class

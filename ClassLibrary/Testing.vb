@@ -18,19 +18,23 @@ Public Class Testing
         Dim rFolder As RDOFolder
         Dim rMail As RDOMail
         Dim rAttach As RDOAttachment
+        Dim rSender As RDOAddressEntry
 
         Try
             rStore = rSession.LogonPstStore(sFilePath)
-            'rMail = rStore.GetMessageFromID(sEntryID)
-            rFolder = rStore.IPMRootFolder.Folders("Unfiled")
-            For Each rMail In rFolder.Items
-                For Each rAttach In rMail.Attachments
-                    If rAttach.Type = rdoAttachmentType.olEmbeddedItem Then
-                        Dim sFileName = rAttach.FileName
-                        rAttach.SaveAsFile($"C:\Users\eric.kleen\Desktop\Test\{sFileName}")
-                    End If
-                Next
-            Next
+            rMail = rStore.GetMessageFromID(sEntryID)
+            rSender = rMail.Sender
+            Debug.WriteLine(rMail.SenderName)
+            Debug.WriteLine("done")
+            'rFolder = rStore.IPMRootFolder.Folders("Unfiled")
+            'For Each rMail In rFolder.Items
+            '    For Each rAttach In rMail.Attachments
+            '        If rAttach.Type = rdoAttachmentType.olEmbeddedItem Then
+            '            Dim sFileName = rAttach.FileName
+            '            rAttach.SaveAsFile($"C:\Users\eric.kleen\Desktop\Test\{sFileName}")
+            '        End If
+            '    Next
+            'Next
 
         Catch ex As Exception
             Debug.WriteLine(ex.ToString)

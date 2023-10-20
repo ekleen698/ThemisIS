@@ -430,15 +430,11 @@ Module Main
 
     Private Sub testEmailProperties()
 
-        Dim sFolder As String = "C:\Users\eric.kleen\Desktop\PF\PST Files"
-        'Dim sFileName As String = "Bp1_2.pst"
-        'Dim oFile As FileInfo = New FileInfo(Path.Combine(sFolder, sFileName))
-        'Dim sEntryID As String = "00000000616D240F36596A4D8624AE4BEB7884E904DB2000"
+        Dim sFolder As String = "C:\Users\eric.kleen\Desktop"
 
         Try
-            Dim sFileNames = New List(Of String) From {"Bp1_1.pst", "Bp1_2.pst", "Bp1_3.pst", "Bp1_4.pst",
-                "bp2_1.pst", "bp2_2.pst"}
-            Dim sEntryID As String = ""
+            Dim sFileNames = New List(Of String) From {"From_Shannon_Wilson_Export.pst"}
+            Dim sEntryID As String = "00000000B81D211C7049304E8339D244FBF313DFA4012000"
 
             For Each sFileName As String In sFileNames
                 Dim oFile As FileInfo = New FileInfo(Path.Combine(sFolder, sFileName))
