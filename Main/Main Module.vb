@@ -11,8 +11,9 @@ Imports System.Windows.Forms
 
 Module Main
 
-    Private ReadOnly sServerName As String = Environment.MachineName
-    Private ReadOnly iProjID As Integer = 1
+    Private sServerName As String = Environment.MachineName
+    Private iProjID As Integer = 1
+    Private DevMode As Boolean = False
 
 
     Public Sub main()
@@ -36,11 +37,7 @@ Module Main
             'testFrmEmailExemption(1551, "Exemption")    'Insert or Update and Exemption or Redaction
             'testFrmAttachExemption(12, "Exemption")
             'testFrmRedacted()
-
-            'testOpenEmail()
-            'testEmailProperties()
-            'testImportEmail()
-            'testRandom()
+            'testFrmLicenseKey()
 
 
         Catch ex As Exception
@@ -52,7 +49,7 @@ Module Main
 
     Private Sub frmDirectory()
 
-        With New frmDirectory
+        With New frmDirectory(devMode:=DevMode)
             .ShowDialog()
         End With
 
@@ -61,7 +58,7 @@ Module Main
     Private Sub testConnect()
 
         CurrServer = New Server(sServerName)
-        CurrDirectory = New ClassLibrary.Directory()
+        CurrDirectory = New ClassLibrary.Directory(devMode:=DevMode)
         CurrProject = CurrDirectory.Projects(iProjID)
         CurrProjDB = New ProjectDB(CurrProject.DatabaseName)
 
@@ -371,99 +368,20 @@ Module Main
 
     End Sub
 
-    Private Sub testOpenEmail()
-        'Open current email in new Outlook application
-
-        Dim ol As New Outlook.Application
-        Dim olns As Outlook.NameSpace = Nothing
-        Dim ols As Outlook.Store = Nothing
-        Dim olm As Outlook.MailItem = Nothing
-        Dim sFilePath As String
-        Dim sEntryID As String
+    Private Sub testFrmLicenseKey()
 
         Try
-            'File and email info
-            sFilePath = "C:\Users\eric.kleen\Desktop\RW Emails 4-1-21\pst_files\Keyword - Plan\Keyword_-_Plan--leonardc@njrps.org_0.pst"
-            sEntryID = "00000000608A0775D6B9B64FA97DAA600DA0526904322000"
+            'testConnect()
 
-            'Initialize Outlook objects
-            olns = ol.GetNamespace("MAPI")
-            olns.Logon("", "", False, True)
-            ol.Session.AddStore(sFilePath)
-            For Each s As Outlook.Store In olns.Stores
-                'Only way to select a specific Store from Namespace
-                If s.FilePath = sFilePath Then
-                    ols = s
-                    Exit For
-                End If
-            Next
-            olm = olns.GetItemFromID(sEntryID, ols.StoreID)
-
-            'Open Outlook Inspector window, min+max to bring window to front
-            olm.Display()
-            olm.GetInspector.WindowState = Outlook.OlWindowState.olMinimized
-            olm.GetInspector.WindowState = Outlook.OlWindowState.olMaximized
-
-            'Remove pst file from Outlook and logoff
-            olns.RemoveStore(olns.Folders(ols.DisplayName))
-            ol.Session.Logoff()
-
-        Catch ex As System.Runtime.InteropServices.COMException
-            MsgBox($"Cannot open email at this time.  Please open Outlook and try again.",, "Open Email Error")
-            Logger.WriteToLog($"{ex.GetType} occurred while opening email in Outlook.")
-            Logger.WriteToLog(ex.ToString)
+            With New frmLicenseKey()
+                .ShowDialog()
+            End With
 
         Catch ex As Exception
-            MsgBox($"{DateTime.Now} > {ex.GetType}", , "Open in Outlook Error")
-            Logger.WriteToLog($"{ex.GetType} occurred while opening email in Outlook.")
-            Logger.WriteToLog(ex.ToString)
+            Throw ex
 
         Finally
-            olm = Nothing
-            ols = Nothing
-            olns = Nothing
-            ol = Nothing
-
-        End Try
-
-    End Sub
-
-    Private Sub testEmailProperties()
-
-        Dim sFolder As String = "C:\Users\eric.kleen\Desktop"
-
-        Try
-            Dim sFileNames = New List(Of String) From {"From_Shannon_Wilson_Export.pst"}
-            Dim sEntryID As String = "00000000B81D211C7049304E8339D244FBF313DFA4012000"
-
-            For Each sFileName As String In sFileNames
-                Dim oFile As FileInfo = New FileInfo(Path.Combine(sFolder, sFileName))
-                Debug.WriteLine(oFile.Name)
-                Testing.email_properties(oFile.FullName, sEntryID)
-            Next
-
-        Catch ex As Exception
-            Debug.WriteLine(ex)
-
-        End Try
-
-    End Sub
-
-    Private Sub testRandom()
-
-
-        Try
-            testConnect()
-
-            Dim RFIDList As New List(Of Integer) From {231, 243}
-            Debug.WriteLine(export_redacted(RFIDList))
-
-        Catch ex As Exception
-            Debug.WriteLine(ex)
-            'Throw ex
-
-        Finally
-            testClose()
+            'testClose()
 
         End Try
 

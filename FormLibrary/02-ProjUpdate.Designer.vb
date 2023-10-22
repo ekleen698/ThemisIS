@@ -47,9 +47,9 @@ Partial Class frmProjUpdate
         '
         Me.txtName.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtName.Location = New System.Drawing.Point(100, 19)
-        Me.txtName.MaxLength = 15
+        Me.txtName.MaxLength = 25
         Me.txtName.Name = "txtName"
-        Me.txtName.Size = New System.Drawing.Size(161, 21)
+        Me.txtName.Size = New System.Drawing.Size(188, 21)
         Me.txtName.TabIndex = 0
         '
         'Label1
@@ -80,7 +80,7 @@ Partial Class frmProjUpdate
         Me.txtOwner.Location = New System.Drawing.Point(100, 52)
         Me.txtOwner.MaxLength = 25
         Me.txtOwner.Name = "txtOwner"
-        Me.txtOwner.Size = New System.Drawing.Size(161, 21)
+        Me.txtOwner.Size = New System.Drawing.Size(188, 21)
         Me.txtOwner.TabIndex = 2
         '
         'Label3
@@ -100,7 +100,7 @@ Partial Class frmProjUpdate
         Me.txtDistrict.Location = New System.Drawing.Point(100, 85)
         Me.txtDistrict.MaxLength = 25
         Me.txtDistrict.Name = "txtDistrict"
-        Me.txtDistrict.Size = New System.Drawing.Size(161, 21)
+        Me.txtDistrict.Size = New System.Drawing.Size(188, 21)
         Me.txtDistrict.TabIndex = 4
         '
         'Label4
@@ -179,7 +179,7 @@ Partial Class frmProjUpdate
         '
         Me.Label7.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label7.ForeColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.Label7.Location = New System.Drawing.Point(265, 19)
+        Me.Label7.Location = New System.Drawing.Point(292, 19)
         Me.Label7.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(73, 19)
@@ -191,7 +191,7 @@ Partial Class frmProjUpdate
         '
         Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label8.ForeColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.Label8.Location = New System.Drawing.Point(265, 53)
+        Me.Label8.Location = New System.Drawing.Point(292, 53)
         Me.Label8.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(73, 19)

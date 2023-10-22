@@ -5,8 +5,9 @@ Imports System.ComponentModel
 Imports System.IO
 
 Public Class frmDirectory
-    ' Disable Close button
+
     Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        ' Disable Close button
         Get
             Dim param As CreateParams = MyBase.CreateParams
             param.ClassStyle = param.ClassStyle Or &H200
@@ -17,8 +18,9 @@ Public Class frmDirectory
     Private _dtProjects As New DataTable
     Private _oSettings As New ClassLibrary.My.MySettings
     Private _ScaleFactor As Single
+    Private _DevMode As Boolean
 
-    Public Sub New()
+    Public Sub New(Optional ByVal devMode As Boolean = False)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -27,6 +29,7 @@ Public Class frmDirectory
 
         ' Create scale factor because value of 'AutoScaleDimensions' changes with screen resolution
         _ScaleFactor = Me.CurrentAutoScaleDimensions.Width / 96
+        _DevMode = devMode
 
     End Sub
 
@@ -64,6 +67,13 @@ Public Class frmDirectory
             Me.Close()
 
         End Try
+
+    End Sub
+
+    Private Sub frmDirectory_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        ' For developer testing, automatically connect to server
+
+        If _DevMode Then Me.cmdConnectServer.PerformClick()
 
     End Sub
 
@@ -116,7 +126,7 @@ Public Class frmDirectory
             End If
 
             ' Connect to Project Directory database, throws exception if not connected after 10 seconds
-            CurrDirectory = New ClassLibrary.Directory
+            CurrDirectory = New ClassLibrary.Directory(_DevMode)
 
             ' Check Directory compatibility with current application version
             If Not CurrDirectory.IsCompatible Then
@@ -128,6 +138,8 @@ Public Class frmDirectory
                 CurrServer.Close()
                 Exit Sub
             End If
+
+            'CurrDirectory
 
             'Disable form server objects and update connection status label
             cmdConnectServer.Enabled = False
@@ -237,7 +249,7 @@ Public Class frmDirectory
 
 
                 oProject = CurrDirectory.Projects(iID)
-                With New frmProjUpdate(Project:=oProject)
+                With New frmProjUpdate(oProject)
                     .ShowDialog(Me)
                 End With
 
@@ -262,19 +274,43 @@ Public Class frmDirectory
         'Open Project Update form in 'Create' mode to add new project
 
         Try
-            ' Open Project Update/Create form
-            With New frmProjUpdate()
-                .ShowDialog()
-            End With
 
-            'Refresh project list view
-            RefreshProjects()
-
-            If Not IsNothing(CurrProject) Then
-                'Open Project Details form with new project
-                With New frmProjDetails()
+            ' Validate license key, skip if DevMode
+            Dim iResult As Integer = 0
+            Dim sKey As String = ""
+            If _DevMode Then
+                iResult = 1
+                sKey = "DevMode"
+            Else
+                With New frmLicenseKey()
                     .ShowDialog(Me)
+                    iResult = .Result
+                    sKey = .LicenseKey
                 End With
+            End If
+
+            ' if valid key, create new project
+            If iResult = 1 Then
+
+                ' Open Project Update/Create form
+                With New frmProjUpdate(sKey)
+                    .ShowDialog()
+
+                    If .Result Then
+                        ' Update License key table
+                        CurrDirectory.UpdateLicense(sKey, CurrProject.ProjectGuid)
+
+                        'Refresh project list view
+                        RefreshProjects()
+
+                        'Open Project Details form with new project
+                        With New frmProjDetails()
+                            .ShowDialog(Me)
+                        End With
+                    End If
+
+                End With
+
             End If
 
         Catch ex As Exception
@@ -449,6 +485,8 @@ Public Class frmDirectory
         Dim oProject As Project
 
         Try
+            ' TODO: update dbo.sys_LicenseKeys 'Removed' date
+
             If Me.lvProjects.SelectedItems.Count > 0 Then
                 iID = Convert.ToInt32((Me.lvProjects.SelectedItems()(0)).SubItems(0).Text)
                 oProject = CurrDirectory.Projects(iID)
@@ -558,4 +596,6 @@ Public Class frmDirectory
         MsgBox($"Client: {Me.ClientSize.Width} x {Me.ClientSize.Height}{vbCrLf + vbCrLf}Form: {Me.Width} x {Me.Height}")
 
     End Sub
+
+
 End Class

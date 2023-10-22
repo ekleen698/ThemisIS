@@ -18,9 +18,10 @@ Public Class frmProjUpdate
     Private _sMode As String = ""   'either "Create" or "Edit"
     Private _oProject As Project = Nothing  'Project object affected by this form
     Private _dirty As Boolean = False   'indicates whether or not changes have been made
-    ' Test
+    Private _sLicenseKey As String = ""  ' project license key
+    Public ReadOnly Property Result As Boolean = False  'True = Success, False = Failed/Cancelled
 
-    Public Sub New(Optional ByRef Project As Project = Nothing)
+    Public Sub New(ByVal LicenseKey As String)
         'Throws exception
 
         ' This call is required by the designer.
@@ -28,14 +29,22 @@ Public Class frmProjUpdate
 
         ' Add any initialization after the InitializeComponent() call.
 
-        'If no Project is passed to the form open in "Create" mode, otherwise open in "Edit"
-        'mode for the passed Project
-        If IsNothing(Project) Then
-            _sMode = "Create"
-        Else
-            _sMode = "Edit"
-            _oProject = Project
-        End If
+        ' Create new project
+        _sMode = "Create"
+        _sLicenseKey = LicenseKey
+
+    End Sub
+    Public Sub New(ByRef Project As Project)
+        'Throws exception
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+
+        ' Edit existing project
+        _sMode = "Edit"
+        _oProject = Project
 
     End Sub
 
@@ -102,22 +111,21 @@ Public Class frmProjUpdate
                     Logger.WriteToLog($"***Begin New Project Database Setup***")
 
                     'Insert row in project directory table 
-                    _oProject = CurrDirectory.AddProject(
-                        Me.txtName.Text,
-                        Me.txtOwner.Text,
-                        Me.txtDistrict.Text,
-                        Me.txtDescription.Text,
-                        Application.ProductVersion,
-                        WithDB:=True)
+                    _oProject = CurrDirectory.AddNewProject(
+                        LicenseKey:=_sLicenseKey,
+                        ApplicationVersion:=Application.ProductVersion,
+                        Name:=Me.txtName.Text,
+                        Owner:=Me.txtOwner.Text,
+                        District:=Me.txtDistrict.Text,
+                        Description:=Me.txtDescription.Text)
 
-                    If IsNothing(_oProject) Then
-                        Logger.WriteToLog($"Error: Empty Project object returned by AddProject().")
-                        Throw New Exception("CurrDirectory.AddProject() Error")
-                    Else
-                        ' Set 'Curr' objects so the Project Details form can be opened
+                    If Not IsNothing(_oProject) Then
+                        ' Instantiate 'Curr' objects from new project
                         CurrProject = _oProject
                         CurrProjDB = New ProjectDB(CurrProject.DatabaseName)
                         Logger.WriteToLog($"***End New Project Database Setup***")
+                        _Result = True
+
                     End If
 
                 ElseIf _sMode = "Edit" Then
@@ -125,15 +133,17 @@ Public Class frmProjUpdate
                     CurrDirectory.UpdateProject(_oProject, Me.txtName.Text, Me.txtOwner.Text,
                         Me.txtDistrict.Text, Me.txtDescription.Text)
                     Logger.WriteToLog($"***Project {_oProject.ID} Details Updated***")
+                    _Result = True
 
                 End If
 
+                ' Close form
                 Me.Close()
 
             End If
 
         Catch ex As Exception
-            MsgBox($"{DateTime.Now} > {ex.GetType}", , "Create Project Error")
+            MsgBox($"{DateTime.Now} > {ex.GetType}", vbOKOnly + vbCritical, "Create Project Error")
             Logger.WriteToLog($"[{ex.GetType}] in Project Update form {_sMode} mode.")
             Logger.WriteToLog(ex.ToString)
 

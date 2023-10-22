@@ -178,6 +178,12 @@
     <Compile Include="10-SearchUpdate.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="01a-LicenseKey.Designer.vb">
+      <DependentUpon>01a-LicenseKey.vb</DependentUpon>
+    </Compile>
+    <Compile Include="01a-LicenseKey.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="14-WorkerProgrBar.Designer.vb">
       <DependentUpon>14-WorkerProgrBar.vb</DependentUpon>
     </Compile>
@@ -277,6 +283,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="10-SearchUpdate.resx">
       <DependentUpon>10-SearchUpdate.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="01a-LicenseKey.resx">
+      <DependentUpon>01a-LicenseKey.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="14-WorkerProgrBar.resx">
       <DependentUpon>14-WorkerProgrBar.vb</DependentUpon>

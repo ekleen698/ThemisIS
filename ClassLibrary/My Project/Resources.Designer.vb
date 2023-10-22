@@ -81,8 +81,7 @@ Namespace My.Resources
         '''BEGIN TRANSACTION
         '''CREATE TABLE [dbo].[ProjectDirectory] (
         '''[ID] INTEGER NOT NULL,
-        '''[CreatedOn] DATE NULL,
-        '''[Applic [rest of string was truncated]&quot;;.
+        '''[GUID] VARCHAR(36) DEFAULT NEWI [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property CreateDirectory() As String
             Get
@@ -99,7 +98,7 @@ Namespace My.Resources
         '''BEGIN
         '''	DECLARE @id INT = (SELECT [ID] FROM inserted);
         '''	UPDATE [dbo].[ProjectDirectory] 
-        '''	SET [CreatedOn]=GETDATE(), [ProjectDatabase]= CONCAT(&apos;mlg_Project_&apos;, FORMAT([ID], &apos;000&apos;))
+        '''	SET [ProjectDatabase] = CONCAT(&apos;mlg_Project_&apos;, FORMAT([ID], &apos;000&apos;))
         '''	WHERE [ID]=@id;
         '''END;.
         '''</summary>
@@ -110,19 +109,37 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to 
+        '''/* Create License Key Table */
+        '''
+        '''BEGIN TRANSACTION
+        '''DROP TABLE IF EXISTS [dbo].[sys_LicenseKeys];
+        '''CREATE TABLE [dbo].[sys_LicenseKeys] (
+        '''ID INT NOT NULL,
+        '''[Key] VARCHAR(32) NOT NULL,
+        '''[Project_GUID] VARCHAR(36) NULL
+        ''');
+        '''
+        '''BEGIN
+        '''	DECLARE @ID INT = 1;
+        '''	DECLARE @Rand INT;
+        '''	DECLARE @Key VARCHAR(32);
+        '''
+        '''	WHILE @ID&lt;=1000
+        '''	BEGIN
+        '''		SET @Rand = CAST(RAND(@id)*1000000 AS INT);
+        '''		SET @Key = CONVERT(VARCHAR(32), HASHBYTES(&apos;MD5&apos;, CAST(@Rand AS VARCHAR(7))), 2);
+        '''		INSERT INTO dbo.sys_LicenseKeys ([ID], [Key] [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property CreateLicenseKeys() As String
+            Get
+                Return ResourceManager.GetString("CreateLicenseKeys", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to /* CREATE ALL DATABASE OBJECTS */
         '''DECLARE @SQLString NVARCHAR(MAX);
-        '''
-        '''
-        '''/* Create Functions */
-        '''SET @SQLString = N&apos;
-        '''CREATE FUNCTION dbo.fUsername() 
-        '''RETURNS VARCHAR(50)
-        '''AS
-        '''BEGIN
-        '''	RETURN (SELECT nt_username FROM sys.sysprocesses WHERE spid = @@SPID);
-        '''END;&apos;
-        '''EXEC @SQLString;
         '''
         '''
         '''/* Create Types  */
@@ -131,7 +148,13 @@ Namespace My.Resources
         '''
         '''/* Create Sequences */
         '''CREATE SEQUENCE dbo.sFiles_PK AS INTEGER START WITH 1 INCREMENT BY 1;
-        '''CREATE SEQUENCE dbo.sPSTFolders_PK AS [rest of string was truncated]&quot;;.
+        '''CREATE SEQUENCE dbo.sPSTFolders_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+        '''CREATE SEQUENCE dbo.sInbox_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+        '''CREATE SEQUENCE dbo.sAttachments_PK AS INTEGER START WITH 1 INCREMENT BY 1;
+        '''
+        '''
+        '''/* Create Tables */
+        '''- [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property CreateTables() As String
             Get
@@ -168,7 +191,7 @@ Namespace My.Resources
         '''  Looks up a localized string similar to 
         '''--Drop and create all indexes in the Database
         '''
-        '''CREATE OR ALTER PROCEDURE fCreateIndexes
+        '''CREATE OR ALTER PROCEDURE [dbo].[fCreateIndexes]
         '''AS
         '''BEGIN
         '''	--DROP all indexes and FULLTEXT INDEX objects if they exist
@@ -179,7 +202,7 @@ Namespace My.Resources
         '''	CREATE INDEX IDX_Inbox_FileID ON dbo.Inbox(FileID);
         '''	CREATE INDEX IDX_Inbox_ChkSum ON dbo.Inbox(ChkSum);
         '''	CREATE INDEX IDX_PSTFolders_FileID ON dbo.PSTFolders(FileID);
-        '''	CREATE INDEX IDX_EmailExemptStatus_Ema [rest of string was truncated]&quot;;.
+        '''	CREATE INDEX IDX_EmailExemptSt [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property fCreateIndexes() As String
             Get
@@ -218,7 +241,7 @@ Namespace My.Resources
         '''  Looks up a localized string similar to 
         '''--Drop all indexes in the Database
         '''
-        '''CREATE OR ALTER PROCEDURE fDropIndexes
+        '''CREATE OR ALTER PROCEDURE [dbo].[fDropIndexes]
         '''AS
         '''BEGIN
         '''	--DROP indexes
@@ -227,9 +250,7 @@ Namespace My.Resources
         '''	DROP INDEX IF EXISTS IDX_Inbox_ChkSum ON dbo.Inbox;
         '''	DROP INDEX IF EXISTS IDX_PSTFolders_FileID ON dbo.PSTFolders;
         '''	DROP INDEX IF EXISTS IDX_EmailExemptStatus_EmailID ON dbo.EmailExemptStatus;
-        '''	DROP INDEX IF EXISTS IDX_EmailExemptStatus_ExemptionID ON dbo.EmailExemptStatus;
-        '''
-        '''	 [rest of string was truncated]&quot;;.
+        '''	DROP INDEX IF EXISTS IDX_EmailExemptStatus_ExemptionID ON dbo.EmailExemptStat [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property fDropIndexes() As String
             Get
@@ -240,7 +261,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to --Used by frmEmail, frmEmailDupe, frmEmailExemptions, frmSearchUpdate
         '''--Insert new row(s) into Email Exemption Status table
-        '''CREATE OR ALTER PROCEDURE [dbo].[fEmailExemption]
+        '''CREATE OR ALTER   PROCEDURE [dbo].[fEmailExemption]
         '''@EmailID INT
         ''', @Exemptions TVP READONLY --custom type (TABLE)
         '''
@@ -255,7 +276,7 @@ Namespace My.Resources
         '''			DELETE FROM dbo.[EmailExemptStatus] 
         '''			WHERE EmailID IN (
         '''				SELECT EmailID
-        '''				FROM dbo.DisplayEmailIDs        ''' [rest of string was truncated]&quot;;.
+        '''				FROM dbo.DisplayEmailID [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property fEmailExemption() As String
             Get
@@ -264,24 +285,21 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to  
-        '''-- Imported Redacted pdf files
-        '''CREATE OR ALTER PROCEDURE [dbo].[fRedactedImport]
+        '''  Looks up a localized string similar to -- Imported Redacted pdf files
+        '''CREATE OR ALTER   PROCEDURE [dbo].[fRedactedImport]
         '''@EmailID INT,
         '''@FileName NVARCHAR(255),
         '''@FilePath NVARCHAR(255)
         '''
         '''AS
         '''BEGIN
-        '''	DECLARE @Seq INT = (select isnull(max(Seq),0)+1 from dbo.RedactedFiles where emailid=@EmailID);
-        '''	DECLARE @SQL NVARCHAR(MAX) = N&apos;
-        '''		INSERT INTO [RedactedFiles] (EmailID, Seq, [FileName], [FileStream])
-        '''		SELECT @P1, @P2, @P3, CAST(bulkcolumn AS VARBINARY(MAX))
-        '''		FROM OPENROWSET(
-        '''			BULK
-        '''			&apos;&apos;&apos; + @FilePath + N&apos;&apos;&apos;,
-        '''			SINGLE_BLOB 
-        '''			) AS [ [rest of string was truncated]&quot;;.
+        '''	IF EXISTS(SELECT 1 FROM dbo.vRedactedFiles WHERE EmailID=@EmailID)
+        '''	BEGIN
+        '''		DECLARE @Seq INT = (select isnull(max(Seq),0)+1 from dbo.RedactedFiles where emailid=@EmailID);
+        '''		DECLARE @SQL NVARCHAR(MAX) = N&apos;
+        '''			INSERT INTO [RedactedFiles] (EmailID, Seq, [FileName], [FileStream])
+        '''			SELECT @P1, @P2, @P3, CAST(bulkcolumn AS VARBINARY(MAX))
+        '''			 [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property fRedactedImport() As String
             Get
@@ -312,8 +330,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to 
-        '''--Used in frmProjDetails, frmBasicSearch, frmPatternSearch
+        '''  Looks up a localized string similar to --Used in frmProjDetails, frmBasicSearch, frmPatternSearch
         '''--Updates list of EmailID&apos;s in DisplayEmailIDs
         '''--DisplayEmailIDs is the data source for frmEmail
         '''
@@ -322,10 +339,8 @@ Namespace My.Resources
         '''@Unreviewed BIT,		--Include unreviewed emails
         '''@Reviewed BIT,			--Include reviewed emails
         '''@Types NVARCHAR(100),	--Exemption Types
-        '''@Flagged BIT			--Filter for only emails with Flag in EmailExemptionStatus
-        '''AS
-        '''BEGIN
-        '''	DECLARE @UnrevPred NVA [rest of string was truncated]&quot;;.
+        '''@Flagged BIT,			--Filter for only emails with Flag in EmailExemptionStatus
+        '''@FilterOption TINYINT   --0=Email&amp;A [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property fUpdate_DisplayEmailIDs() As String
             Get
@@ -360,10 +375,9 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to 
-        '''--Used by frmEmailExemption
+        '''  Looks up a localized string similar to --Used by frmEmailExemption
         '''--Remove multiple rows from email and attachment exemption tables
-        '''CREATE OR ALTER PROCEDURE fUpdateReset
+        '''CREATE OR ALTER PROCEDURE [dbo].[fUpdateReset]
         '''AS
         '''BEGIN
         '''	--Delete any already existing email exemptions
@@ -375,7 +389,7 @@ Namespace My.Resources
         '''    WHERE [AttachID] IN (
         '''		SELECT [ID] 
         '''		FROM Attachments 
-        '''		WHERE [EmailID] IN (SELECT [EmailID] FROM dbo.DisplayEmail [rest of string was truncated]&quot;;.
+        '''		WHERE [EmailID] IN (SELECT [EmailID] FROM dbo.Displa [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property fUpdateReset() As String
             Get

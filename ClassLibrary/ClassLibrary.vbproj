@@ -217,6 +217,7 @@
     <Content Include="Resources\fRedactedImport.txt" />
     <Content Include="Resources\fUpdateDuplicate.txt" />
     <Content Include="Resources\fUsername.txt" />
+    <Content Include="Resources\CreateLicenseKeys.txt" />
     <None Include="Resources\fResetSeq.txt" />
     <None Include="Resources\fUpdateReset.txt" />
   </ItemGroup>

@@ -1,0 +1,25 @@
+﻿
+/* Create License Key Table */
+
+BEGIN TRANSACTION
+DROP TABLE IF EXISTS [dbo].[sys_LicenseKeys];
+CREATE TABLE [dbo].[sys_LicenseKeys] (
+ID INT NOT NULL,
+[Key] VARCHAR(32) NOT NULL,
+[Project_GUID] VARCHAR(36) NULL
+);
+
+BEGIN
+	DECLARE @ID INT = 1;
+	DECLARE @Rand INT;
+	DECLARE @Key VARCHAR(32);
+
+	WHILE @ID<=1000
+	BEGIN
+		SET @Rand = CAST(RAND(@id)*1000000 AS INT);
+		SET @Key = CONVERT(VARCHAR(32), HASHBYTES('MD5', CAST(@Rand AS VARCHAR(7))), 2);
+		INSERT INTO dbo.sys_LicenseKeys ([ID], [Key]) VALUES (@ID, @Key);
+		SET @ID = @ID + 1;
+	END;
+END;
+COMMIT

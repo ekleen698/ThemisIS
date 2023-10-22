@@ -76,7 +76,7 @@ Partial Class frmWorkerProgress
         Me.lblFolder1.Location = New System.Drawing.Point(27, 8)
         Me.lblFolder1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblFolder1.Name = "lblFolder1"
-        Me.lblFolder1.Size = New System.Drawing.Size(76, 20)
+        Me.lblFolder1.Size = New System.Drawing.Size(387, 20)
         Me.lblFolder1.TabIndex = 4
         Me.lblFolder1.Text = "Worker(1)"
         '
@@ -94,7 +94,7 @@ Partial Class frmWorkerProgress
         'cmdLocation
         '
         Me.cmdLocation.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.cmdLocation.Location = New System.Drawing.Point(360, 13)
+        Me.cmdLocation.Location = New System.Drawing.Point(436, 8)
         Me.cmdLocation.Margin = New System.Windows.Forms.Padding(2)
         Me.cmdLocation.Name = "cmdLocation"
         Me.cmdLocation.Size = New System.Drawing.Size(56, 21)
@@ -119,7 +119,7 @@ Partial Class frmWorkerProgress
         Me.lblFolder2.Location = New System.Drawing.Point(24, 96)
         Me.lblFolder2.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblFolder2.Name = "lblFolder2"
-        Me.lblFolder2.Size = New System.Drawing.Size(76, 20)
+        Me.lblFolder2.Size = New System.Drawing.Size(387, 20)
         Me.lblFolder2.TabIndex = 14
         Me.lblFolder2.Text = "Worker(2)"
         '
@@ -163,7 +163,7 @@ Partial Class frmWorkerProgress
         Me.lblFolder4.Location = New System.Drawing.Point(21, 275)
         Me.lblFolder4.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblFolder4.Name = "lblFolder4"
-        Me.lblFolder4.Size = New System.Drawing.Size(76, 20)
+        Me.lblFolder4.Size = New System.Drawing.Size(387, 20)
         Me.lblFolder4.TabIndex = 22
         Me.lblFolder4.Text = "Worker(4)"
         '
@@ -207,7 +207,7 @@ Partial Class frmWorkerProgress
         Me.lblFolder3.Location = New System.Drawing.Point(24, 187)
         Me.lblFolder3.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblFolder3.Name = "lblFolder3"
-        Me.lblFolder3.Size = New System.Drawing.Size(76, 20)
+        Me.lblFolder3.Size = New System.Drawing.Size(387, 20)
         Me.lblFolder3.TabIndex = 18
         Me.lblFolder3.Text = "Worker(3)"
         '
@@ -251,7 +251,7 @@ Partial Class frmWorkerProgress
         Me.lblFolder5.Location = New System.Drawing.Point(21, 364)
         Me.lblFolder5.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.lblFolder5.Name = "lblFolder5"
-        Me.lblFolder5.Size = New System.Drawing.Size(76, 20)
+        Me.lblFolder5.Size = New System.Drawing.Size(387, 20)
         Me.lblFolder5.TabIndex = 26
         Me.lblFolder5.Text = "Worker(5)"
         '
@@ -328,7 +328,6 @@ Partial Class frmWorkerProgress
         Me.MinimizeBox = False
         Me.Name = "frmWorkerProgress"
         Me.ShowIcon = False
-        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Worker Progress"
         Me.ResumeLayout(False)

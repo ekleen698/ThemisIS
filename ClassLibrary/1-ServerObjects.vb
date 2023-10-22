@@ -55,8 +55,9 @@ Public Class Server
         'Drop database on current server.
         ' Throws exception
 
-        ' Kill any processes on the target DB then drop
-        With _Connection.CreateCommand
+        ' Kill any processes on the target DB, drop DB, then delete row from Directory
+        ' NOTE: DROP DATABASE statement cannot be used inside a user transaction.
+        With Connection.CreateCommand
             .CommandTimeout = My.Settings.TimeOutSeconds    'set longer timout value to allow for large databases
             .CommandText = $"
                 BEGIN
@@ -89,7 +90,7 @@ Public Class Server
 	                    WHERE ProjectDatabase=@Name;
 
                 END"
-            .Parameters.Add("@Name", SqlDbType.NVarChar, 15).Value = DBName
+            .Parameters.Add("@Name", SqlDbType.NVarChar, 25).Value = DBName
             .ExecuteNonQuery()
 
         End With

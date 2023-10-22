@@ -5,8 +5,9 @@ Imports System.Windows.Forms
 Imports ClassLibrary.GlobalObjects
 
 Public Class frmWorkerProgress
-    ' Disable Close button
+
     Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        ' Disable Close button
         Get
             Dim param As CreateParams = MyBase.CreateParams
             param.ClassStyle = param.ClassStyle Or &H200

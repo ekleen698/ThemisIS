@@ -229,24 +229,24 @@ Public Class ImportEmails
         Dim rMail As RDOMail = Nothing
         Dim rParent As RDOFolder = Nothing
         Dim sEntryID As String = ""
+        Dim sParent As String = ""
 
         'Iterate all items in current folder
         For i = 1 To rItems.Count
             If _bStop Then Exit For
+            _Trans = Nothing 'reset for each loop
 
             Try
-                'Begin transaction to allow rollback of all insert operations if error occurs
-                _Trans = CurrProjDB.Connection.BeginTransaction("Current")
-
                 ' Raise the import status event after each email
                 _TotalScanned += 1
                 RaiseEvent ImportStatus(Me, _TotalScanned, _TotalItems, _File.Name, False)
                 Thread.Sleep(10)
 
-                ' Test for corrupted emails
+                ' Initialize mail object
                 rMail = rItems(i)
-                rParent = rMail.Parent  'Outlook folder containing rMail
                 sEntryID = rMail.EntryID
+
+                ' Test for corrupted email
                 Try
                     _Store.GetMessageFromID(sEntryID)
 
@@ -255,13 +255,25 @@ Public Class ImportEmails
 
                 End Try
 
+                ' Get Parent folder name
+                rParent = rMail.Parent
+                sParent = rParent.Name
+                ReleaseComObject(rParent)
+
                 ' Insert Email, commit all insert operations if no errors, update imported items counter
-                insertEmail(rMail, rParent.Name)
+                _Trans = CurrProjDB.Connection.BeginTransaction("Current")
+                insertEmail(rMail, sParent)
                 _Trans.Commit()
                 _TotalImported += 1
 
+            Catch ex As CorruptEmailException
+                _TotalErrors += 1
+                ErrLogger.WriteToLog($"{Now.ToString("yyyy-MM-dd_HH-mm-ss")}|CorruptEmailException|" &
+                                     $"{_File.Name}|{sEntryID}")
+                'ErrLogger.WriteToLog($"CorruptEmailException ----> {ex.InnerException}") ' for debugging
+
             Catch ex As SqlException
-                _Trans.Rollback()
+                If Not IsNothing(_Trans) Then _Trans.Rollback()
                 If ex.Number = 2627 Then
                     ' Unique Key = FileID + EntryID
                     _TotalSkipped += 1
@@ -274,21 +286,13 @@ Public Class ImportEmails
                     Throw New Exception("loopItems SQL Error", ex)
                 End If
 
-            Catch ex As CorruptEmailException
-                _Trans.Rollback()
-                _TotalErrors += 1
-                ErrLogger.WriteToLog($"{Now.ToString("yyyy-MM-dd_HH-mm-ss")}|CorruptEmailException|" &
-                                     $"{_File.Name}|{sEntryID}")
-                'ErrLogger.WriteToLog($"CorruptEmailException ----> {ex.InnerException}") ' for debugging
-
             Catch ex As Exception
-                _Trans.Rollback()
+                If Not IsNothing(_Trans) Then _Trans.Rollback()
                 Logger.WriteToLog($"EntryID :: {sEntryID}")
                 Throw New Exception("loopItems Error", ex)
 
-                Finally
+            Finally
                 'Release memory of com objects
-                ReleaseComObject(rParent)
                 ReleaseComObject(rMail)
 
             End Try

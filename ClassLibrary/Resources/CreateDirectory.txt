@@ -18,9 +18,11 @@ COMMIT
 BEGIN TRANSACTION
 CREATE TABLE [dbo].[ProjectDirectory] (
 [ID] INTEGER NOT NULL,
-[CreatedOn] DATE NULL,
+[GUID] VARCHAR(36) DEFAULT NEWID() NOT NULL,
+[CreatedOn] DATE DEFAULT GETDATE() NOT NULL,
+[LicenseKey] varchar(32) NOT NULL,
 [ApplicationVersion] VARCHAR(10) NULL,
-[Name] VARCHAR(15) NOT NULL,
+[Name] VARCHAR(25) NOT NULL,
 [Owner] VARCHAR(25) NOT NULL,
 [District] VARCHAR(25) NULL,
 [Description] VARCHAR(255) NULL,
@@ -33,11 +35,23 @@ ALTER TABLE [dbo].[ProjectDirectory]
 ADD CONSTRAINT [DF_ProjectDirectory_PK] DEFAULT (NEXT VALUE FOR [sProjectDirectory_PK]) FOR [ID];
 COMMIT
 
-/*  Create ProjectInfo table  */
+/*  Create Project Info table  */
 BEGIN TRANSACTION
 CREATE TABLE [dbo].[sys_DirectoryInfo] (
 [ID] INTEGER IDENTITY(1,1) PRIMARY KEY,
 [Key] VARCHAR(25) NOT NULL,
 [Value] VARCHAR(255) NOT NULL
+);
+COMMIT
+
+
+/*  Create Project History table */
+BEGIN TRANSACTION
+CREATE TABLE [dbo].[ProjectHistory] (
+[ID] INTEGER IDENTITY(1,1) NOT NULL,
+[GUID] VARCHAR(36) NOT NULL,
+[ProjectName] VARCHAR(25) NULL,
+[Action] VARCHAR(20) NOT NULL,
+[Date] DATE DEFAULT GETDATE() NOT NULL
 );
 COMMIT

@@ -65,7 +65,7 @@ Public Class ProjectDB
 
     End Sub
 
-    Public Sub Create(DatabaseName As String)
+    Public Sub Create(DatabaseName As String, LicenseKey As String, ProjectGuid As String)
         'Create new project database on current server.
         'Throws exception
 
@@ -116,9 +116,12 @@ Public Class ProjectDB
                     INSERT INTO dbo.[ProjectInfo] ([Key], [Value]) 
                     VALUES ('CreatedBy', dbo.fUsername()) 
                     , ('CreatedOn', CONVERT(VARCHAR, GETDATE(), 101)) 
-                    , ('ApplicationVersion', @Ver); "
+                    , ('ApplicationVersion', @Ver)
+                    , ('LicenseKey', @License)
+                    , ('ProjectGuid', @Guid); "
                 .Parameters.Add("@Ver", SqlDbType.VarChar, 100).Value = Application.ProductVersion
-
+                .Parameters.Add("@License", SqlDbType.VarChar, 32).Value = LicenseKey
+                .Parameters.Add("@Guid", SqlDbType.VarChar, 36).Value = ProjectGuid
                 .ExecuteNonQuery()
 
             End With
