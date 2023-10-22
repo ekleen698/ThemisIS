@@ -262,13 +262,13 @@ Public Class Log
 
     End Sub
 
-    Public Sub WriteToLog(ByVal sText As String)
+    Public Sub WriteToLog(ByRef sText As Object)
         ' Method used to write text to log file
 
-        Debug.WriteLine(sText)
+        'Debug.WriteLine(sText)
         Using writer As New StreamWriter(Path, True)
             writer.Flush()
-            writer.WriteLine($"{Now.ToString("MM/dd/yyyy HH:mm:ss")} > {sText}")
+            writer.WriteLine($"{Now.ToString("MM/dd/yyyy HH:mm:ss")} > {sText.ToString}")
             writer.Flush()
             writer.Close()
         End Using

@@ -1,7 +1,9 @@
 ﻿Imports System.Data.SqlClient
 Imports System.Windows.Forms
 Imports System.IO
+Imports System.Runtime.InteropServices
 Imports ClassLibrary.GlobalObjects
+Imports Microsoft.Office.Interop
 
 Public Class Directory
 
@@ -43,21 +45,13 @@ Public Class Directory
                     'Connect to new database
                     connect()
 
-                    'Create project directory table
+                    'Create project directory objects
                     .Connection = _Connection
                     .CommandText = My.Resources.CreateDirectory
                     .ExecuteNonQuery()
 
-                    'Create INSERT trigger on table to generate Project Database name
-                    .CommandText = My.Resources.CreateDirectoryTrigger
-                    .ExecuteNonQuery()
-
                     'Create procedure used to reset the Sequence for the PK
                     .CommandText = My.Resources.fResetSeq
-                    .ExecuteNonQuery()
-
-                    'Create license key table
-                    .CommandText = My.Resources.CreateLicenseKeys
                     .ExecuteNonQuery()
 
                     ' Add Directory Info
@@ -124,7 +118,7 @@ Public Class Directory
             End With
 
             ' Add entry to History table
-            UpdateHistory(oProject.ProjectGuid, oProject.Name, "Add")
+            UpdateHistory(oProject.ProjectGuid, oProject.Name, oProject.District, "Add")
 
             Return oProject
 
@@ -212,7 +206,7 @@ Public Class Directory
         Project = CurrDirectory.Projects(iID)
 
         ' Add entry to History table
-        UpdateHistory(Project.ProjectGuid, Project.Name, "Update")
+        UpdateHistory(Project.ProjectGuid, Project.Name, Project.District, "Update")
 
         Logger.WriteToLog($"Project {iID} updated.")
 
@@ -255,12 +249,13 @@ Public Class Directory
 
     End Sub
 
-    Public Sub RemoveProject(Project As Project)
+    Public Sub RemoveProject(ByRef Project As Project, Optional ByVal History As Boolean = False)
         'Delete project row in project directory table and drop project database
 
         Dim iID As Integer = Project.ID
-        Dim sGUID As String = Project.ProjectGuid
-        Dim sName As String = Project.Name
+        'Dim sGUID As String = Project.ProjectGuid
+        'Dim sName As String = Project.Name
+        'Dim sDistrict As String = Project.District
 
         Try
             ' Drop project database
@@ -273,7 +268,7 @@ Public Class Directory
             End With
 
             ' Add entry to History table
-            UpdateHistory(sGUID, sName, "Remove")
+            If History Then UpdateHistory(Project.ProjectGuid, Project.Name, Project.District, "Remove")
 
             ' Update collection of projects
             refreshProjects()
@@ -446,7 +441,7 @@ Public Class Directory
 
                 Else
                     ' Add entry to History table
-                    UpdateHistory(oNewProject.ProjectGuid, oNewProject.Name, "Restore")
+                    UpdateHistory(oNewProject.ProjectGuid, oNewProject.Name, oNewProject.District, "Restore")
 
                 End If
 
@@ -498,20 +493,101 @@ Public Class Directory
 
     End Sub
 
-    Private Sub UpdateHistory(ByVal ProjectGuid As String, ByVal ProjectName As String, ByVal Action As String)
+    Private Sub UpdateHistory(ByVal ProjectGuid As String, ByVal ProjectName As String,
+                              ByVal ProjectDistrict As String, ByVal Action As String)
 
         With Connection.CreateCommand()
             .CommandText = "
-                INSERT INTO dbo.ProjectHistory (GUID, ProjectName, Action)
-                VALUES (@GUID, @Name, @Action);"
+                INSERT INTO dbo.ProjectHistory (GUID, ProjectName, ProjectDistrict, Action)
+                VALUES (@GUID, @Name, @District, @Action);"
             .Parameters.Add("@GUID", SqlDbType.VarChar).Value = ProjectGuid
             .Parameters.Add("@Name", SqlDbType.VarChar).Value = ProjectName
+            .Parameters.Add("@District", SqlDbType.VarChar).Value = ProjectDistrict
             .Parameters.Add("@Action", SqlDbType.VarChar).Value = Action
             .ExecuteNonQuery()
 
         End With
 
     End Sub
+
+    Public Function ActivityLog(ByVal desktopPath As String) As String
+
+        Dim destFile = Path.Combine(desktopPath, "Themis_Activity_Log.xlsx")
+        Dim oFile As New FileInfo(destFile)
+
+        ' Check for existing file before starting Excel
+        If oFile.Exists Then
+            Dim rslt = MsgBox($"File already exists, replace?{vbCrLf & vbCrLf}{destFile}", vbOKCancel + vbQuestion, "Overwrite Warning")
+            If rslt <> vbOK Then Throw New OperationCanceledException
+        End If
+
+        Dim dtActivity As New DataTable
+        Dim sSQL As String
+        Dim xlApp As New Excel.Application
+        Dim wbs As Excel.Workbooks = xlApp.Workbooks
+        Dim wb As Excel.Workbook = wbs.Add()
+        Dim wss As Excel.Sheets = wb.Worksheets
+        Dim ws As Excel.Worksheet = wss("Sheet1")
+        Dim c1 As Excel.Range = ws.Cells(1, 1)
+        Dim c2 As Excel.Range = ws.Cells(1, 1)
+
+        Try
+            ' Fill DataTable
+            sSQL = "
+            select k.[Key] [LicenseKey], h.[GUID] [ProjectGuid], h.ProjectName, h.ProjectDistrict, h.[Action], h.[TimeStamp]
+            from dbo.ProjectHistory h
+            join dbo.sys_LicenseKeys k on h.[GUID]=k.Project_GUID
+            order by k.[Key], h.[GUID], h.[TimeStamp];"
+            With New SqlDataAdapter(sSQL, Connection)
+                .Fill(dtActivity)
+            End With
+
+            ' Create Excel file
+            ' Note: arrays are 0-indexed
+            Dim cols(dtActivity.Columns.Count - 1) As String
+            For c As Integer = 0 To dtActivity.Columns.Count - 1
+                cols(c) = dtActivity.Columns(c).ColumnName
+            Next
+
+            Dim arr(dtActivity.Rows.Count - 1, cols.Length - 1) As String
+            For r As Integer = 0 To dtActivity.Rows.Count - 1
+                For c As Integer = 0 To cols.Length - 1
+                    arr(r, c) = dtActivity.Rows(r)(cols(c))
+                Next
+            Next
+
+            ' Add column names
+            c2 = ws.Cells(1, cols.Length)
+            ws.Range(c1, c2).Value = cols
+
+            ' Add data rows
+            c1 = ws.Cells(2, 1)
+            c2 = ws.Cells(dtActivity.Rows.Count + 1, cols.Length)
+            ws.Range(c1, c2).Value = arr
+
+            ' Save file without overwrite notification
+            xlApp.DisplayAlerts = False
+            wb.SaveAs(Filename:=destFile, Password:="Badfish698")
+
+            Return destFile
+
+        Catch ex As Exception
+            Throw New Exception("", ex)
+
+        Finally
+            wb.Close(SaveChanges:=False)
+            xlApp.Quit()
+            Marshal.ReleaseComObject(c1)
+            Marshal.ReleaseComObject(c2)
+            Marshal.ReleaseComObject(ws)
+            Marshal.ReleaseComObject(wss)
+            Marshal.ReleaseComObject(wb)
+            Marshal.ReleaseComObject(wbs)
+            Marshal.ReleaseComObject(xlApp)
+
+        End Try
+
+    End Function
 
     Private Sub connect()
         'Called by constructor, connect to project directory database

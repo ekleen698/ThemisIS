@@ -833,25 +833,35 @@ Public Class Converter
         ' Loop 
         _Count = 0
         _Total = Emails.Count
-        For Each SourceFile In Emails
+        RaiseEvent ConvertStatus(Me, _Count, _Total, _EmailFolder.Name, _OpStep, _WorkerId)
+        Try
+            For Each SourceFile In Emails
 
-            ' Exit if cancelled
-            _Token.ThrowIfCancellationRequested()
+                ' Exit if cancelled
+                _Token.ThrowIfCancellationRequested()
 
-            ' Add image of each page of current pdf file to destination file
-            merge_pdfs_doc(SourceFile, DestFile)
+                ' Add image of each page of current pdf file to destination file
+                merge_pdfs_doc(SourceFile, DestFile)
 
-            ' Update progress bar
-            _Count += 1
-            RaiseEvent ConvertStatus(Me, _Count, _Total, _EmailFolder.Name, _OpStep, _WorkerId)
+                ' Update progress bar
+                _Count += 1
+                RaiseEvent ConvertStatus(Me, _Count, _Total, _EmailFolder.Name, _OpStep, _WorkerId)
 
-        Next
+            Next
 
-        ' Save new pdf to root folder
-        DestFile.Info.Clear()
-        DestFile.SaveOptions.UpdateProducerInformation = False
-        DestFile.Save(DestFileName)
-        DestFile.Dispose()
+        Catch ex As Exception
+            Throw ex
+
+        Finally
+            ' Save new pdf to root folder
+            If Not IsNothing(DestFile) Then
+                DestFile.Info.Clear()
+                DestFile.SaveOptions.UpdateProducerInformation = False
+                DestFile.Save(DestFileName)
+                DestFile.Dispose()
+            End If
+
+        End Try
 
     End Sub
 
@@ -868,46 +878,51 @@ Public Class Converter
 
         ' Initialize loop variables
         srcDoc = PdfDocument.Load(SourceFile.FullName)
-        options = New ImageSaveOptions With {
-                            .Format = ImageSaveFormat.Png
-                            }
+        options = New ImageSaveOptions With {.Format = ImageSaveFormat.Png}
 
         ' Name of temporary .png file used by current Worker
         sTempFile = Path.Combine(New DirectoryInfo(Path.GetTempPath).FullName, $"pdf_page_Worker({_WorkerId}).png")
 
-        ' Loop
-        For Each page As PdfPage In srcDoc.Pages
+        Try
+            ' Loop
+            For Each page As PdfPage In srcDoc.Pages
 
-            ' Exit if cancelled
-            _Token.ThrowIfCancellationRequested()
+                ' Exit if cancelled
+                _Token.ThrowIfCancellationRequested()
 
-            ' Create temp pdf doc from current page and export png file to temp folder
-            With New PdfDocument
-                .Pages.Kids.AddClone(page)
-                .Save(sTempFile, options)
-            End With
+                ' Create temp pdf doc from current page and export png file to temp folder
+                With New PdfDocument
+                    .Pages.Kids.AddClone(page)
+                    .Save(sTempFile, options)
+                End With
 
-            'load the saved png file
-            pdfImage = PdfImage.Load(sTempFile)
+                'load the saved png file
+                pdfImage = PdfImage.Load(sTempFile)
 
-            ' The steps below add a new page in landscape format to the final pdf document 
-            destpage = DestFile.Pages.Add()
-            ' Initialize transform object
-            transform = PdfMatrix.Identity
-            ' Set the image origin (bottom-left corner) to bottom-right of page
-            transform.Translate(destpage.Size.Width, 0)
-            ' Set the image size for landscape format
-            transform.Scale(destpage.Size.Width, destpage.Size.Height)
-            ' Rotate image 90 degrees counterclockwise
-            transform.Rotate(90)
-            ' Draw image
-            destpage.Content.DrawImage(pdfImage, transform)
-            ' Rotate page 90 degrees clockwise
-            destpage.Rotate = 90
+                ' The steps below add a new page in landscape format to the final pdf document 
+                destpage = DestFile.Pages.Add()
+                ' Initialize transform object
+                transform = PdfMatrix.Identity
+                ' Set the image origin (bottom-left corner) to bottom-right of page
+                transform.Translate(destpage.Size.Width, 0)
+                ' Set the image size for landscape format
+                transform.Scale(destpage.Size.Width, destpage.Size.Height)
+                ' Rotate image 90 degrees counterclockwise
+                transform.Rotate(90)
+                ' Draw image
+                destpage.Content.DrawImage(pdfImage, transform)
+                ' Rotate page 90 degrees clockwise
+                destpage.Rotate = 90
 
-        Next
+            Next
 
-        srcDoc.Dispose()
+        Catch ex As Exception
+            Throw ex
+
+        Finally
+            srcDoc.Dispose()
+
+        End Try
 
     End Sub
 

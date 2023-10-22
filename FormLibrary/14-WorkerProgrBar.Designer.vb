@@ -61,6 +61,7 @@ Partial Class frmWorkerProgress
         '
         'lblCount1
         '
+        Me.lblCount1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblCount1.AutoSize = True
         Me.lblCount1.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblCount1.Location = New System.Drawing.Point(432, 37)
@@ -72,6 +73,8 @@ Partial Class frmWorkerProgress
         '
         'lblFolder1
         '
+        Me.lblFolder1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFolder1.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblFolder1.Location = New System.Drawing.Point(27, 8)
         Me.lblFolder1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
@@ -93,6 +96,7 @@ Partial Class frmWorkerProgress
         '
         'cmdLocation
         '
+        Me.cmdLocation.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdLocation.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.cmdLocation.Location = New System.Drawing.Point(436, 8)
         Me.cmdLocation.Margin = New System.Windows.Forms.Padding(2)
@@ -115,6 +119,8 @@ Partial Class frmWorkerProgress
         '
         'lblFolder2
         '
+        Me.lblFolder2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFolder2.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblFolder2.Location = New System.Drawing.Point(24, 96)
         Me.lblFolder2.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
@@ -125,6 +131,7 @@ Partial Class frmWorkerProgress
         '
         'lblCount2
         '
+        Me.lblCount2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblCount2.AutoSize = True
         Me.lblCount2.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblCount2.Location = New System.Drawing.Point(429, 125)
@@ -159,6 +166,8 @@ Partial Class frmWorkerProgress
         '
         'lblFolder4
         '
+        Me.lblFolder4.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFolder4.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblFolder4.Location = New System.Drawing.Point(21, 275)
         Me.lblFolder4.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
@@ -169,6 +178,7 @@ Partial Class frmWorkerProgress
         '
         'lblCount4
         '
+        Me.lblCount4.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblCount4.AutoSize = True
         Me.lblCount4.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblCount4.Location = New System.Drawing.Point(427, 304)
@@ -203,6 +213,8 @@ Partial Class frmWorkerProgress
         '
         'lblFolder3
         '
+        Me.lblFolder3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFolder3.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblFolder3.Location = New System.Drawing.Point(24, 187)
         Me.lblFolder3.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
@@ -213,6 +225,7 @@ Partial Class frmWorkerProgress
         '
         'lblCount3
         '
+        Me.lblCount3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblCount3.AutoSize = True
         Me.lblCount3.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblCount3.Location = New System.Drawing.Point(429, 216)
@@ -247,6 +260,8 @@ Partial Class frmWorkerProgress
         '
         'lblFolder5
         '
+        Me.lblFolder5.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFolder5.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblFolder5.Location = New System.Drawing.Point(21, 364)
         Me.lblFolder5.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
@@ -257,6 +272,7 @@ Partial Class frmWorkerProgress
         '
         'lblCount5
         '
+        Me.lblCount5.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblCount5.AutoSize = True
         Me.lblCount5.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblCount5.Location = New System.Drawing.Point(427, 393)
@@ -280,10 +296,11 @@ Partial Class frmWorkerProgress
         '
         'cmdClose
         '
+        Me.cmdClose.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdClose.BackColor = System.Drawing.SystemColors.ControlLight
         Me.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdClose.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdClose.Location = New System.Drawing.Point(397, 443)
+        Me.cmdClose.Location = New System.Drawing.Point(421, 443)
         Me.cmdClose.Margin = New System.Windows.Forms.Padding(2)
         Me.cmdClose.Name = "cmdClose"
         Me.cmdClose.Size = New System.Drawing.Size(74, 25)
@@ -297,7 +314,7 @@ Partial Class frmWorkerProgress
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.CancelButton = Me.cmdLocation
-        Me.ClientSize = New System.Drawing.Size(500, 481)
+        Me.ClientSize = New System.Drawing.Size(524, 481)
         Me.ControlBox = False
         Me.Controls.Add(Me.cmdClose)
         Me.Controls.Add(Me.lblStep5)

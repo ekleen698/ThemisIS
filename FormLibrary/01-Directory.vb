@@ -154,6 +154,7 @@ Public Class frmDirectory
             cmdBackup.Enabled = True
             cmdRestore.Enabled = True
             cmdRemove.Enabled = True
+            lnkActivity.Enabled = True
             Me.lvProjects.Enabled = True
 
             'Update project listview
@@ -528,6 +529,45 @@ Public Class frmDirectory
 
     End Sub
 
+    Private Sub lnkActivity_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lnkActivity.LinkClicked
+        ' Generate password-protected Excel file with Project activity log
+
+        Dim desktopPath As String = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+        Dim destFile As String = ""
+        Dim oFile As FileInfo
+
+        Cursor.Current = Cursors.WaitCursor
+        Try
+            ' Create Excel file
+            destFile = CurrDirectory.ActivityLog(desktopPath)
+            oFile = New FileInfo(destFile)
+            If oFile.Exists Then
+                MsgBox($"Activity Log Exported{vbCrLf & vbCrLf}{destFile}", vbOKOnly, "Operation Complete")
+
+            Else
+                ' this should not happen
+                Throw New FileNotFoundException
+
+            End If
+
+        Catch ex As OperationCanceledException
+            ' Do nothing
+
+        Catch ex As Exception
+            If Not IsNothing(ex.InnerException) Then
+                ex = ex.InnerException
+            End If
+            Logger.WriteToLog(ex)
+            MsgBox($"{ex.GetType} while exporting file{vbCrLf & vbCrLf}Path: <{destFile}>",
+                   vbOKOnly + vbCritical, "File Save Error")
+
+
+        End Try
+        Cursor.Current = Cursors.Default
+
+
+    End Sub
+
     Private Sub lvProjects_ItemSelectionChanged(sender As Object,
                 e As ListViewItemSelectionChangedEventArgs) Handles _
                 lvProjects.ItemSelectionChanged
@@ -591,11 +631,8 @@ Public Class frmDirectory
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
-
-
         MsgBox($"Client: {Me.ClientSize.Width} x {Me.ClientSize.Height}{vbCrLf + vbCrLf}Form: {Me.Width} x {Me.Height}")
 
     End Sub
-
 
 End Class

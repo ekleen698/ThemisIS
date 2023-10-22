@@ -63,9 +63,12 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 
         '''/*  Drop Sequence and Table if they exist  */
+        '''DROP TABLE IF EXISTS [dbo].[sys_LicenseKeys];
+        '''DROP TABLE IF EXISTS [dbo].[sys_DirectoryInfo];
+        '''DROP TABLE IF EXISTS [dbo].[ProjectHistory];
         '''DROP TABLE IF EXISTS [dbo].[ProjectDirectory];
         '''DROP SEQUENCE IF EXISTS [dbo].[sProjectDirectory_PK];
-        '''DROP TABLE IF EXISTS [dbo].[sys_DirectoryInfo];
+        '''
         '''
         '''/*  Create Project Directory table  */
         '''BEGIN TRANSACTION
@@ -76,64 +79,12 @@ Namespace My.Resources
         ''' MINVALUE 1
         ''' MAXVALUE 999
         ''' NO CACHE ;
-        '''COMMIT
         '''
-        '''BEGIN TRANSACTION
-        '''CREATE TABLE [dbo].[ProjectDirectory] (
-        '''[ID] INTEGER NOT NULL,
-        '''[GUID] VARCHAR(36) DEFAULT NEWI [rest of string was truncated]&quot;;.
+        '''CREATE TABLE [dbo].[ProjectD [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property CreateDirectory() As String
             Get
                 Return ResourceManager.GetString("CreateDirectory", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to 
-        '''/*  Create Trigger on Project Directory table to generate Project Database name  */
-        '''CREATE TRIGGER [dbo].[DBName] ON [dbo].[ProjectDirectory]
-        '''AFTER INSERT
-        '''AS
-        '''BEGIN
-        '''	DECLARE @id INT = (SELECT [ID] FROM inserted);
-        '''	UPDATE [dbo].[ProjectDirectory] 
-        '''	SET [ProjectDatabase] = CONCAT(&apos;mlg_Project_&apos;, FORMAT([ID], &apos;000&apos;))
-        '''	WHERE [ID]=@id;
-        '''END;.
-        '''</summary>
-        Friend ReadOnly Property CreateDirectoryTrigger() As String
-            Get
-                Return ResourceManager.GetString("CreateDirectoryTrigger", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to 
-        '''/* Create License Key Table */
-        '''
-        '''BEGIN TRANSACTION
-        '''DROP TABLE IF EXISTS [dbo].[sys_LicenseKeys];
-        '''CREATE TABLE [dbo].[sys_LicenseKeys] (
-        '''ID INT NOT NULL,
-        '''[Key] VARCHAR(32) NOT NULL,
-        '''[Project_GUID] VARCHAR(36) NULL
-        ''');
-        '''
-        '''BEGIN
-        '''	DECLARE @ID INT = 1;
-        '''	DECLARE @Rand INT;
-        '''	DECLARE @Key VARCHAR(32);
-        '''
-        '''	WHILE @ID&lt;=1000
-        '''	BEGIN
-        '''		SET @Rand = CAST(RAND(@id)*1000000 AS INT);
-        '''		SET @Key = CONVERT(VARCHAR(32), HASHBYTES(&apos;MD5&apos;, CAST(@Rand AS VARCHAR(7))), 2);
-        '''		INSERT INTO dbo.sys_LicenseKeys ([ID], [Key] [rest of string was truncated]&quot;;.
-        '''</summary>
-        Friend ReadOnly Property CreateLicenseKeys() As String
-            Get
-                Return ResourceManager.GetString("CreateLicenseKeys", resourceCulture)
             End Get
         End Property
         

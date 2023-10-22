@@ -1,11 +1,18 @@
+/* CREATE ALL DIRECTORY OBJECTS */
+
+DECLARE @SQLString NVARCHAR(MAX);
 
 /*  Drop Sequence and Table if they exist  */
+DROP TABLE IF EXISTS [dbo].[sys_LicenseKeys];
+DROP TABLE IF EXISTS [dbo].[sys_DirectoryInfo];
+DROP TABLE IF EXISTS [dbo].[ProjectHistory];
 DROP TABLE IF EXISTS [dbo].[ProjectDirectory];
 DROP SEQUENCE IF EXISTS [dbo].[sProjectDirectory_PK];
-DROP TABLE IF EXISTS [dbo].[sys_DirectoryInfo];
+
 
 /*  Create Project Directory table  */
 BEGIN TRANSACTION
+-- create sequence for ID
 CREATE SEQUENCE [sProjectDirectory_PK] 
  AS [int]
  START WITH 1
@@ -13,9 +20,8 @@ CREATE SEQUENCE [sProjectDirectory_PK]
  MINVALUE 1
  MAXVALUE 999
  NO CACHE ;
-COMMIT
 
-BEGIN TRANSACTION
+ -- create table
 CREATE TABLE [dbo].[ProjectDirectory] (
 [ID] INTEGER NOT NULL,
 [GUID] VARCHAR(36) DEFAULT NEWID() NOT NULL,
@@ -28,12 +34,40 @@ CREATE TABLE [dbo].[ProjectDirectory] (
 [Description] VARCHAR(255) NULL,
 [ProjectDatabase] VARCHAR(15) NULL
 );
-COMMIT
 
-BEGIN TRANSACTION
+-- add sequence to table
 ALTER TABLE [dbo].[ProjectDirectory] 
 ADD CONSTRAINT [DF_ProjectDirectory_PK] DEFAULT (NEXT VALUE FOR [sProjectDirectory_PK]) FOR [ID];
 COMMIT
+
+-- create trigger for ProjectDatabase
+BEGIN TRANSACTION
+SET @SQLString = N'
+CREATE TRIGGER [dbo].[DBName] ON [dbo].[ProjectDirectory]
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @id INT = (SELECT [ID] FROM inserted);
+	UPDATE [dbo].[ProjectDirectory] 
+	SET [ProjectDatabase] = CONCAT(''mlg_Project_'', FORMAT([ID], ''000''))
+	WHERE [ID]=@id;
+END;'
+EXECUTE sp_executesql @SQLString;
+COMMIT
+
+
+/*  Create Project History table */
+BEGIN TRANSACTION
+CREATE TABLE [dbo].[ProjectHistory] (
+[ID] INTEGER IDENTITY(1,1) NOT NULL PRIMARY KEY,
+[GUID] VARCHAR(36) NOT NULL,
+[ProjectName] VARCHAR(25) NOT NULL,
+[ProjectDistrict] VARCHAR(25) NULL,
+[Action] VARCHAR(20) NOT NULL,
+[TimeStamp] DATETIME DEFAULT GETDATE() NOT NULL
+);
+COMMIT
+
 
 /*  Create Project Info table  */
 BEGIN TRANSACTION
@@ -45,13 +79,29 @@ CREATE TABLE [dbo].[sys_DirectoryInfo] (
 COMMIT
 
 
-/*  Create Project History table */
+/* Create License Key Table */
 BEGIN TRANSACTION
-CREATE TABLE [dbo].[ProjectHistory] (
-[ID] INTEGER IDENTITY(1,1) NOT NULL,
-[GUID] VARCHAR(36) NOT NULL,
-[ProjectName] VARCHAR(25) NULL,
-[Action] VARCHAR(20) NOT NULL,
-[Date] DATE DEFAULT GETDATE() NOT NULL
+-- create table
+CREATE TABLE [dbo].[sys_LicenseKeys] (
+ID INT NOT NULL PRIMARY KEY,
+[Key] VARCHAR(32) NOT NULL UNIQUE ,
+[Project_GUID] VARCHAR(36) NULL
 );
+
+-- fill table
+BEGIN
+	DECLARE @Start INT = 1;
+	DECLARE @Rows INT = 1000;
+	DECLARE @ID INT = @Start;
+	DECLARE @Rand INT;
+	DECLARE @Key VARCHAR(32);
+
+	WHILE @ID <= (@Start+@Rows)
+	BEGIN
+		SET @Rand = CAST(RAND(@id)*1000000 AS INT);
+		SET @Key = CONVERT(VARCHAR(32), HASHBYTES('MD5', CAST(@Rand AS VARCHAR(7))), 2);
+		INSERT INTO dbo.sys_LicenseKeys ([ID], [Key]) VALUES (@ID, @Key);
+		SET @ID = @ID + 1;
+	END;
+END;
 COMMIT

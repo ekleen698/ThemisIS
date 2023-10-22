@@ -42,6 +42,7 @@ Partial Class frmDirectory
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
+        Me.lnkActivity = New System.Windows.Forms.LinkLabel()
         Me.SuspendLayout()
         '
         'lblServer
@@ -258,12 +259,25 @@ Partial Class frmDirectory
         Me.Button2.UseVisualStyleBackColor = True
         Me.Button2.Visible = False
         '
+        'lnkActivity
+        '
+        Me.lnkActivity.Enabled = False
+        Me.lnkActivity.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lnkActivity.Location = New System.Drawing.Point(696, 340)
+        Me.lnkActivity.Name = "lnkActivity"
+        Me.lnkActivity.Size = New System.Drawing.Size(70, 20)
+        Me.lnkActivity.TabIndex = 25
+        Me.lnkActivity.TabStop = True
+        Me.lnkActivity.Text = "Activity Log"
+        Me.ToolTip1.SetToolTip(Me.lnkActivity, "Create Project Activity Log")
+        '
         'frmDirectory
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.ControlLight
         Me.ClientSize = New System.Drawing.Size(787, 369)
+        Me.Controls.Add(Me.lnkActivity)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.cmdSettings)
@@ -310,4 +324,5 @@ Partial Class frmDirectory
     Friend WithEvents ToolTip1 As System.Windows.Forms.ToolTip
     Friend WithEvents Button1 As System.Windows.Forms.Button
     Friend WithEvents Button2 As System.Windows.Forms.Button
+    Friend WithEvents lnkActivity As System.Windows.Forms.LinkLabel
 End Class

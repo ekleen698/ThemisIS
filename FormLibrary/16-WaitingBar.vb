@@ -46,7 +46,7 @@ Public Class frmWaiting
         If a.Operation = "Restore" Then
             CurrDirectory.RestoreProject(a.FilePath)
         ElseIf a.Operation = "Remove" Then
-            CurrDirectory.RemoveProject(a.Project)
+            CurrDirectory.RemoveProject(a.Project, History:=True)
         ElseIf a.Operation = "Backup" Then
             CurrDirectory.BackupProject(a.Project, a.FilePath)
         End If
