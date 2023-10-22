@@ -65,7 +65,7 @@ Public Class ProjectDB
 
     End Sub
 
-    Public Sub Create(DatabaseName As String, LicenseKey As String, ProjectGuid As String)
+    Public Sub Create(ByRef Project As Project)
         'Create new project database on current server.
         'Throws exception
 
@@ -75,23 +75,23 @@ Public Class ProjectDB
             'Add Filestream file
             With CurrServer.Connection.CreateCommand
                 .CommandText = $"
-                    CREATE DATABASE [{DatabaseName}];
-                    ALTER DATABASE [{DatabaseName}] MODIFY File(name=N'{DatabaseName}', 
+                    CREATE DATABASE [{Project.DatabaseName}];
+                    ALTER DATABASE [{Project.DatabaseName}] MODIFY File(name=N'{Project.DatabaseName}', 
                         NEWNAME=N'Data_File');
-                    ALTER DATABASE [{DatabaseName}] MODIFY File(name=N'{DatabaseName}_log', 
+                    ALTER DATABASE [{Project.DatabaseName}] MODIFY File(name=N'{Project.DatabaseName}_log', 
                         NEWNAME=N'Log_File');
-                    ALTER DATABASE [{DatabaseName}] ADD FILEGROUP [FILESTREAM] CONTAINS FILESTREAM;
-                    ALTER DATABASE [{DatabaseName}] ADD FILE ( 
+                    ALTER DATABASE [{Project.DatabaseName}] ADD FILEGROUP [FILESTREAM] CONTAINS FILESTREAM;
+                    ALTER DATABASE [{Project.DatabaseName}] ADD FILE ( 
                         NAME = N'FS_Files', 
-	                    FILENAME = N'C:\FileStream\{DatabaseName}' ) 
+	                    FILENAME = N'C:\FileStream\{Project.DatabaseName}' ) 
 	                    TO FILEGROUP [FILESTREAM];"
                 .ExecuteNonQuery()
             End With
 
             'Update Name property
-            _Name = DatabaseName
+            _Name = Project.DatabaseName
 
-            Logger.WriteToLog($"Project database '{DatabaseName}' created.")
+            Logger.WriteToLog($"Project database '{Project.DatabaseName}' created.")
 
             'Connect new database
             Connect()
@@ -100,7 +100,7 @@ Public Class ProjectDB
             _Name = Nothing
             _Connection = Nothing
             _IsConnected = False
-            Logger.WriteToLog($"{ex.GetType} occurred while creating project database '{DatabaseName}'.")
+            Logger.WriteToLog($"{ex.GetType} occurred while creating project database '{Project.DatabaseName}'.")
             Logger.WriteToLog(ex.Message)
             Throw ex     'for frmProjectUpdate error handling
 
@@ -115,13 +115,19 @@ Public Class ProjectDB
                 .CommandText = $"
                     INSERT INTO dbo.[ProjectInfo] ([Key], [Value]) 
                     VALUES ('CreatedBy', dbo.fUsername()) 
-                    , ('CreatedOn', CONVERT(VARCHAR, GETDATE(), 101)) 
-                    , ('ApplicationVersion', @Ver)
+                    , ('ProjectGuid', @Guid)
+                    , ('CreatedOn', @Created) 
                     , ('LicenseKey', @License)
-                    , ('ProjectGuid', @Guid); "
-                .Parameters.Add("@Ver", SqlDbType.VarChar, 100).Value = Application.ProductVersion
-                .Parameters.Add("@License", SqlDbType.VarChar, 32).Value = LicenseKey
-                .Parameters.Add("@Guid", SqlDbType.VarChar, 36).Value = ProjectGuid
+                    , ('ApplicationVersion', @AppVersion)
+                    , ('RequestDate', @RequestDate)
+                    , ('District', @District); "
+                .Parameters.Add("@Guid", SqlDbType.VarChar).Value = Project.ProjectGuid
+                .Parameters.Add("@Created", SqlDbType.VarChar).Value = Project.CreatedOn.ToString("d")
+                .Parameters.Add("@License", SqlDbType.VarChar).Value = Project.LicenseKey
+                .Parameters.Add("@AppVersion", SqlDbType.VarChar).Value = Project.ApplicationVersion
+                .Parameters.Add("@RequestDate", SqlDbType.VarChar).Value = Project.RequestDate.ToString("d")
+                .Parameters.Add("@District", SqlDbType.VarChar).Value = Project.District
+
                 .ExecuteNonQuery()
 
             End With

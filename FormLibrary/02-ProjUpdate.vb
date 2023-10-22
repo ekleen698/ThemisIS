@@ -54,6 +54,8 @@ Public Class frmProjUpdate
         ' Form properties
         Me.MaximumSize = Me.Size
         Me.MinimumSize = Me.Size
+        Me.dtRequestDate.Format = DateTimePickerFormat.Custom
+        Me.dtRequestDate.CustomFormat = "MM/dd/yyyy"
 
         If _sMode = "Create" Then
             'Add new project to directory
@@ -67,9 +69,12 @@ Public Class frmProjUpdate
         ElseIf _sMode = "Edit" Then
             'Edit existing project
             Me.Text = $"Edit Existing Project"
+            Me.dtRequestDate.Text = _oProject.RequestDate
+            Me.dtRequestDate.Enabled = False
+            Me.txtDistrict.Text = _oProject.District
+            Me.txtDistrict.Enabled = False
             Me.txtName.Text = _oProject.Name
             Me.txtOwner.Text = _oProject.Owner
-            Me.txtDistrict.Text = _oProject.District
             Me.txtDescription.Text = _oProject.Description
             Me.txtID.Text = _oProject.ID.ToString
             Me.txtCreatedOn.Text = _oProject.CreatedOn.ToString("d")
@@ -101,6 +106,10 @@ Public Class frmProjUpdate
         'Execute operation to CREATE/UPDATE project
 
         Try
+            'Dim x As Date = CDate(Me.dtRequestDate.Text)
+            'Debug.WriteLine(x.ToString)
+            'Exit Sub
+
             'Validation requires that Project Name and Owner fields are not empty
             If fValidate() Then
 
@@ -114,9 +123,10 @@ Public Class frmProjUpdate
                     _oProject = CurrDirectory.AddNewProject(
                         LicenseKey:=_sLicenseKey,
                         ApplicationVersion:=Application.ProductVersion,
+                        RequestDate:=CDate(Me.dtRequestDate.Text),
+                        District:=Me.txtDistrict.Text,
                         Name:=Me.txtName.Text,
                         Owner:=Me.txtOwner.Text,
-                        District:=Me.txtDistrict.Text,
                         Description:=Me.txtDescription.Text)
 
                     If Not IsNothing(_oProject) Then
@@ -130,8 +140,7 @@ Public Class frmProjUpdate
 
                 ElseIf _sMode = "Edit" Then
                     'Update project information in project directory table
-                    CurrDirectory.UpdateProject(_oProject, Me.txtName.Text, Me.txtOwner.Text,
-                        Me.txtDistrict.Text, Me.txtDescription.Text)
+                    CurrDirectory.UpdateProject(_oProject, Me.txtName.Text, Me.txtOwner.Text, Me.txtDescription.Text)
                     Logger.WriteToLog($"***Project {_oProject.ID} Details Updated***")
                     _Result = True
 
@@ -146,6 +155,7 @@ Public Class frmProjUpdate
             MsgBox($"{DateTime.Now} > {ex.GetType}", vbOKOnly + vbCritical, "Create Project Error")
             Logger.WriteToLog($"[{ex.GetType}] in Project Update form {_sMode} mode.")
             Logger.WriteToLog(ex.ToString)
+            Debug.WriteLine(ex)
 
         Finally
             Cursor.Current = Cursors.Default
@@ -186,7 +196,7 @@ Public Class frmProjUpdate
         'Requires that Name and Owner fields have text in them before creating a new project
         ' or updating an existing one.
 
-        If ((Me.txtName.Text.Length > 0) And (Me.txtOwner.Text.Length > 0)) Then
+        If ((Me.dtRequestDate.Text.Length > 0) And (Me.txtDistrict.Text.Length > 0)) Then
             Return True
         Else
             MsgBox("Please fill in all required fields.", MsgBoxStyle.OkOnly, "Required Information")

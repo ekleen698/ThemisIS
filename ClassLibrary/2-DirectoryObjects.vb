@@ -102,23 +102,23 @@ Public Class Directory
 
     End Sub
 
-    Public Function AddNewProject(LicenseKey As String, ApplicationVersion As String, Name As String,
-                                Owner As String, District As String, Description As String) As Project
+    Public Function AddNewProject(LicenseKey As String, ApplicationVersion As String, RequestDate As Date, District As String,
+                                  Name As String, Owner As String, Description As String) As Project
         ' For creating new projects
 
         ' Insert new row into project directory
-        Dim oProject As Project = AddProject(LicenseKey, ApplicationVersion, Name, Owner, District, Description)
+        Dim oProject As Project = AddProject(LicenseKey, ApplicationVersion, RequestDate, District, Name, Owner, Description)
 
 
         Try
             ' Create Project Database for new project using derived database name
             With New ProjectDB()
-                .Create(oProject.DatabaseName, oProject.LicenseKey, oProject.ProjectGuid)
+                .Create(oProject)
                 .Close()
             End With
 
             ' Add entry to History table
-            UpdateHistory(oProject.ProjectGuid, oProject.Name, oProject.District, "Add")
+            UpdateHistory(oProject.ProjectGuid, oProject.RequestDate, oProject.District, oProject.Name, "Add")
 
             Return oProject
 
@@ -132,8 +132,9 @@ Public Class Directory
     End Function
 
     Private Function AddProject(Optional LicenseKey As String = "", Optional ApplicationVersion As String = "",
+                                Optional RequestDate As Date = #1/1/1900#, Optional District As String = "",
                                 Optional Name As String = "", Optional Owner As String = "",
-                                Optional District As String = "", Optional Description As String = ""
+                                Optional Description As String = ""
                                 ) As Project
         ' Add project to directory
         ' Exception: return Nothing
@@ -145,15 +146,17 @@ Public Class Directory
             'Insert new row into directory table
             With _Connection.CreateCommand
                 .CommandText = $"
-                INSERT INTO [ProjectDirectory] ([ApplicationVersion], [LicenseKey], [Name], [Owner], [District], [Description]) 
-                VALUES ( @AppVers, @License, @Name, @Owner, @District, @Description); 
+                INSERT INTO [ProjectDirectory] ([LicenseKey], [ApplicationVersion], [RequestDate], [District], 
+                    [Name], [Owner], [Description]) 
+                VALUES (@License, @AppVers, @RequestDate, @District, @Name, @Owner, @Description); 
                 SELECT CAST([last_used_value] AS INT) AS [ID]
                 FROM [sys].[sequences] WHERE [name] ='sProjectDirectory_PK';"
                 .Parameters.Add("@License", SqlDbType.VarChar, 255).Value = LicenseKey
                 .Parameters.Add("@AppVers", SqlDbType.VarChar, 255).Value = ApplicationVersion
+                .Parameters.Add("@RequestDate", SqlDbType.Date).Value = RequestDate
+                .Parameters.Add("@District", SqlDbType.VarChar, 25).Value = District
                 .Parameters.Add("@Name", SqlDbType.VarChar, 15).Value = Name
                 .Parameters.Add("@Owner", SqlDbType.VarChar, 25).Value = Owner
-                .Parameters.Add("@District", SqlDbType.VarChar, 25).Value = District
                 .Parameters.Add("@Description", SqlDbType.VarChar, 255).Value = Description
 
                 'Execute INSERT and return new row ID for next step
@@ -179,8 +182,7 @@ Public Class Directory
 
     End Function
 
-    Public Sub UpdateProject(ByRef Project As Project, Name As String, Owner As String,
-                             District As String, Description As String)
+    Public Sub UpdateProject(ByRef Project As Project, Name As String, Owner As String, Description As String)
         ' Update project properties in directory table
         ' Throws exception
 
@@ -190,11 +192,10 @@ Public Class Directory
         With _Connection.CreateCommand()
             .CommandText = "
                 UPDATE [ProjectDirectory] 
-                SET [Name]=@Name, [Owner]=@Owner, [District]=@District, [Description]=@Description
+                SET [Name]=@Name, [Owner]=@Owner, [Description]=@Description
                 WHERE [ID]=@ID;"
             .Parameters.Add("@Name", SqlDbType.VarChar, 15).Value = Name
             .Parameters.Add("@Owner", SqlDbType.VarChar, 25).Value = Owner
-            .Parameters.Add("@District", SqlDbType.VarChar, 25).Value = District
             .Parameters.Add("@Description", SqlDbType.VarChar, 255).Value = Description
             .Parameters.Add("@ID", SqlDbType.Int).Value = iID
             .ExecuteNonQuery()
@@ -206,36 +207,39 @@ Public Class Directory
         Project = CurrDirectory.Projects(iID)
 
         ' Add entry to History table
-        UpdateHistory(Project.ProjectGuid, Project.Name, Project.District, "Update")
+        UpdateHistory(Project.ProjectGuid, Project.RequestDate, Project.District, Project.Name, "Update")
 
         Logger.WriteToLog($"Project {iID} updated.")
 
     End Sub
 
-    Private Sub UpdateProject(ByRef Project As Project, Name As String, Owner As String, District As String,
-                             Description As String, ProjectGuid As String, CreatedOn As Date,
-                             LicenseKey As String, ApplicationVersion As String)
+    Private Sub UpdateProject(ByRef Project As Project, ProjectGuid As String, CreatedOn As Date, LicenseKey As String,
+                              ApplicationVersion As String, RequestDate As Date, District As String, Name As String,
+                              Owner As String, Description As String
+                             )
         ' Update Restored project
         ' Throws exception
 
         Dim iID As Integer = Project.ID
         Dim sSQL As String = "
             UPDATE [ProjectDirectory] 
-            SET [Name]=@Name, [Owner]=@Owner, [District]=@District, [Description]=@Description,
-                [GUID]=@Guid, [CreatedOn]=@CreatedOn, [LicenseKey]=@License, [ApplicationVersion]=@AppVers
+            SET [GUID]=@Guid, [CreatedOn]=@CreatedOn, [LicenseKey]=@License, [ApplicationVersion]=@AppVers, 
+                [RequestDate]=@RequestDate, [District]=@District, 
+                [Name]=@Name, [Owner]=@Owner, [Description]=@Description
             WHERE [ID]=@ID;"
 
         'Execute UPDATE SQL
         With _Connection.CreateCommand
             .CommandText = sSQL
-            .Parameters.Add("@Name", SqlDbType.VarChar, 15).Value = Name
-            .Parameters.Add("@Owner", SqlDbType.VarChar, 25).Value = Owner
-            .Parameters.Add("@District", SqlDbType.VarChar, 25).Value = District
-            .Parameters.Add("@Description", SqlDbType.VarChar, 255).Value = Description
             .Parameters.Add("@Guid", SqlDbType.VarChar, 36).Value = ProjectGuid
             .Parameters.Add("@CreatedOn", SqlDbType.Date).Value = CreatedOn
             .Parameters.Add("@License", SqlDbType.VarChar, 32).Value = LicenseKey
             .Parameters.Add("@AppVers", SqlDbType.VarChar, 255).Value = ApplicationVersion
+            .Parameters.Add("@RequestDate", SqlDbType.Date).Value = RequestDate
+            .Parameters.Add("@District", SqlDbType.VarChar, 25).Value = District
+            .Parameters.Add("@Name", SqlDbType.VarChar, 15).Value = Name
+            .Parameters.Add("@Owner", SqlDbType.VarChar, 25).Value = Owner
+            .Parameters.Add("@Description", SqlDbType.VarChar, 255).Value = Description
             .Parameters.Add("@ID", SqlDbType.Int).Value = iID
             .ExecuteNonQuery()
         End With
@@ -268,7 +272,7 @@ Public Class Directory
             End With
 
             ' Add entry to History table
-            If History Then UpdateHistory(Project.ProjectGuid, Project.Name, Project.District, "Remove")
+            If History Then UpdateHistory(Project.ProjectGuid, Project.RequestDate, Project.District, Project.Name, "Remove")
 
             ' Update collection of projects
             refreshProjects()
@@ -296,9 +300,9 @@ Public Class Directory
                 ' Add directory info to database Project Info table
                 .CommandText = $"
                         DELETE FROM {Project.DatabaseName}.dbo.ProjectInfo
-                        WHERE [Key] IN ('Name', 'Owner', 'District', 'Description');
+                        WHERE [Key] IN ('Name', 'Owner', 'Description');
                         INSERT INTO {Project.DatabaseName}.dbo.ProjectInfo([Key], [Value])
-                        VALUES ('Name', @Name), ('Owner', @Owner), ('District', @District), ('Description', @Description);"
+                        VALUES ('Name', @Name), ('Owner', @Owner), ('Description', @Description);"
                 .Parameters.Add("@Name", SqlDbType.VarChar, 255).Value = Project.Name
                 .Parameters.Add("@Owner", SqlDbType.VarChar, 255).Value = Project.Owner
                 .Parameters.Add("@Description", SqlDbType.VarChar, 255).Value = Project.Description
@@ -378,9 +382,7 @@ Public Class Directory
             Dim sSQL = $"
                 IF OBJECT_ID(N'[dbo].[ProjectInfo]') IS NOT NULL
 	                SELECT [Key], [Value]
-	                FROM [dbo].[ProjectInfo]
-                    WHERE [Key] IN ('ProjectGuid', 'CreatedOn', 'LicenseKey', 'ApplicationVersion', 
-                        'Name', 'Owner', 'District', 'Description');
+	                FROM [dbo].[ProjectInfo];
                 ELSE
                     -- Allow for backward compatibility
 	                IF OBJECT_ID(N'[dbo].[RestoreProjDir]') IS NOT NULL
@@ -411,14 +413,15 @@ Public Class Directory
                 ' Add ProjectInfo members to new project, update Project object
                 UpdateProject(
                     Project:=oNewProject,
-                    Name:=ValuesDict("Name"),
-                    Owner:=ValuesDict("Owner"),
-                    District:=ValuesDict("District"),
-                    Description:=ValuesDict("Description"),
                     ProjectGuid:=ValuesDict("ProjectGuid"),
                     CreatedOn:=ValuesDict("CreatedOn"),
                     LicenseKey:=ValuesDict("LicenseKey"),
-                    ApplicationVersion:=ValuesDict("ApplicationVersion")
+                    ApplicationVersion:=ValuesDict("ApplicationVersion"),
+                    RequestDate:=ValuesDict("RequestDate"),
+                    District:=ValuesDict("District"),
+                    Name:=ValuesDict("Name"),
+                    Owner:=ValuesDict("Owner"),
+                    Description:=ValuesDict("Description")
                     )
 
                 ' Check if license key already used for existing project
@@ -441,7 +444,7 @@ Public Class Directory
 
                 Else
                     ' Add entry to History table
-                    UpdateHistory(oNewProject.ProjectGuid, oNewProject.Name, oNewProject.District, "Restore")
+                    UpdateHistory(oNewProject.ProjectGuid, oNewProject.RequestDate, oNewProject.District, oNewProject.Name, "Restore")
 
                 End If
 
@@ -493,16 +496,17 @@ Public Class Directory
 
     End Sub
 
-    Private Sub UpdateHistory(ByVal ProjectGuid As String, ByVal ProjectName As String,
-                              ByVal ProjectDistrict As String, ByVal Action As String)
+    Private Sub UpdateHistory(ByVal ProjectGuid As String, ByVal RequestDate As Date,
+                              ByVal ProjectDistrict As String, ByVal ProjectName As String, ByVal Action As String)
 
         With Connection.CreateCommand()
             .CommandText = "
-                INSERT INTO dbo.ProjectHistory (GUID, ProjectName, ProjectDistrict, Action)
-                VALUES (@GUID, @Name, @District, @Action);"
+                INSERT INTO dbo.ProjectHistory (GUID, RequestDate, District, Name, Action)
+                VALUES (@GUID, @RequestDate, @District, @Name, @Action);"
             .Parameters.Add("@GUID", SqlDbType.VarChar).Value = ProjectGuid
-            .Parameters.Add("@Name", SqlDbType.VarChar).Value = ProjectName
+            .Parameters.Add("@RequestDate", SqlDbType.Date).Value = RequestDate
             .Parameters.Add("@District", SqlDbType.VarChar).Value = ProjectDistrict
+            .Parameters.Add("@Name", SqlDbType.VarChar).Value = ProjectName
             .Parameters.Add("@Action", SqlDbType.VarChar).Value = Action
             .ExecuteNonQuery()
 
@@ -534,7 +538,7 @@ Public Class Directory
         Try
             ' Fill DataTable
             sSQL = "
-            select k.[Key] [LicenseKey], h.[GUID] [ProjectGuid], h.ProjectName, h.ProjectDistrict, h.[Action], h.[TimeStamp]
+            select k.[Key] [LicenseKey], h.[GUID] [ProjectGuid], h.RequestDate, h.District, h.[Action], h.[TimeStamp]
             from dbo.ProjectHistory h
             join dbo.sys_LicenseKeys k on h.[GUID]=k.Project_GUID
             order by k.[Key], h.[GUID], h.[TimeStamp];"
@@ -614,7 +618,7 @@ Public Class Directory
         'Create datatable from [ProjectDirectory] table in project directory database
         sSQL = $"
             SELECT [ID], CAST([GUID] AS VARCHAR(36)) [GUID], CAST([CreatedOn] AS varchar) AS [CreatedOn], [LicenseKey], 
-                [ApplicationVersion], [Name], [Owner], [District], [Description], [ProjectDatabase]
+                [ApplicationVersion], [RequestDate], [District], [Name], [Owner], [Description], [ProjectDatabase]
             FROM [dbo].[ProjectDirectory]
             ORDER BY [ID];"
         With New SqlDataAdapter
@@ -631,9 +635,10 @@ Public Class Directory
                     CreatedOn:=row("CreatedOn"),
                     LicenseKey:=row("LicenseKey"),
                     ApplicationVersion:=row("ApplicationVersion"),
+                    RequestDate:=row("RequestDate"),
+                    District:=row("District"),
                     Name:=row("Name"),
                     Owner:=row("Owner"),
-                    District:=row("District"),
                     Description:=row("Description"),
                     DatabaseName:=row("ProjectDatabase")
                     ))
@@ -686,27 +691,32 @@ Public Class Project
     Public ReadOnly Property CreatedOn As Date = #1/1/1900#
     Public ReadOnly Property LicenseKey As String
     Public ReadOnly Property ApplicationVersion As String
+    Public ReadOnly Property RequestDate As Date = #1/1/1900#
+    Public ReadOnly Property District As String
     Public ReadOnly Property Name As String
     Public ReadOnly Property Owner As String
-    Public ReadOnly Property District As String
     Public ReadOnly Property Description As String
     Public ReadOnly Property DatabaseName As String
 
 
     Protected Friend Sub New(ID As Integer, ProjectGuid As String, CreatedOn As Date, LicenseKey As String,
-                             ApplicationVersion As String, Name As String, Owner As String,
-                             District As String, Description As String, DatabaseName As String
+                             ApplicationVersion As String, RequestDate As Date, District As String, Name As String,
+                             Owner As String, Description As String, DatabaseName As String
                              )
-        'Create new object and set property values
+        ' Create new object and set property values
 
+        ' Generated
         _ID = ID
         _ProjectGuid = ProjectGuid
         _CreatedOn = CreatedOn
         _LicenseKey = LicenseKey
         _ApplicationVersion = ApplicationVersion
+
+        ' User entered
+        _RequestDate = RequestDate
+        _District = District
         _Name = Name
         _Owner = Owner
-        _District = District
         _Description = Description
         _DatabaseName = DatabaseName
 

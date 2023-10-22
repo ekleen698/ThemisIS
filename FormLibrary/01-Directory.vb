@@ -15,7 +15,7 @@ Public Class frmDirectory
         End Get
     End Property
 
-    Private _dtProjects As New DataTable
+    'Private _dtProjects As New DataTable
     Private _oSettings As New ClassLibrary.My.MySettings
     Private _ScaleFactor As Single
     Private _DevMode As Boolean
@@ -47,8 +47,9 @@ Public Class frmDirectory
             ' Add columns to listview -> auto scale does not affect column widths
             With Me.lvProjects.Columns
                 .Add("ID", Convert.ToInt32(35 * _ScaleFactor)) '35
-                .Add("Name", Convert.ToInt32(216 * _ScaleFactor)) '216
-                .Add("District", Convert.ToInt32(216 * _ScaleFactor)) '216
+                .Add("RequestDate", Convert.ToInt32(100 * _ScaleFactor)) '100
+                .Add("District", Convert.ToInt32(180 * _ScaleFactor)) '180
+                .Add("Name", Convert.ToInt32(160 * _ScaleFactor)) '160
                 .Add("Owner", Convert.ToInt32(160 * _ScaleFactor)) '160
                 .Add("Description", 0)
             End With
@@ -82,7 +83,7 @@ Public Class frmDirectory
 
         Try
             _oSettings = Nothing
-            _dtProjects.Dispose()
+            '_dtProjects.Dispose()
             If Not IsNothing(CurrDirectory) Then CurrDirectory.Close()  'executes CurrServer.Close()
 
         Catch ex As Exception
@@ -138,8 +139,6 @@ Public Class frmDirectory
                 CurrServer.Close()
                 Exit Sub
             End If
-
-            'CurrDirectory
 
             'Disable form server objects and update connection status label
             cmdConnectServer.Enabled = False
@@ -575,7 +574,7 @@ Public Class frmDirectory
 
         Try
             If Me.lvProjects.SelectedItems.Count > 0 Then
-                txtDescription.Text = Me.lvProjects.Items(e.ItemIndex).SubItems(4).Text
+                txtDescription.Text = Me.lvProjects.Items(e.ItemIndex).SubItems(5).Text
             End If
 
         Catch ex As Exception
@@ -589,7 +588,7 @@ Public Class frmDirectory
         'Refresh the listview
         'Throws exception
 
-        Dim row(4) As String
+        Dim row(5) As String
 
         Try
             'Clear all data from listview and project description textbox
@@ -599,10 +598,11 @@ Public Class frmDirectory
             'Create a new row in the listview for each project
             For Each itm In CurrDirectory.Projects
                 row(0) = itm.Value.ID
-                row(1) = itm.Value.Name
+                row(1) = itm.Value.RequestDate.ToString("d")
                 row(2) = itm.Value.District
-                row(3) = itm.Value.Owner
-                row(4) = itm.Value.Description
+                row(3) = itm.Value.Name
+                row(4) = itm.Value.Owner
+                row(5) = itm.Value.Description
                 lvProjects.Items.Add(New ListViewItem(row))
             Next
 

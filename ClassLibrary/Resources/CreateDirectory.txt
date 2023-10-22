@@ -23,14 +23,15 @@ CREATE SEQUENCE [sProjectDirectory_PK]
 
  -- create table
 CREATE TABLE [dbo].[ProjectDirectory] (
-[ID] INTEGER NOT NULL,
+[ID] INTEGER PRIMARY KEY,
 [GUID] VARCHAR(36) DEFAULT NEWID() NOT NULL,
 [CreatedOn] DATE DEFAULT GETDATE() NOT NULL,
 [LicenseKey] varchar(32) NOT NULL,
-[ApplicationVersion] VARCHAR(10) NULL,
-[Name] VARCHAR(25) NOT NULL,
-[Owner] VARCHAR(25) NOT NULL,
-[District] VARCHAR(25) NULL,
+[ApplicationVersion] VARCHAR(10) NOT NULL,
+[RequestDate] DATE NOT NULL,
+[District] VARCHAR(25) NOT NULL,
+[Name] VARCHAR(25) NULL,
+[Owner] VARCHAR(25) NULL,
 [Description] VARCHAR(255) NULL,
 [ProjectDatabase] VARCHAR(15) NULL
 );
@@ -61,8 +62,9 @@ BEGIN TRANSACTION
 CREATE TABLE [dbo].[ProjectHistory] (
 [ID] INTEGER IDENTITY(1,1) NOT NULL PRIMARY KEY,
 [GUID] VARCHAR(36) NOT NULL,
-[ProjectName] VARCHAR(25) NOT NULL,
-[ProjectDistrict] VARCHAR(25) NULL,
+[RequestDate] DATE NOT NULL,
+[District] VARCHAR(25) NULL,
+[Name] VARCHAR(25) NULL,
 [Action] VARCHAR(20) NOT NULL,
 [TimeStamp] DATETIME DEFAULT GETDATE() NOT NULL
 );
