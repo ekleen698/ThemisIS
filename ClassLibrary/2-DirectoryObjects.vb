@@ -538,10 +538,10 @@ Public Class Directory
         Try
             ' Fill DataTable
             sSQL = "
-            select k.[Key] [LicenseKey], h.[GUID] [ProjectGuid], h.RequestDate, h.District, h.[Action], h.[TimeStamp]
+            select k.[Key] [LicenseKey], h.[TimeStamp], h.[Action], h.[GUID] [ProjectGuid], h.RequestDate, h.District, h.Name
             from dbo.ProjectHistory h
             join dbo.sys_LicenseKeys k on h.[GUID]=k.Project_GUID
-            order by k.[Key], h.[GUID], h.[TimeStamp];"
+            order by k.[Key], h.[TimeStamp];"
             With New SqlDataAdapter(sSQL, Connection)
                 .Fill(dtActivity)
             End With
@@ -576,7 +576,7 @@ Public Class Directory
             Return destFile
 
         Catch ex As Exception
-            Throw New Exception("", ex)
+            Throw New Exception(destFile, ex)
 
         Finally
             wb.Close(SaveChanges:=False)

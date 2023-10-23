@@ -22,6 +22,7 @@ Partial Class frmProjUpdate
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmProjUpdate))
         Me.txtName = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -43,6 +44,7 @@ Partial Class frmProjUpdate
         Me.txtVersion = New System.Windows.Forms.TextBox()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.dtRequestDate = New System.Windows.Forms.DateTimePicker()
+        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.SuspendLayout()
         '
         'txtName
@@ -53,6 +55,7 @@ Partial Class frmProjUpdate
         Me.txtName.Name = "txtName"
         Me.txtName.Size = New System.Drawing.Size(188, 21)
         Me.txtName.TabIndex = 2
+        Me.ToolTip1.SetToolTip(Me.txtName, "(Optional) Name of project")
         '
         'Label1
         '
@@ -84,6 +87,7 @@ Partial Class frmProjUpdate
         Me.txtOwner.Name = "txtOwner"
         Me.txtOwner.Size = New System.Drawing.Size(188, 21)
         Me.txtOwner.TabIndex = 3
+        Me.ToolTip1.SetToolTip(Me.txtOwner, "(Optional) Owner of project")
         '
         'Label3
         '
@@ -104,6 +108,7 @@ Partial Class frmProjUpdate
         Me.txtDistrict.Name = "txtDistrict"
         Me.txtDistrict.Size = New System.Drawing.Size(188, 21)
         Me.txtDistrict.TabIndex = 1
+        Me.ToolTip1.SetToolTip(Me.txtDistrict, "Name of school district")
         '
         'Label4
         '
@@ -125,6 +130,7 @@ Partial Class frmProjUpdate
         Me.txtDescription.Name = "txtDescription"
         Me.txtDescription.Size = New System.Drawing.Size(444, 109)
         Me.txtDescription.TabIndex = 4
+        Me.ToolTip1.SetToolTip(Me.txtDescription, "(Optional) Freetext description of project")
         '
         'lblID
         '
@@ -259,6 +265,7 @@ Partial Class frmProjUpdate
         Me.dtRequestDate.Name = "dtRequestDate"
         Me.dtRequestDate.Size = New System.Drawing.Size(188, 21)
         Me.dtRequestDate.TabIndex = 0
+        Me.ToolTip1.SetToolTip(Me.dtRequestDate, "Date of OPRA request")
         Me.dtRequestDate.Value = New Date(2023, 10, 1, 0, 0, 0, 0)
         '
         'frmProjUpdate
@@ -321,4 +328,5 @@ Partial Class frmProjUpdate
     Friend WithEvents txtVersion As System.Windows.Forms.TextBox
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents dtRequestDate As System.Windows.Forms.DateTimePicker
+    Friend WithEvents ToolTip1 As System.Windows.Forms.ToolTip
 End Class

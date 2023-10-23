@@ -103,9 +103,6 @@ Public Class Server
 
         Dim oReader As SqlDataReader
 
-        If MsgBox("Permanently destroy Directory and all Projects?", vbYesNo + vbCritical,
-                  "Destroy All") <> MsgBoxResult.Yes Then Exit Sub
-
         Logger.WriteToLog("Destroying Directory and all Project databases.")
 
         With _Connection.CreateCommand

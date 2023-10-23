@@ -106,50 +106,45 @@ Public Class frmProjUpdate
         'Execute operation to CREATE/UPDATE project
 
         Try
-            'Dim x As Date = CDate(Me.dtRequestDate.Text)
-            'Debug.WriteLine(x.ToString)
-            'Exit Sub
+            Cursor.Current = Cursors.WaitCursor
 
-            'Validation requires that Project Name and Owner fields are not empty
-            If fValidate() Then
+            If _sMode = "Create" Then
 
-                Cursor.Current = Cursors.WaitCursor
+                'Validation requires that Request Date and District are not empty
+                If Not fValidate() Then Exit Sub
 
-                If _sMode = "Create" Then
-                    'Create new Project and Project Database
-                    Logger.WriteToLog($"***Begin New Project Database Setup***")
+                'Create new Project and Project Database
+                Logger.WriteToLog($"***Begin New Project Database Setup***")
 
-                    'Insert row in project directory table 
-                    _oProject = CurrDirectory.AddNewProject(
-                        LicenseKey:=_sLicenseKey,
-                        ApplicationVersion:=Application.ProductVersion,
-                        RequestDate:=CDate(Me.dtRequestDate.Text),
-                        District:=Me.txtDistrict.Text,
-                        Name:=Me.txtName.Text,
-                        Owner:=Me.txtOwner.Text,
-                        Description:=Me.txtDescription.Text)
+                'Insert row in project directory table 
+                _oProject = CurrDirectory.AddNewProject(
+                    LicenseKey:=_sLicenseKey,
+                    ApplicationVersion:=Application.ProductVersion,
+                    RequestDate:=CDate(Me.dtRequestDate.Text),
+                    District:=Me.txtDistrict.Text,
+                    Name:=Me.txtName.Text,
+                    Owner:=Me.txtOwner.Text,
+                    Description:=Me.txtDescription.Text)
 
-                    If Not IsNothing(_oProject) Then
-                        ' Instantiate 'Curr' objects from new project
-                        CurrProject = _oProject
-                        CurrProjDB = New ProjectDB(CurrProject.DatabaseName)
-                        Logger.WriteToLog($"***End New Project Database Setup***")
-                        _Result = True
-
-                    End If
-
-                ElseIf _sMode = "Edit" Then
-                    'Update project information in project directory table
-                    CurrDirectory.UpdateProject(_oProject, Me.txtName.Text, Me.txtOwner.Text, Me.txtDescription.Text)
-                    Logger.WriteToLog($"***Project {_oProject.ID} Details Updated***")
+                If Not IsNothing(_oProject) Then
+                    ' Instantiate 'Curr' objects from new project
+                    CurrProject = _oProject
+                    CurrProjDB = New ProjectDB(CurrProject.DatabaseName)
+                    Logger.WriteToLog($"***End New Project Database Setup***")
                     _Result = True
 
                 End If
 
-                ' Close form
-                Me.Close()
+            ElseIf _sMode = "Edit" Then
+                'Update project information in project directory table
+                CurrDirectory.UpdateProject(_oProject, Me.txtName.Text, Me.txtOwner.Text, Me.txtDescription.Text)
+                Logger.WriteToLog($"***Project {_oProject.ID} Details Updated***")
+                _Result = True
 
             End If
+
+            ' Close form
+            Me.Close()
 
         Catch ex As Exception
             MsgBox($"{DateTime.Now} > {ex.GetType}", vbOKOnly + vbCritical, "Create Project Error")

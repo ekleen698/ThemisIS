@@ -3,6 +3,8 @@ Imports ClassLibrary.GlobalObjects
 Imports System.Windows.Forms
 Imports System.ComponentModel
 Imports System.IO
+Imports System.Security.Cryptography
+Imports System.Text
 
 Public Class frmDirectory
 
@@ -54,6 +56,11 @@ Public Class frmDirectory
                 .Add("Description", 0)
             End With
 
+            ' Initialize destroy mode to False
+            _oSettings.Destroy = False
+            _oSettings.Save()
+            _oSettings = New ClassLibrary.My.MySettings
+
             ' Get server name from user settings, if default value then use computer name
             If _oSettings.Server <> "" Then
                 Me.txtServer.Text = _oSettings.Server
@@ -74,7 +81,7 @@ Public Class frmDirectory
     Private Sub frmDirectory_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         ' For developer testing, automatically connect to server
 
-        If _DevMode Then Me.cmdConnectServer.PerformClick()
+        'If _DevMode Then Me.cmdConnectServer.PerformClick()
 
     End Sub
 
@@ -120,10 +127,29 @@ Public Class frmDirectory
 
             ' Destroy all mlg databases, used to remove directory for application revision
             If _oSettings.Destroy Then
+
+                If _DevMode Then
+                    If Not MsgBox("Continue?", vbYesNo, "DevMode Destroy") = vbYes Then Exit Sub
+                Else
+                    Dim sResponse As String = InputBox("Enter password to permanently destroy Directory and all Projects.", "Destroy All")
+                    If sResponse = "" Then
+                        Exit Sub
+                    ElseIf sResponse <> GetPass() Then
+                        MsgBox("Incorrect Password")
+                        Exit Sub
+                    End If
+
+                End If
+
+                Cursor.Current = Cursors.WaitCursor
                 CurrServer.destroy()
+                Cursor.Current = Cursors.Default
+                MsgBox("Directory has been replaced and all Projects removed. Now connecting.", vbOKOnly, "Operation Complete")
+
                 _oSettings.Destroy = False
                 _oSettings.Save()
                 _oSettings = New ClassLibrary.My.MySettings
+
             End If
 
             ' Connect to Project Directory database, throws exception if not connected after 10 seconds
@@ -553,11 +579,12 @@ Public Class frmDirectory
             ' Do nothing
 
         Catch ex As Exception
+            Logger.WriteToLog(ex)
             If Not IsNothing(ex.InnerException) Then
+                destFile = ex.Message
                 ex = ex.InnerException
             End If
-            Logger.WriteToLog(ex)
-            MsgBox($"{ex.GetType} while exporting file{vbCrLf & vbCrLf}Path: <{destFile}>",
+            MsgBox($"{ex.GetType}{vbCrLf}{ex.Message}{vbCrLf & vbCrLf}Path: <{destFile}>",
                    vbOKOnly + vbCritical, "File Save Error")
 
 
@@ -619,6 +646,29 @@ Public Class frmDirectory
         End Try
 
     End Sub
+
+    Private Function GetPass() As String
+
+        Dim sDate As String = Now.ToString("yyyy-MM-dd")
+
+        Using hasher As MD5 = MD5.Create()    ' create hash object
+
+            ' Convert to byte array and get hash
+            Dim dbytes As Byte() =
+             hasher.ComputeHash(Encoding.UTF8.GetBytes(sDate))
+
+            ' sb to create string from bytes
+            Dim sBuilder As New StringBuilder()
+
+            ' convert byte data to hex string
+            For n As Integer = 0 To dbytes.Length - 1
+                sBuilder.Append(dbytes(n).ToString("X2"))
+            Next n
+
+            Return sBuilder.ToString()
+        End Using
+
+    End Function
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
